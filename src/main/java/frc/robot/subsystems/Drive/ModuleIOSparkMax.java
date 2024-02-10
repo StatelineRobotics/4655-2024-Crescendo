@@ -110,7 +110,7 @@ public class ModuleIOSparkMax implements ModuleIO{
 
     // Command driving and turning SPARKS MAX towards their respective setpoints.
     
-    if (Math.abs(state.speedMetersPerSecond) < 0.05) {
+    if (Math.abs(state.speedMetersPerSecond) < 0.1) {
       stopDrive();
       return;
     }
