@@ -20,6 +20,7 @@ public final class DriveConstants {
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double KMaxLinearSpeed = Units.feetToMeters(14.5);
 
     public static final double kDirectionSlewRate = 10.0; // radians per second
     public static final double kMagnitudeSlewRate = 10.0; // percent per second (1 = 100%)
@@ -31,7 +32,7 @@ public final class DriveConstants {
     public static final double kWheelBase = Units.inchesToMeters(24.5);
     // Distance between front and back wheels on robot
     
-    public static final double kTrackRadius = Units.inchesToMeters (Math.sqrt((kTrackWidth * kTrackWidth) + (kWheelBase * kWheelBase)));//(29.34); //MUST CHANGE - ALSO IT'S IN METERS was 29.34 
+    public static final double kTrackRadius = Units.inchesToMeters (Math.sqrt(Math.pow(kTrackWidth,2 ) + Math.pow(kWheelBase, 2)));//(29.34); //MUST CHANGE - ALSO IT'S IN METERS was 29.34 
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
             new Translation2d(kWheelBase / 2, kTrackWidth / 2),
             new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
@@ -102,7 +103,7 @@ public final class DriveConstants {
         public static final double kTurningMinOutput = -1;
         public static final double kTurningMaxOutput = 1;
 
-        public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
+        public static final IdleMode kDrivingMotorIdleMode = IdleMode.kCoast;
         public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
         public static final int kDrivingMotorCurrentLimit = 30; // amps

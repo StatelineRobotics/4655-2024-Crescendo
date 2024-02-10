@@ -16,9 +16,12 @@ package frc.robot;
 import com.pathplanner.lib.auto.AutoBuilder;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants.OIConstants;
@@ -116,6 +119,13 @@ public class RobotContainer {
             drive));
 
       OIConstants.m_driverController.rightBumper().onTrue(new InstantCommand(drive::zeroHeading));
+      OIConstants.m_driverController.b()
+        .onTrue(Commands.runOnce(
+                    () ->
+                        drive.resetOdometry(
+                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                    drive)
+                .ignoringDisable(true));
 
   }
   /**

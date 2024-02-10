@@ -95,6 +95,7 @@ public class Drive extends SubsystemBase {
                                                      // furthest module. ***MIGHT CHANGE***
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 ),
+                
                 () -> DriverStation.getAlliance().isPresent() && DriverStation.getAlliance().get() == Alliance.Red,
                 this // Reference to this subsystem to set requirements
         );
@@ -236,6 +237,7 @@ public class Drive extends SubsystemBase {
             }
             m_prevTime = currentTime;
 
+            
             xSpeedCommanded = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
             ySpeedCommanded = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
             m_currentRotation = m_rotLimiter.calculate(rot);
@@ -257,6 +259,7 @@ public class Drive extends SubsystemBase {
 
          SmartDashboard.putBoolean("Field Relative", fieldRelative);
 
+         
         Rotation2d fieldRelativeRotation;
         switch(Constants.currentMode){
             case REAL:
@@ -271,10 +274,17 @@ public class Drive extends SubsystemBase {
 
         }
 
+        boolean isFlipped =
+            DriverStation.getAlliance().isPresent()
+                && DriverStation.getAlliance().get() == Alliance.Red;
+
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
                 fieldRelative
                         ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered,
-                                fieldRelativeRotation.plus(DriveConstants.kChassisAngularOffset))
+                        isFlipped
+                            ?   fieldRelativeRotation.plus(new Rotation2d(Math.PI))
+                            :   fieldRelativeRotation)
+                            // was fieldRelativeRotation.plus(DriveConstants.kChassisAngularOffset)
                         : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         SwerveDriveKinematics.desaturateWheelSpeeds(
                 swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
@@ -288,10 +298,11 @@ public class Drive extends SubsystemBase {
      * Sets the wheels into an X formation to prevent movement.
      */
     public void setX() {
-        m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
-        m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+        m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+        m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+        m_rearLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+        m_rearRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(0)));
+       
     }
 
     public SwerveModuleState[] getModuleStates() {
