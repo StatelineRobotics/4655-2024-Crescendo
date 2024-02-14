@@ -115,9 +115,11 @@ public class RobotContainer {
                 -MathUtil.applyDeadband(OIConstants.m_driverController.getLeftX(), OIConstants.kDriveDeadband),
                 -MathUtil.applyDeadband(OIConstants.m_driverController.getRightX(), OIConstants.kDriveDeadband),
                 !OIConstants.kdriveJoyButton.getRawButton(5),
-                 true),
+                 false),
             drive));
 
+      OIConstants.m_driverController.x().onTrue(Commands.runOnce(drive::setX, drive));
+      
       OIConstants.m_driverController.rightBumper().onTrue(new InstantCommand(drive::zeroHeading));
       OIConstants.m_driverController.b()
         .onTrue(Commands.runOnce(

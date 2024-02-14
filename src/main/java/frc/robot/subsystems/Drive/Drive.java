@@ -86,10 +86,10 @@ public class Drive extends SubsystemBase {
                 this::driveRobotRelative, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
                 new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your
                                                  // Constants class
-                        new PIDConstants(ModuleConstants.kDrivingP, ModuleConstants.kDrivingI,
-                                ModuleConstants.kDrivingD), // Translation PID constants
-                        new PIDConstants(ModuleConstants.kTurningP, ModuleConstants.kTurningI,
-                                ModuleConstants.kTurningD), // Rotation PID constants
+                        new PIDConstants(ModuleConstants.kAutoDrivingP, ModuleConstants.kAutoDrivingI,
+                                ModuleConstants.kAutoDrivingD), // Translation PID constants
+                        new PIDConstants(ModuleConstants.kAutoTurningP, ModuleConstants.kAutoTurningI,
+                                ModuleConstants.kAutoTurningD), // Rotation PID constants
                         4.5, // Max module speed, in m/s ***MIGHT CHANGE***
                         DriveConstants.kTrackRadius, // Drive base radius in meters. Distance from robot center to
                                                      // furthest module. ***MIGHT CHANGE***

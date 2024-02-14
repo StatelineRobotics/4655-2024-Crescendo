@@ -96,12 +96,20 @@ public final class DriveConstants {
         public static final double kDrivingMinOutput = -1;
         public static final double kDrivingMaxOutput = 1;
 
-        public static final double kTurningP = .5;
+        public static final double kTurningP = 2;
         public static final double kTurningI = 0;
         public static final double kTurningD = 0;
         public static final double kTurningFF = 0;
-        public static final double kTurningMinOutput = -1;
-        public static final double kTurningMaxOutput = 1;
+        public static final double kTurningMinOutput = -.7;
+        public static final double kTurningMaxOutput = 7;
+
+        public static final double kAutoDrivingP = 0.9 ;
+        public static final double kAutoDrivingI = 0;
+        public static final double kAutoDrivingD = 0;
+
+        public static final double kAutoTurningP = .9;
+        public static final double kAutoTurningI = 0;
+        public static final double kAutoTurningD = 0;
 
         public static final IdleMode kDrivingMotorIdleMode = IdleMode.kCoast;
         public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
@@ -121,10 +129,10 @@ public final class DriveConstants {
         public static final double kPThetaController = 1;
 
         public static final HolonomicPathFollowerConfig follower = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
-                        new PIDConstants(ModuleConstants.kDrivingP, ModuleConstants.kDrivingI, ModuleConstants.kDrivingD), // Translation PID constants
-                        new PIDConstants(ModuleConstants.kTurningP, ModuleConstants.kTurningI, ModuleConstants.kTurningD), // Rotation PID constants
+                        new PIDConstants(ModuleConstants.kAutoDrivingP, ModuleConstants.kAutoDrivingI, ModuleConstants.kAutoDrivingD), // Translation PID constants
+                        new PIDConstants(ModuleConstants.kAutoTurningP, ModuleConstants.kAutoTurningI, ModuleConstants.kAutoTurningD), // Rotation PID constants
                         4.5, // Max module speed, in m/s ***MIGHT CHANGE***
-                        0.4, // Drive base radius in meters. Distance from robot center to furthest module. ***MIGHT CHANGE***
+                        kTrackRadius, // Drive base radius in meters. Distance from robot center to furthest module. ***MIGHT CHANGE***
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 );
 
