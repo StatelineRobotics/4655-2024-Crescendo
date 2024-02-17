@@ -77,6 +77,7 @@ public class ModuleIOSparkMax implements ModuleIO{
     m_turningPIDController.setOutputRange(ModuleConstants.kTurningMinOutput,
         ModuleConstants.kTurningMaxOutput);
 
+    
     m_drivingSparkMax.burn();
     m_turningSparkMax.burn();
     

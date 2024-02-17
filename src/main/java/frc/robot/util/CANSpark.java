@@ -112,11 +112,11 @@ public class CANSpark {
                 throw new IllegalArgumentException("Not a Recognized Motor Controller Type");
         }
 
-        motor.restoreFactoryDefaults();
+ //NJ       motor.restoreFactoryDefaults();
 
         motor.setSmartCurrentLimit(build.currentLimit);
         motor.setIdleMode(build.mode);
-        motor.setInverted(build.inverted);
+ //NJ         motor.setInverted(build.inverted);
         if(build.compensate){
             motor.enableVoltageCompensation(build.compensationVolts);
         }
@@ -133,7 +133,7 @@ public class CANSpark {
         if(build.hasAbsoluteEncoder){
             absEncoder = motor.getAbsoluteEncoder(Type.kDutyCycle);
             absEncoder.setInverted(build.inverted);
-            motor.setInverted(build.inverted);
+//NJ            motor.setInverted(build.inverted);
             absEncoder.setAverageDepth(2);
             motor.setPeriodicFramePeriod(PeriodicFrame.kStatus5, 20);
             motor.setPeriodicFramePeriod(PeriodicFrame.kStatus6, 20);

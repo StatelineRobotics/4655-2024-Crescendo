@@ -36,7 +36,7 @@ public class ClimberSubsistem  extends SubsystemBase {
          m_RightClimber.restoreFactoryDefaults();
          m_LeftClimber.setIdleMode(IdleMode.kBrake);
          m_RightClimber.setIdleMode(IdleMode.kBrake);
-         m_LeftClimber.setInverted(true);
+         m_LeftClimber.setInverted(false);
          m_RightClimber.setInverted(true);
          m_LeftClimber.setSmartCurrentLimit(30);
          m_RightClimber.setSmartCurrentLimit(30);

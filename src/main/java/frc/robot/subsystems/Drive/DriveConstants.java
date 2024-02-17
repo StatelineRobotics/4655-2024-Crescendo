@@ -53,13 +53,13 @@ public final class DriveConstants {
     public static final int kFrontRightDrivingCanId = 6;
     public static final int kFrontLeftTurningCanId = 7; 
     public static final int kFrontLeftDrivingCanId = 8;
-    public static final int kRearLeftTurningCanId = 9;
-    public static final int kRearLeftDrivingCanId = 10;
+    public static final int kRearLeftTurningCanId = 10;
+    public static final int kRearLeftDrivingCanId = 9;
 
 
     public static final Rotation2d kChassisAngularOffset = Rotation2d.fromDegrees(0);
 
-    public static final int kPigeonCanId = 20;
+    public static final int kPigeonCanId = 19;
 
     public static final boolean kGyroReversed = true;
 
@@ -76,6 +76,7 @@ public final class DriveConstants {
         public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
 
         public static final boolean kDrivingMotorInverted = true;
+
         public static final double kDrivingMotorReduction = (50.0 / 14.0) * (17.0 / 27.0) * (45.0 / 15.0);
         public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
                 / kDrivingMotorReduction;

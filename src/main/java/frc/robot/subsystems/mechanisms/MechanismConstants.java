@@ -13,8 +13,8 @@ public class MechanismConstants {
     public static final int kArmLeftCanId = 2;
     public static final int kLeftClimberCanId = 11;
     public static final int kRightClimberCanId = 12;
-    public static final int kShooterTopCanId = 13;
-    public static final int kShooterBottomCanId = 14; 
+    public static final int kTopShooterCanId = 13;
+    public static final int kBottomShooterCanId = 14; 
     public static final int kArmExtenderCanId = 15;
     public static final int kWristCanId = 16; 
     public static final int kIntakeCanId = 17; 
