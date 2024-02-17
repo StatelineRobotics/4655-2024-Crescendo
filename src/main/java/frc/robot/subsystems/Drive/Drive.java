@@ -4,7 +4,12 @@
 
 package frc.robot.subsystems.Drive;
 
+import java.util.Optional;
+
 import org.littletonrobotics.junction.Logger;
+import org.photonvision.EstimatedRobotPose;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -14,6 +19,7 @@ import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -23,6 +29,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
+import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -53,6 +60,8 @@ public class Drive extends SubsystemBase {
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry;
     private Pose2d pose = new Pose2d();
+    private PhotonPoseEstimator VisionPose;
+    private Pose3d = VisionPose.get();
 
     /** Creates a new DriveSubsystem. */
     public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
@@ -74,7 +83,7 @@ public class Drive extends SubsystemBase {
                         m_frontLeft.getPosition(),
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
-                        m_rearRight.getPosition()
+                        m_rearRight.getPosition(),
                 });
 
         this.zeroHeading();
@@ -147,7 +156,7 @@ public class Drive extends SubsystemBase {
         var twist = DriveConstants.kDriveKinematics.toTwist2d(wheelDeltas);
         // Apply the twist (change since last sample) to the current pose
         pose = pose.exp(twist);
-
+        Pose3d Men = VisionPose.getEstimatedPose();
        
 
         Logger.recordOutput("Odometry", getPose());

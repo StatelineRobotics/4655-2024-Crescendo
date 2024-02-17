@@ -1,4 +1,5 @@
 package frc.robot.subsystems.Vision;
+
 import java.util.function.Supplier;
 
 import org.photonvision.PhotonCamera;
@@ -30,11 +31,9 @@ public class Fearful extends Command {
     private static final int Tag_to_chase = 9;
 
     private static final Transform3d Tag_to_goal = new Transform3d(
-        new Translation3d(
-            Translation3d(1,0,0),
-            Translation3d(0,0,Math.PI)
+        new Translation3d(1,0,0),
+        new Rotation3d(0,0,Math.PI)
         );
-    );
 
     private PhotonCamera Left;
     private Drive drive;
@@ -53,14 +52,24 @@ public class Fearful extends Command {
         this.drive = drive;
         this.Left = Left;
         this.poseProvider = poseProvider;
-
         xController.setTolerance(.3);
         yController.setTolerance(.3);
+        omegaController.setTolerance(Units.degreesToRadians(3));
 
         addRequirements(drive);
     }
 
-    public initialize() {
+    @Override
+    public void initialize() {
+        var Robotpose = poseProvider.get();
+        xController.reset(Robotpose.getX());
+        yController.reset(Robotpose.getY());
 
     }
+
+    @Override
+    public void Execute(){
+        Robotpose
+    }
+    
 }
