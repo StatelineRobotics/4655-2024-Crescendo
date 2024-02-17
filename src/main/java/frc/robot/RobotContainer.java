@@ -26,7 +26,9 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
-//import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
+import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -39,8 +41,9 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-    // private final Flywheel flywheel;
-  //public static PhotonVision pvPoseCamera;
+  private final IntakeSubsystem intakeSubsystem;
+  private final ClimberSubsystem climberSubsystem;
+  public static PhotonVision pvPoseCamera;
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
   // private final LoggedDashboardNumber flywheelSpeedInput =
@@ -59,7 +62,8 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
-
+        climberSubsystem = new ClimberSubsystem();
+        intakeSubsystem = new IntakeSubsystem();
         break;
 
       case SIM:
@@ -71,7 +75,8 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
-
+        climberSubsystem = new ClimberSubsystem();
+        intakeSubsystem = new IntakeSubsystem();
         break;
 
       default:
@@ -83,7 +88,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-        // flywheel = new Flywheel(new FlywheelIO() {});
+                climberSubsystem = new ClimberSubsystem();
+                intakeSubsystem = new IntakeSubsystem();
         break;
     }
 
@@ -131,7 +137,17 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+
   }
+
+  public ClimberSubsystem getCLimberSubsystem(){
+    return climberSubsystem;
+  }
+
+  public IntakeSubsystem getIntakeSubsystem(){
+    return intakeSubsystem;
+  }
+
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *
