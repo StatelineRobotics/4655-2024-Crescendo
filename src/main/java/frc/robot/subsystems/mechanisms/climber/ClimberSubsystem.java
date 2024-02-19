@@ -29,15 +29,17 @@ public class ClimberSubsystem  extends SubsystemBase {
          m_LeftClimber = new CANSparkMax(MechanismConstants.kLeftClimberCanId, MotorType.kBrushless);
          m_RightClimber = new CANSparkMax(MechanismConstants.kRightClimberCanId, MotorType.kBrushless);
 
+        m_LeftClimber.follow(m_RightClimber);
+
         leftClimberEncoder =  m_LeftClimber.getEncoder();
         rightClimberEncoder =  m_RightClimber.getEncoder();
 
          m_LeftClimber.restoreFactoryDefaults();
          m_RightClimber.restoreFactoryDefaults();
-         m_LeftClimber.setIdleMode(IdleMode.kBrake);
-         m_RightClimber.setIdleMode(IdleMode.kBrake);
+         m_LeftClimber.setIdleMode(IdleMode.kCoast);
+         m_RightClimber.setIdleMode(IdleMode.kCoast);
          m_LeftClimber.setInverted(false);
-         m_RightClimber.setInverted(true);
+         m_RightClimber.setInverted(false);
          m_LeftClimber.setSmartCurrentLimit(30);
          m_RightClimber.setSmartCurrentLimit(30);
         
@@ -46,20 +48,21 @@ public class ClimberSubsystem  extends SubsystemBase {
         leftClimberController.setP(1);
         leftClimberController.setP(0);
         leftClimberController.setP(0);
-        leftClimberController.setOutputRange(-.25,.25);
+        leftClimberController.setOutputRange(-.2,.2);
 
         rightClimberController = m_RightClimber.getPIDController();
         rightClimberController.setFeedbackDevice(rightClimberEncoder);
         rightClimberController.setP(1);
         rightClimberController.setP(0);
         rightClimberController.setP(0);
-        rightClimberController.setOutputRange(-.25,.25);
+        rightClimberController.setOutputRange(-.2,.2);
 
         m_LeftClimber.burnFlash();
         m_RightClimber.burnFlash();
 
-        SmartDashboard.setDefaultBoolean("Run Left Climber Up", false);
-        SmartDashboard.setDefaultBoolean("Run Right Climber Up", false);
+        SmartDashboard.setDefaultBoolean("Run Climber Up", false);
+        SmartDashboard.setDefaultBoolean("Run Climber Down", false);
+
     }
 
     public double leftClimberPos() {
@@ -67,47 +70,31 @@ public class ClimberSubsystem  extends SubsystemBase {
     }
 
     public double rightClimberPos() {
-        return leftClimberEncoder.getPosition();
+        return rightClimberEncoder.getPosition();
     }
 
     @Override
     public void periodic(){
-       SmartDashboard.getNumber("Left Climber Position", leftClimberEncoder.getPosition()); 
-       SmartDashboard.getNumber("Right Climber Position", rightClimberEncoder.getPosition());
+       SmartDashboard.putNumber("Left Climber Position", leftClimberEncoder.getPosition()); 
+       SmartDashboard.putNumber("Right Climber Position", rightClimberEncoder.getPosition());
        
-       SmartDashboard.putBoolean("Run Left Climber Up", false);
-       SmartDashboard.putBoolean("Right Left Climber Up", false);
-       
+       SmartDashboard.getBoolean("Run Climber Up", false);
+       SmartDashboard.getBoolean("Run Climber Down", false);
+
       // SmartDashboard.putBoolean("Run Left Climber Up",  false); 
 
-       if (SmartDashboard.getBoolean("Run Left Climber Up", false)) {
-        m_LeftClimber.set(.1);
+       if (SmartDashboard.getBoolean("Run Climber Up", false)) {
+        m_RightClimber.set(-.2);
        }
-       else{
-        m_LeftClimber.set(0);
-       }
-
-       if (SmartDashboard.getBoolean("Run Left Climber Down", false)) {
-        m_LeftClimber.set(-.1);
-       }
-       else{
-        m_LeftClimber.set(0);
-       }
-
-       if (SmartDashboard.getBoolean("Run Right Climber Up", false)) {
-        m_RightClimber.set(.1);
+       else
+       if (SmartDashboard.getBoolean("Run Climber Down", false)) {
+        m_RightClimber.set(.2);
        }
        else{
         m_RightClimber.set(0);
        }
 
-       if (SmartDashboard.getBoolean("Run Right Climber Down", false)) {
-        m_RightClimber.set(-.1);
-       }
-       else{
-        m_RightClimber.set(0);
-       }
-
+       
 
        
       

@@ -8,12 +8,16 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
+
+import au.grapplerobotics.LaserCan;
+
 import com.revrobotics.CANSparkBase.ControlType;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
 
 import frc.robot.subsystems.mechanisms.MechanismConstants;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -25,12 +29,15 @@ public class IntakeSubsystem extends SubsystemBase {
     private RelativeEncoder intakeEncoder;
     private SparkPIDController wristController;
     private SparkPIDController intakeController;
+    private LaserCan ringDistance;
+
 
   /** Creates a new IntakeSubsustem. */
   public IntakeSubsystem() {
     m_Wrist = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
     m_Intake = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
-    
+    ringDistance = new LaserCan(18);
+
     wristEncoder =  m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
     intakeEncoder =  m_Intake.getEncoder();
     wristEncoder.setInverted(false);
@@ -71,11 +78,31 @@ public class IntakeSubsystem extends SubsystemBase {
     return intakeEncoder.getVelocity();
   }
 
+   public double getRingDistance() {
+    LaserCan.Measurement measurement = ringDistance.getMeasurement();
+      if (measurement != null) {
+        if (measurement.status == 0) {
+          return measurement.distance_mm;
+        } else {
+          DriverStation.reportWarning("LaserCan status went bad: " + measurement.status, false);
+          return measurement.distance_mm;
+            }
+        } else {
+          return 0;
+        }
+  }
+  
+
+ 
+
   @Override
   public void periodic() {
 
     SmartDashboard.putNumber("Wrist Position", getWristPosition());
     SmartDashboard.putNumber("Intake RPM", getIntakeRPM());
+    SmartDashboard.putNumber("Intake RPM", getIntakeRPM());
+    SmartDashboard.putNumber("Ring Distance",  getRingDistance());
+
     double dsSetIntakeRPM =
           SmartDashboard.getNumber("Set Intake RPM", 0.0);
     double dsSetWristPostion =
