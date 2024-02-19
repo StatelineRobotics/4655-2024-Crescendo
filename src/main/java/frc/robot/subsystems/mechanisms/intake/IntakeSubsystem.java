@@ -4,123 +4,104 @@
 
 package frc.robot.subsystems.mechanisms.intake;
 
-import com.revrobotics.AbsoluteEncoder;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-
-import au.grapplerobotics.LaserCan;
-
-import com.revrobotics.CANSparkBase.ControlType;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
-import com.revrobotics.SparkAbsoluteEncoder.Type;
-
+import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+
 public class IntakeSubsystem extends SubsystemBase {
-  
-    private CANSparkMax m_Wrist;
-    private CANSparkMax  m_Intake;
-    private AbsoluteEncoder wristEncoder;
-    private RelativeEncoder intakeEncoder;
-    private SparkPIDController wristController;
-    private SparkPIDController intakeController;
-    private LaserCan ringDistance;
-
-
-  /** Creates a new IntakeSubsustem. */
-  public IntakeSubsystem() {
-    m_Wrist = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
-    m_Intake = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
-    ringDistance = new LaserCan(18);
-
-    wristEncoder =  m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
-    intakeEncoder =  m_Intake.getEncoder();
-    wristEncoder.setInverted(false);
-
-    m_Wrist.restoreFactoryDefaults();
-    m_Intake.restoreFactoryDefaults();
-    m_Wrist.setIdleMode(IdleMode.kBrake);
-    m_Intake.setIdleMode(IdleMode.kCoast);
-    m_Wrist.setInverted(false);
-    m_Intake.setInverted(false);
-    m_Wrist.setSmartCurrentLimit(30);
-    m_Intake.setSmartCurrentLimit(30);
- 
-    intakeController = m_Intake.getPIDController();
-    intakeController.setFeedbackDevice(intakeEncoder);
-    intakeController.setP(1);
-    intakeController.setP(0);
-    intakeController.setP(0);
-    intakeController.setOutputRange(-.05,.05);
-
-    wristController = m_Wrist.getPIDController();
-    wristController.setFeedbackDevice(wristEncoder);
-    wristController.setP(1);
-    wristController.setP(0);
-    wristController.setP(0);
-    wristController.setOutputRange(-.05,.05);
-
-    m_Wrist.burnFlash();
-    m_Intake.burnFlash();
-
-  }
-
-  public double getWristPosition() {
-    return wristEncoder.getPosition();
-  }
-
-  public double getIntakeRPM() {
-    return intakeEncoder.getVelocity();
-  }
-
-   public double getRingDistance() {
-    LaserCan.Measurement measurement = ringDistance.getMeasurement();
-      if (measurement != null) {
-        if (measurement.status == 0) {
-          return measurement.distance_mm;
-        } else {
-          DriverStation.reportWarning("LaserCan status went bad: " + measurement.status, false);
-          return measurement.distance_mm;
-            }
-        } else {
-          return 0;
-        }
-  }
+  private final IntakeIO io; 
+  private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
+  private boolean pickup = false;
+  private boolean shoot = false;
+  private boolean shootPosition = false;
   
 
- 
+
+  public IntakeSubsystem(IntakeIO io) {
+    System.out.println("[Init] Creating Intake");
+    this.io = io;
+  }
 
   @Override
   public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Intake", inputs);
 
-    SmartDashboard.putNumber("Wrist Position", getWristPosition());
-    SmartDashboard.putNumber("Intake RPM", getIntakeRPM());
-    SmartDashboard.putNumber("Intake RPM", getIntakeRPM());
-    SmartDashboard.putNumber("Ring Distance",  getRingDistance());
-
-    double dsSetIntakeRPM =
-          SmartDashboard.getNumber("Set Intake RPM", 0.0);
-    double dsSetWristPostion =
-          SmartDashboard.getNumber("Set Wrist Positon", 0.0);
-   
-    if (SmartDashboard.getBoolean("Run Intake", false)) {
-      intakeController.setReference(dsSetIntakeRPM,CANSparkMax.ControlType.kVelocity);
+ 
+    if (DriverStation.isDisabled()) {
+      stop();
+    } else {
+      if (pickup) {
+        io.setIntakeMotors(MechanismConstants.kIntakePickupRPM, MechanismConstants.kIntakePickupPostion);
+      } else if (shootPosition) {
+        io.setIntakeMotors(0, MechanismConstants.kIntakePickupPostion);
+      } else if (shoot) {
+        io.setIntakeMotors(MechanismConstants.kIntakeShootRPM, MechanismConstants.kIntakePickupPostion);
+      }  
     }
-    else {
-       m_Intake.set(0);
-    }    
 
-     if (SmartDashboard.getBoolean("Run Intake", false)) {
-      wristController.setReference(dsSetWristPostion, ControlType.kDutyCycle);
-    }
-    else {
-       m_Wrist.set(0);
-    }   
-    
   }
+  
+  public boolean pickuping() {
+    return pickup;
+  }
+    
+  public boolean shootingPositioning() {
+    return shootPosition;
+  }
+
+  public boolean shooting() {
+    return shoot;
+  }
+
+
+  public boolean running() {
+    return pickup || shootPosition || shoot;
+  }
+
+  private void pickup() {
+    pickup = true;
+    shootPosition = false;
+    shoot = false;
+  }
+
+  private void shootPosition() {
+    pickup = false;
+    shootPosition = true;
+    shoot = false;
+  }
+
+  private void shoot() {
+    pickup = false;
+    shootPosition = false;
+    shoot = true;
+  }
+
+  private void stop() {
+    pickup = false;
+    shootPosition = false;
+    shoot = false;
+    io.stop();
+  }
+
+  public Command pickupCommand() {
+    return Commands.runOnce(this::pickup);
+  }
+
+  public Command shootPoitionCommand() {
+    return Commands.runOnce(this::shootPosition);
+  }
+
+  public Command shootCommand() {
+    return Commands.runOnce(this::shoot);
+  }
+
+   public Command stopCommand() {
+    return Commands.runOnce(this::stop);
+  }
+
 }

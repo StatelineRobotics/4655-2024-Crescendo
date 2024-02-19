@@ -4,108 +4,104 @@
 
 package frc.robot.subsystems.mechanisms.climber;
 
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.SparkPIDController;
-
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkBase.IdleMode;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import org.littletonrobotics.junction.Logger;
+
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 
 /** Add your docs here. */
 public class ClimberSubsystem  extends SubsystemBase {
-    private CANSparkMax m_LeftClimber;
-    private CANSparkMax  m_RightClimber;
-    private RelativeEncoder leftClimberEncoder;
-    private RelativeEncoder rightClimberEncoder;
-    private SparkPIDController rightClimberController;
-    private SparkPIDController leftClimberController;
+    private final ClimberIO io;
+    private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged() ;
+    private boolean chainGrab = false;
+    private boolean climb = false;
+    private boolean reset = false;
 
-    public ClimberSubsystem(){
 
-         m_LeftClimber = new CANSparkMax(MechanismConstants.kLeftClimberCanId, MotorType.kBrushless);
-         m_RightClimber = new CANSparkMax(MechanismConstants.kRightClimberCanId, MotorType.kBrushless);
-
-        m_LeftClimber.follow(m_RightClimber);
-
-        leftClimberEncoder =  m_LeftClimber.getEncoder();
-        rightClimberEncoder =  m_RightClimber.getEncoder();
-
-         m_LeftClimber.restoreFactoryDefaults();
-         m_RightClimber.restoreFactoryDefaults();
-         m_LeftClimber.setIdleMode(IdleMode.kCoast);
-         m_RightClimber.setIdleMode(IdleMode.kCoast);
-         m_LeftClimber.setInverted(false);
-         m_RightClimber.setInverted(false);
-         m_LeftClimber.setSmartCurrentLimit(30);
-         m_RightClimber.setSmartCurrentLimit(30);
-        
-        leftClimberController = m_LeftClimber.getPIDController();
-        leftClimberController.setFeedbackDevice(leftClimberEncoder);
-        leftClimberController.setP(1);
-        leftClimberController.setP(0);
-        leftClimberController.setP(0);
-        leftClimberController.setOutputRange(-.2,.2);
-
-        rightClimberController = m_RightClimber.getPIDController();
-        rightClimberController.setFeedbackDevice(rightClimberEncoder);
-        rightClimberController.setP(1);
-        rightClimberController.setP(0);
-        rightClimberController.setP(0);
-        rightClimberController.setOutputRange(-.2,.2);
-
-        m_LeftClimber.burnFlash();
-        m_RightClimber.burnFlash();
-
-        SmartDashboard.setDefaultBoolean("Run Climber Up", false);
-        SmartDashboard.setDefaultBoolean("Run Climber Down", false);
-
-    }
-
-    public double leftClimberPos() {
-        return leftClimberEncoder.getPosition();
-    }
-
-    public double rightClimberPos() {
-        return rightClimberEncoder.getPosition();
+    public ClimberSubsystem(ClimberIO io){
+        System.out.println("[Init] Creating Intake");
+        this.io = io;
     }
 
     @Override
-    public void periodic(){
-       SmartDashboard.putNumber("Left Climber Position", leftClimberEncoder.getPosition()); 
-       SmartDashboard.putNumber("Right Climber Position", rightClimberEncoder.getPosition());
-       
-       SmartDashboard.getBoolean("Run Climber Up", false);
-       SmartDashboard.getBoolean("Run Climber Down", false);
-
-      // SmartDashboard.putBoolean("Run Left Climber Up",  false); 
-
-       if (SmartDashboard.getBoolean("Run Climber Up", false)) {
-        m_RightClimber.set(-.2);
-       }
-       else
-       if (SmartDashboard.getBoolean("Run Climber Down", false)) {
-        m_RightClimber.set(.2);
-       }
-       else{
-        m_RightClimber.set(0);
-       }
-
-       
-
-       
-      
-
-
-
-
+    public void periodic() {
+        io.updateInputs(inputs);
+        Logger.processInputs("Climber", inputs);
+    
+        if (DriverStation.isDisabled()) {
+            stop();
+        } else {
+            if (chainGrab) {
+                io.setElevatorMotors(MechanismConstants.kClimberGrabPosition);
+            } else if (climb) {
+                io.setElevatorMotors(MechanismConstants.kClimberClimbPosition);
+            } else if (reset) {
+                io.setElevatorMotors(MechanismConstants.kClimberResetPosition);
+            }  
+        }
     }
 
+    public boolean grabing() {
+        return chainGrab;
+    }
+        
+    public boolean climbing() {
+        return climb;
+    }
+    
+    public boolean reseting() {
+        return reset;
+    }
 
- 
+    public boolean running() {
+        return chainGrab || climb || reset;
+      }
+    
+    private void chainGrab() {
+        chainGrab = true;
+        climb = false;
+        reset = false;
+    }
+    
+    private void climb() {
+        chainGrab = false;
+        climb = true;
+        reset = false;
+    }
+    
+    private void reset() {
+        chainGrab = false;
+        climb = false;
+        reset = true;
+    }
+    
+    private void stop() {
+        chainGrab = false;
+        climb = false;
+        reset = false;
+        io.stop();
+    }
+
+   public Command chainGrabCommand() {
+    return Commands.runOnce(this::chainGrab);
+  }
+
+  public Command climbCommand() {
+    return Commands.runOnce(this::climb);
+  }
+
+  public Command resetCommand() {
+    return Commands.runOnce(this::reset);
+  }
+
+   public Command stopCommand() {
+    return Commands.runOnce(this::stop);
+  }
  
  
 }

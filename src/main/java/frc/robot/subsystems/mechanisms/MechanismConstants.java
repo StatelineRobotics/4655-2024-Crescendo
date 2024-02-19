@@ -18,7 +18,7 @@ public class MechanismConstants {
     public static final int kArmExtenderCanId = 15;
     public static final int kWristCanId = 16; 
     public static final int kIntakeCanId = 17; 
-    public static final int kLaserSensorCanId = 18; 
+    public static final int kLaserCanId = 18; 
     public static final int kSparkPowerDistributionCanID = 19; 
 
 
@@ -50,7 +50,14 @@ public class MechanismConstants {
     public static final double kWristMinOutput = -.25;
     public static final double kWristMaxOutput = .25;
     
+    public static final double kIntakePickupPostion = 0;
+    public static final double kIntakePickupRPM = 0;
+    public static final double kIntakeShootPostion = 0;
+    public static final double kIntakeShootRPM = 0;
 
+    public static final double kClimberResetPosition = 0;
+    public static final double kClimberClimbPosition = 90;
+    public static final double kClimberGrabPosition = 100;
 
     
 

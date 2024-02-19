@@ -27,8 +27,11 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
-import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
+import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
+import frc.robot.subsystems.mechanisms.MechanisimControl;
+import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
+import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -43,6 +46,7 @@ public class RobotContainer {
   private final Drive drive;
   private final IntakeSubsystem intakeSubsystem;
   private final ClimberSubsystem climberSubsystem;
+  private final MechanisimControl mechanisimControl;
   public static PhotonVision pvPoseCamera;
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -60,8 +64,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
-        climberSubsystem = new ClimberSubsystem();
-        intakeSubsystem = new IntakeSubsystem();
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
+        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
 
       case SIM:
@@ -73,8 +78,9 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
-        climberSubsystem = new ClimberSubsystem();
-        intakeSubsystem = new IntakeSubsystem();
+        intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
+        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
 
       default:
@@ -86,8 +92,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-                climberSubsystem = new ClimberSubsystem();
-                intakeSubsystem = new IntakeSubsystem();
+                intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
+                climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+                mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
     }
 
@@ -135,15 +142,33 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
+      OIConstants.m_auxController
+                .leftBumper()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)))
+                .onFalse(
+                    Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.IDLE)));
+
+      OIConstants.m_auxController
+                .rightBumper()
+                .onTrue(
+                    Commands.runOnce(
+                        () -> climberSubsystem.chainGrabCommand()))
+                .onFalse(
+                    Commands.runOnce(
+                        () -> climberSubsystem.stopCommand()));
 
   }
 
-  public ClimberSubsystem getCLimberSubsystem(){
-    return climberSubsystem;
-  }
 
   public IntakeSubsystem getIntakeSubsystem(){
     return intakeSubsystem;
+  }
+
+  public ClimberSubsystem getCimberSubsystem(){
+    return climberSubsystem;
   }
 
   /**

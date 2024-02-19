@@ -43,5 +43,6 @@ public final class Constants {
     public static final Joystick kdriveJoyButton = new Joystick(0);
 
     public static final CommandXboxController m_driverController = new CommandXboxController(0);
+    public static final CommandXboxController m_auxController = new CommandXboxController(1);
   }
 }
