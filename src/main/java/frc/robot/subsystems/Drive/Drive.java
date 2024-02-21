@@ -4,8 +4,6 @@
 
 package frc.robot.subsystems.Drive;
 
-import java.util.Optional;
-
 import org.littletonrobotics.junction.Logger;
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -60,9 +58,14 @@ public class Drive extends SubsystemBase {
     // Odometry class for tracking robot pose
     SwerveDriveOdometry m_odometry;
     private Pose2d pose = new Pose2d();
+    private PhotonCamera Left;
     private PhotonPoseEstimator VisionPose;
-    private Pose3d = VisionPose.get();
 
+
+  
+
+
+    
     /** Creates a new DriveSubsystem. */
     public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
         this.gyro = gyro;
@@ -156,8 +159,12 @@ public class Drive extends SubsystemBase {
         var twist = DriveConstants.kDriveKinematics.toTwist2d(wheelDeltas);
         // Apply the twist (change since last sample) to the current pose
         pose = pose.exp(twist);
-        Pose3d Men = VisionPose.getEstimatedPose();
-       
+
+        if(Left.hasTargets()){
+        var update = VisionPose.update();
+        Pose3d Vpose = update.get().estimatedPose;
+        pose = Vpose.toPose2d();
+    }
 
         Logger.recordOutput("Odometry", getPose());
         Logger.recordOutput("Simulated Pose", pose);

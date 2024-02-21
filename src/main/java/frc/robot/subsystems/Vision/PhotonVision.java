@@ -18,10 +18,14 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -42,6 +46,11 @@ public class PhotonVision extends SubsystemBase {
 
   // end adams code=============
 
+      private static final Transform3d Robot_to_cam = new Transform3d(
+        new Translation3d(-.3,-.127,.711),    //Converstion from itches to meters
+        new Rotation3d(0,0,Math.PI)
+        );
+
 public PhotonVision() 
 {
       FIELD_LAYOUT = fields.loadAprilTagLayoutField();
@@ -50,7 +59,7 @@ public PhotonVision()
           FIELD_LAYOUT,
           PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, // strategy to use for tag to pose calculation
           camera, // the PhotonCamera
-          new Transform3d() // a series of transformations from Camera pos. to robot pos. (where camera is on robot)
+          Robot_to_cam // a series of transformations from Camera pos. to robot pos. (where camera is on robot)
       );
       setLedMode(ledMode);
 
@@ -272,4 +281,6 @@ public void initSendable( SendableBuilder builder )
           return Optional.of(estimatedPose);
       } else return Optional.empty();
   }
+
+
 }
