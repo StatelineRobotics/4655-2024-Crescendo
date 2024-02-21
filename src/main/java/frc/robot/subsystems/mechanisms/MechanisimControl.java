@@ -47,8 +47,6 @@ public class MechanisimControl extends SubsystemBase {
         }
       
     }
-
-    //Logger.recordOutput("DevBotSuperstructure/currentState", currentState.toString());// This method will be called once per scheduler run
   }
 
   public void setDesiredState(State desiredState) {

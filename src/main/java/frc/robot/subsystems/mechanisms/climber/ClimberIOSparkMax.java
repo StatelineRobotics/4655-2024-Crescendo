@@ -10,7 +10,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
@@ -56,11 +56,19 @@ public class ClimberIOSparkMax implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs) {
         inputs.leftClimberPosition = leftClimberEncoder.getPosition();
         inputs.rightClimberPosition = rightClimberEncoder.getPosition();
+        SmartDashboard.putNumber("Left Climber Postion", leftClimberEncoder.getPosition()); 
+        SmartDashboard.putNumber("Right Climber Position", rightClimberEncoder.getPosition());
     }
 
     @Override
     public void setElevatorMotors(double rightClimberPosition) {
        climberController.setReference(rightClimberPosition, CANSparkMax.ControlType.kPosition);
     }
+
+    @Override
+    public void setclimbCommand(double percent) {
+        m_LeftClimber.set(percent);
+    }
+    
 
 }

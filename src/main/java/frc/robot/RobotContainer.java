@@ -24,6 +24,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
@@ -142,23 +144,34 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-      OIConstants.m_auxController
-                .leftBumper()
-                .onTrue(
-                    Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)))
-                .onFalse(
-                    Commands.runOnce(
+
+//Mechanisim Control
+      new JoystickButton(OIConstants.kauxController, 1) // A Button PICKUP
+                .onTrue(Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+
+      new JoystickButton(OIConstants.kauxController, 4) // Y PREPARE_SHOOT
+                .onTrue( Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+      new JoystickButton(OIConstants.kauxController, 3) // X IDLE
+                .onTrue( Commands.runOnce(
                         () -> mechanisimControl.setDesiredState(MechanisimControl.State.IDLE)));
 
-      OIConstants.m_auxController
-                .rightBumper()
-                .onTrue(
-                    Commands.runOnce(
-                        () -> climberSubsystem.chainGrabCommand()))
-                .onFalse(
-                    Commands.runOnce(
-                        () -> climberSubsystem.stopCommand()));
+      new JoystickButton(OIConstants.kauxController, 6) // Right Bump IDLE
+                .onTrue( Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+
+
+
+      new POVButton(OIConstants.kauxController, 0) // Up POV
+                .whileTrue( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.01)))
+                .onFalse( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.00)));
+      new POVButton(OIConstants.kauxController, 180) // Up POV
+                .whileTrue( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(-.01)))
+                .onFalse( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.00)));
+
+  
 
   }
 

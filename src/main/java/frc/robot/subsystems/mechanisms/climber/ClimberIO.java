@@ -12,6 +12,7 @@ public interface ClimberIO {
    class ClimberIOInputs {
      public double leftClimberPosition = 0.0;
      public double rightClimberPosition = 0.0;
+     public double percent = 0.0;
    }
 
   /** Update inputs */
@@ -19,6 +20,8 @@ public interface ClimberIO {
 
   /** Set Elevator motor positions */
   default void setElevatorMotors(double rightClimberPosition) {}
+
+  default void setclimbCommand(double percent) {}
 
   /** Stop intake */
   default void stop() {}   

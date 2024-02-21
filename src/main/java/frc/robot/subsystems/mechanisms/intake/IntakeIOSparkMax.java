@@ -14,6 +14,7 @@ import com.revrobotics.SparkPIDController;
 
 import au.grapplerobotics.ConfigurationFailedException;
 import au.grapplerobotics.LaserCan;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
@@ -33,6 +34,7 @@ public class IntakeIOSparkMax implements IntakeIO{
         wristEncoder =  m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
         intakeEncoder =  m_Intake.getEncoder();
         wristEncoder.setInverted(false);
+        wristEncoder.setPositionConversionFactor(360);
 
         m_Wrist.restoreFactoryDefaults();
         m_Intake.restoreFactoryDefaults();
@@ -74,6 +76,8 @@ public class IntakeIOSparkMax implements IntakeIO{
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.intakeRPM = intakeEncoder.getVelocity();
         inputs.wristposition = wristEncoder.getPosition();
+        SmartDashboard.putNumber("IntakeRPM", intakeEncoder.getVelocity()); 
+        SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
         
     }
     @Override

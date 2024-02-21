@@ -59,9 +59,17 @@ public class MechanismConstants {
     public static final double kClimberClimbPosition = 90;
     public static final double kClimberGrabPosition = 100;
 
-    
+    public static final double kArmPickupPOS = 1;
+    public static final double kArmExtenderPickupPOS = 1;
 
-    
+    public static final double kArmShootPOS = 1;
+    public static final double kArmExtenderShootPOS = 1;
+
+    public static final double kArmHomePOS = 1;
+    public static final double kArmExtenderHomePOS = 1;
+
+    public static final double kTopShooterRPM = 6000;
+    public static final double KBottomShooterRPM = 5000;
 
 
 }
