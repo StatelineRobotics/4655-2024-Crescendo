@@ -50,7 +50,7 @@
 //             PhotonCamera left,
 //             Drive drive,
 //             Supplier<Pose2d> poseProvider) {
-//         this.left = left;
+
 //         this.drive = drive;
 //         this.poseProvider = poseProvider;
 

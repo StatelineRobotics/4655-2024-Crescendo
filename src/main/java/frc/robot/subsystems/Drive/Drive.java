@@ -160,7 +160,7 @@ public class Drive extends SubsystemBase {
         // Apply the twist (change since last sample) to the current pose
         pose = pose.exp(twist);
 
-        if(Left.hasTargets()){
+        if(Left.getLatestResult().hasTargets()){
         var update = VisionPose.update();
         Pose3d Vpose = update.get().estimatedPose;
         pose = Vpose.toPose2d();
@@ -179,6 +179,7 @@ public class Drive extends SubsystemBase {
      */
     public Pose2d getPose() {
         return m_odometry.getPoseMeters();
+
     }
 
     /**

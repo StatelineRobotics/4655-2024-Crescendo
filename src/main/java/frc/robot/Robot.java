@@ -13,8 +13,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.Drive.Drive;
+
 import org.littletonrobotics.junction.LogFileUtil;
 import org.littletonrobotics.junction.LoggedRobot;
 import org.littletonrobotics.junction.Logger;
@@ -22,6 +26,8 @@ import org.littletonrobotics.junction.networktables.NT4Publisher;
 import org.littletonrobotics.junction.wpilog.WPILOGReader;
 import org.littletonrobotics.junction.wpilog.WPILOGWriter;
 import org.littletonrobotics.urcl.URCL;
+import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonPoseEstimator;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +38,15 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+  private PhotonCamera Left;
+  private Drive drive;
+  private Pose2d pose;
+  private PhotonPoseEstimator Vpose;
+  
+
+
+
+    
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -78,6 +93,7 @@ public class Robot extends LoggedRobot {
         Logger.addDataReceiver(new WPILOGWriter(LogFileUtil.addPathSuffix(logPath, "_sim")));
         break;
     }
+  
 
     // See http://bit.ly/3YIzFZ6 for more information on timestamps in AdvantageKit.
     // Logger.disableDeterministicTimestamps()
@@ -91,6 +107,7 @@ public class Robot extends LoggedRobot {
     robotContainer = new RobotContainer();
   }
 
+
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
@@ -100,6 +117,13 @@ public class Robot extends LoggedRobot {
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    if(Left.getLatestResult().hasTargets()){
+      var update = Vpose.update();
+      Pose3d Vpose = update.get().estimatedPose;
+      pose = Vpose.toPose2d();
+      drive.resetOdometry(pose);
+    }
   }
 
   /** This function is called once when the robot is disabled. */

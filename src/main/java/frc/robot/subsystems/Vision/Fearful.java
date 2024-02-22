@@ -50,7 +50,7 @@
 //         PhotonCamera Left;
 //         Supplier<Pose2d> poseProvider;
 //         this.drive = drive;
-//         this.Left = Left;
+
 //         this.poseProvider = poseProvider;
 //         xController.setTolerance(.3);
 //         yController.setTolerance(.3);
