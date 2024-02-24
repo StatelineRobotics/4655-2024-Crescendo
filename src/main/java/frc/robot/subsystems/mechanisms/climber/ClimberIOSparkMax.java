@@ -8,9 +8,10 @@ import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.SparkLimitSwitch;
 import com.revrobotics.SparkPIDController;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
@@ -20,6 +21,8 @@ public class ClimberIOSparkMax implements ClimberIO {
     private RelativeEncoder rightClimberEncoder;
     private RelativeEncoder leftClimberEncoder;
     private SparkPIDController climberController;
+    private SparkLimitSwitch rightClimberLimitSwitch;
+    private SparkLimitSwitch leftClimberLimitSwitch;
    
 
     public ClimberIOSparkMax(){
@@ -30,8 +33,7 @@ public class ClimberIOSparkMax implements ClimberIO {
 
         rightClimberEncoder =  m_RightClimber.getEncoder();
 
-        m_LeftClimber.restoreFactoryDefaults();
-        m_RightClimber.restoreFactoryDefaults();
+       
         m_LeftClimber.setIdleMode(IdleMode.kCoast);
         m_RightClimber.setIdleMode(IdleMode.kCoast);
         m_LeftClimber.setInverted(false);
@@ -39,14 +41,17 @@ public class ClimberIOSparkMax implements ClimberIO {
         m_LeftClimber.setSmartCurrentLimit(30);
         m_RightClimber.setSmartCurrentLimit(30);
         
+        rightClimberLimitSwitch = m_RightClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        leftClimberLimitSwitch = m_LeftClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
+        
         climberController = m_RightClimber.getPIDController();
         climberController.setFeedbackDevice(rightClimberEncoder);
         climberController.setP(1);
-        climberController.setP(0);
-        climberController.setP(0);
+        climberController.setI(0);
+        climberController.setD(0);
+        climberController.setIZone(0);
+        climberController.setFF(0);
         climberController.setOutputRange(-.2,.2);
-
-       
 
         m_LeftClimber.burnFlash();
         m_RightClimber.burnFlash();
@@ -56,8 +61,15 @@ public class ClimberIOSparkMax implements ClimberIO {
     public void updateInputs(ClimberIOInputs inputs) {
         inputs.leftClimberPosition = leftClimberEncoder.getPosition();
         inputs.rightClimberPosition = rightClimberEncoder.getPosition();
-        SmartDashboard.putNumber("Left Climber Postion", leftClimberEncoder.getPosition()); 
-        SmartDashboard.putNumber("Right Climber Position", rightClimberEncoder.getPosition());
+
+        if(rightClimberLimitSwitch.isPressed()) {
+            rightClimberEncoder.setPosition(0);
+        }
+
+        if(leftClimberLimitSwitch.isPressed()) {
+            leftClimberEncoder.setPosition(0);
+        }
+
     }
 
     @Override
@@ -67,7 +79,7 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     @Override
     public void setclimbCommand(double percent) {
-        m_LeftClimber.set(percent);
+        m_RightClimber.set(percent);
     }
     
 

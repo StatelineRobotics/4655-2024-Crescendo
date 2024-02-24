@@ -5,6 +5,8 @@
 package frc.robot.subsystems.mechanisms.shooter;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
@@ -12,7 +14,9 @@ import frc.robot.subsystems.mechanisms.MechanismConstants;
 public class ShooterSubsystem  extends SubsystemBase {
     private final ShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
-    private boolean shoot = false;
+    private boolean spinning = false;
+    private double topShooterRPM = 0.0;
+    private double bottomShooterRPM = 0.0;
 
     public ShooterSubsystem(ShooterIO io){
         System.out.println("[Init] Creating Shooter");
@@ -28,16 +32,41 @@ public class ShooterSubsystem  extends SubsystemBase {
 
         if (DriverStation.isDisabled()) {
             stop();
-        } else if (shoot) {
-            io.setShooterMotors(MechanismConstants.kTopShooterRPM, MechanismConstants.KBottomShooterRPM);
-       }
+        } else {
+            io.setRPM(topShooterRPM, bottomShooterRPM);
+        }
+    
+        
+            Logger.recordOutput("Shooter/TopRPM", inputs.topShooterVelocityRPM);
+            Logger.recordOutput("Shooter/BotomRPM", inputs.bottomShooterVelocityRPM);
+        
     }
 
-    private void stop() {
-        shoot = false;
-        io.stop();
+    public void requestRPM(double topShooterRPM, double bottomShooterRPM) {
+         this.topShooterRPM = topShooterRPM;
+        this.bottomShooterRPM = bottomShooterRPM;
+      }
+    
+    
+      public void stop() {
+        topShooterRPM = 0;
+        bottomShooterRPM = 0;
+      }
+
+      public double getTopSooterVelocity() {
+        return inputs.topShooterVelocityRPM;
+      }
+    
+      public double getBottomShooterVelocity() {
+        return inputs.bottomShooterVelocityRPM;
       }
  
+    @AutoLogOutput(key = "Shooter/AtSetpoint")
+  public boolean atSetpoint() {
+    return Math.abs(inputs.topShooterVelocityRPM - topShooterRPM) <= MechanismConstants.shooterToleranceRPM
+        && Math.abs(inputs.bottomShooterVelocityRPM - bottomShooterRPM) <= MechanismConstants.shooterToleranceRPM
+        && spinning;
+  }
     
 
  

@@ -20,20 +20,21 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
+
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
+import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
+import frc.robot.subsystems.mechanisms.shooter.ShooterSubsystem;
 import frc.robot.subsystems.mechanisms.MechanisimControl;
-import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
-import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
+
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -46,8 +47,8 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
-  private final ClimberSubsystem climberSubsystem;
   private final MechanisimControl mechanisimControl;
   public static PhotonVision pvPoseCamera;
   // Dashboard inputs
@@ -66,9 +67,11 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
-        intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
-        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem);
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
+        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
+      //  climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+      //  mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
 
       case SIM:
@@ -80,9 +83,9 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
-        intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
-        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem);
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
+        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
         break;
 
       default:
@@ -94,13 +97,13 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {});
-                intakeSubsystem = new IntakeSubsystem(new IntakeIOSparkMax());
-                climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-                mechanisimControl = new MechanisimControl(intakeSubsystem);
+        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
+        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
         break;
     }
 
-
+ 
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
     // Set up feedforward characterization
@@ -156,23 +159,12 @@ public class RobotContainer {
 
       new JoystickButton(OIConstants.kauxController, 3) // X IDLE
                 .onTrue( Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.IDLE)));
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
 
-      new JoystickButton(OIConstants.kauxController, 6) // Right Bump IDLE
+      new JoystickButton(OIConstants.kauxController, 6) // Right Bump SHOOT
                 .onTrue( Commands.runOnce(
                         () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
-
-
-
-      new POVButton(OIConstants.kauxController, 0) // Up POV
-                .whileTrue( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.01)))
-                .onFalse( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.00)));
-      new POVButton(OIConstants.kauxController, 180) // Up POV
-                .whileTrue( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(-.01)))
-                .onFalse( Commands.runOnce( () -> ClimberSubsystem.setclimbCommand(.00)));
-
   
-
   }
 
 
@@ -180,8 +172,8 @@ public class RobotContainer {
     return intakeSubsystem;
   }
 
-  public ClimberSubsystem getCimberSubsystem(){
-    return climberSubsystem;
+  public ShooterSubsystem getShooterSubsystem(){
+    return shooterSubsystem;
   }
 
   /**

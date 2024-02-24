@@ -145,7 +145,6 @@ public class ModuleIOSparkMax implements ModuleIO{
     inputs.driveVelocityMetersPerSec = m_drivingSparkMax.getRelativeVelocity();
     
     inputs.turnAbsolutePosition = Rotation2d.fromRadians(m_turningSparkMax.getAbsolutePosition()).minus(m_chassisAngularOffset);
-   //NJ inputs.turnAbsolutePosition = Rotation2d.fromRadians(m_turningSparkMax.getAbsolutePosition());
     inputs.turnVelocityRadPerSec = m_turningSparkMax.getAbsoluteVelocity();
   }
 }

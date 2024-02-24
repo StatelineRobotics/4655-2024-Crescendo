@@ -54,7 +54,6 @@ public PhotonVision()
       );
       setLedMode(ledMode);
 
-//NJ  Util.consoleLog("PhotonVision created!");
 
       SmartDashboard.putData(field);
 }
@@ -179,8 +178,7 @@ public PhotonVision()
    */
   public void selectPipeline(int index)
   {
- //NJ     Util.consoleLog("%d", index);
-
+ 
       camera.setPipelineIndex(index);
   }
 
@@ -190,7 +188,6 @@ public PhotonVision()
    */
   public void setLedMode(VisionLEDMode mode)
   {
-//NJ      Util.consoleLog("%d", mode.value);
 
       camera.setLED(mode);
 
@@ -225,7 +222,6 @@ public PhotonVision()
    */
   public void outputSnapshot()
   {
-//NJ      Util.consoleLog();
 
       camera.takeOutputSnapshot();
   }

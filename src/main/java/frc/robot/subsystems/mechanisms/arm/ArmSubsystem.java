@@ -30,6 +30,8 @@ public class ArmSubsystem extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
+    
+
     if (DriverStation.isDisabled()) {
       stop();
     } else {

@@ -4,10 +4,11 @@
 
 package frc.robot.subsystems.mechanisms.shooter;
 
+import com.revrobotics.CANSparkBase;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -32,8 +33,7 @@ public class ShooterIOSparkMax implements ShooterIO {
         bottomShooterEncoder =  m_BottomShooter.getEncoder();
         topShooterEncoder =  m_TopShooter.getEncoder();
 
-        m_BottomShooter.restoreFactoryDefaults();
-        m_BottomShooter.restoreFactoryDefaults();
+       
         m_BottomShooter.setIdleMode(IdleMode.kBrake);
         m_BottomShooter.setIdleMode(IdleMode.kBrake);
         m_BottomShooter.setInverted(false);
@@ -44,8 +44,10 @@ public class ShooterIOSparkMax implements ShooterIO {
         bottomShooterController = m_BottomShooter.getPIDController();
         bottomShooterController.setFeedbackDevice(bottomShooterEncoder);
         bottomShooterController.setP(1);
-        bottomShooterController.setP(0);
-        bottomShooterController.setP(0);
+        bottomShooterController.setI(0);
+        bottomShooterController.setD(0);
+        bottomShooterController.setIZone(0);
+        bottomShooterController.setFF(0);
         bottomShooterController.setOutputRange(-.25,.25);
 
         topShooterController = m_TopShooter.getPIDController();
@@ -53,6 +55,8 @@ public class ShooterIOSparkMax implements ShooterIO {
         topShooterController.setP(1);
         topShooterController.setP(0);
         topShooterController.setP(0);
+        topShooterController.setIZone(0);
+        topShooterController.setFF(0);
         topShooterController.setOutputRange(-.25,.25);
 
         m_BottomShooter.burnFlash();
@@ -62,20 +66,23 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     @Override
     public void updateInputs(ShooterIOInputs inputs) {
-        inputs.TopShooterRPM = topShooterEncoder.getVelocity();
-        inputs.BottomShooterRPM = bottomShooterEncoder.getVelocity();
-        SmartDashboard.putNumber("Top Shooter RPM", topShooterEncoder.getVelocity()); 
-        SmartDashboard.putNumber("Bottom Shooter RPM", bottomShooterEncoder.getVelocity());
-
-        
+        inputs.topShooterVelocityRPM = topShooterEncoder.getVelocity();
+        inputs.bottomShooterVelocityRPM = bottomShooterEncoder.getVelocity();
+       
+       
     }
 
     @Override
-    public void setShooterMotors(double shooterTopRPM, double shooterBottomRPM) {
-        topShooterController.setReference(shooterTopRPM, CANSparkMax.ControlType.kVelocity);
-        bottomShooterController.setReference(shooterBottomRPM, CANSparkMax.ControlType.kVelocity);
+    public void setTopShooterRPM(double rpm) {
+        topShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity);
+    }
+    
+     @Override
+    public void setBottomShooterRPM(double rpm) {
+        bottomShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity);
     }
  
+
     @Override
     public void stop() {
         m_TopShooter.stopMotor();

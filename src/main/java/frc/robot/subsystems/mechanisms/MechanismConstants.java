@@ -33,7 +33,7 @@ public class MechanismConstants {
     public static final double kShooterD = 0;
     public static final double kShooterMinOutput = -1;
     public static final double kShooterMaxOutput = 1;
-    
+    public static double shooterToleranceRPM = 50.0;
 
 
     public static final boolean kIntakeSparkMaxInverted = true;
@@ -44,7 +44,7 @@ public class MechanismConstants {
     public static final double kIntakeMaxOutput = .25;
     
     public static final boolean kWristSparkMaxInverted = true; 
-     public static final double kWristP = 1;
+    public static final double kWristP = 1;
     public static final double kWristI = 0;
     public static final double kWristD = 0;
     public static final double kWristMinOutput = -.25;
@@ -68,8 +68,6 @@ public class MechanismConstants {
     public static final double kArmHomePOS = 1;
     public static final double kArmExtenderHomePOS = 1;
 
-    public static final double kTopShooterRPM = 6000;
-    public static final double KBottomShooterRPM = 5000;
 
 
 }

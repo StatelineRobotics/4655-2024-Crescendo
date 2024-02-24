@@ -12,9 +12,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-import au.grapplerobotics.ConfigurationFailedException;
-import au.grapplerobotics.LaserCan;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+//LC import au.grapplerobotics.ConfigurationFailedException;
+//LC import au.grapplerobotics.LaserCan;
+
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
@@ -25,19 +26,22 @@ public class IntakeIOSparkMax implements IntakeIO{
     private final RelativeEncoder intakeEncoder;
     private final SparkPIDController wristController;
     private final SparkPIDController intakeController;
-    private final LaserCan lasercan;  
+//LC    private final LaserCan lasercan;  
 
     public IntakeIOSparkMax() {
-        m_Wrist = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
-        m_Intake = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
-    
-        wristEncoder =  m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
+        m_Wrist = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
+        m_Intake = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
+        
+        wristEncoder = m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
         intakeEncoder =  m_Intake.getEncoder();
+        
         wristEncoder.setInverted(false);
+        
         wristEncoder.setPositionConversionFactor(360);
+    
 
-        m_Wrist.restoreFactoryDefaults();
-        m_Intake.restoreFactoryDefaults();
+
+
         m_Wrist.setIdleMode(IdleMode.kBrake);
         m_Intake.setIdleMode(IdleMode.kCoast);
         m_Wrist.setInverted(false);
@@ -47,43 +51,55 @@ public class IntakeIOSparkMax implements IntakeIO{
     
         intakeController = m_Intake.getPIDController();
         intakeController.setFeedbackDevice(intakeEncoder);
-        intakeController.setP(1);
-        intakeController.setP(0);
-        intakeController.setP(0);
-        intakeController.setOutputRange(-.05,.05);
+        intakeController.setP(.000007);
+        intakeController.setI(0);
+        intakeController.setD(0);
+        intakeController.setIZone(0);
+        intakeController.setFF(0);
+        intakeController.setOutputRange(-.40,.40);
 
         wristController = m_Wrist.getPIDController();
         wristController.setFeedbackDevice(wristEncoder);
-        wristController.setP(1);
-        wristController.setP(0);
-        wristController.setP(0);
-        wristController.setOutputRange(-.05,.05);
+        wristController.setP(.0007);
+        wristController.setI(0);
+        wristController.setD(0);
+        wristController.setIZone(0);
+        wristController.setFF(0);
+        wristController.setOutputRange(-0.40,0.40);
+
+        int smartMotionSlot = 0;
+        wristController.setSmartMotionMaxVelocity(1000, smartMotionSlot);
+        wristController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
+        wristController.setSmartMotionMaxAccel(500, smartMotionSlot);
+        wristController.setSmartMotionAllowedClosedLoopError(1, smartMotionSlot);
+
 
         m_Wrist.burnFlash();
         m_Intake.burnFlash();
 
-        lasercan = new LaserCan(MechanismConstants.kLaserCanId);
-        try {
-        lasercan.setRangingMode(LaserCan.RangingMode.SHORT);
-        lasercan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
-        lasercan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-        } catch (ConfigurationFailedException e) {
-        System.out.println("Configuration failed! " + e);
-        }
+    
+
+  //LC      lasercan = new LaserCan(MechanismConstants.kLaserCanId);
+  //LC      try {
+  //LC      lasercan.setRangingMode(LaserCan.RangingMode.SHORT);
+  //LC      lasercan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
+  //LC      lasercan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
+  //LC      } catch (ConfigurationFailedException e) {
+  //LC      System.out.println("Configuration failed! " + e);
+  //LC      }
     } 
     
     @Override
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.intakeRPM = intakeEncoder.getVelocity();
         inputs.wristposition = wristEncoder.getPosition();
-        SmartDashboard.putNumber("IntakeRPM", intakeEncoder.getVelocity()); 
-        SmartDashboard.putNumber("Wrist Position", wristEncoder.getPosition());
+    
         
     }
     @Override
     public void setIntakeMotors(double intakeRPM, double wristPostion) {
         intakeController.setReference(intakeRPM, CANSparkMax.ControlType.kVelocity);
-        wristController.setReference(wristPostion, CANSparkMax.ControlType.kDutyCycle);
+        wristController.setReference(wristPostion, CANSparkMax.ControlType.kSmartMotion);
     }
  
     @Override
