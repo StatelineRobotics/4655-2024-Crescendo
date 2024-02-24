@@ -18,14 +18,12 @@ import org.photonvision.targeting.PhotonTrackedTarget;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -259,6 +257,7 @@ public void initSendable( SendableBuilder builder )
    */
   public Optional<EstimatedRobotPose> getEstimatedPose() {
       Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update();
+      var poses = poseEstimator.update();
       if (estimatedPoseOptional.isPresent()) {
           EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
           Pose3d pose = estimatedPose.estimatedPose;
@@ -278,9 +277,10 @@ public void initSendable( SendableBuilder builder )
               }
           }
 
-          return Optional.of(estimatedPose);
+          return poses;
       } else return Optional.empty();
+  
+
   }
-
-
 }
+

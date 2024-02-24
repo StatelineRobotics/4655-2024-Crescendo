@@ -5,9 +5,7 @@
 package frc.robot.subsystems.Drive;
 
 import org.littletonrobotics.junction.Logger;
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
+
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
@@ -15,19 +13,18 @@ import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
+
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
-import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -56,10 +53,10 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
-    SwerveDriveOdometry m_odometry;
+    private SwerveDrivePoseEstimator m_odometry;
     private Pose2d pose = new Pose2d();
-    private PhotonCamera Left;
-    private PhotonPoseEstimator VisionPose;
+
+    
 
 
   
@@ -79,7 +76,8 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
-        m_odometry = new SwerveDriveOdometry(
+
+        m_odometry = new SwerveDrivePoseEstimator(
                 DriveConstants.kDriveKinematics,
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
                 new SwerveModulePosition[] {
@@ -87,7 +85,7 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition(),
-                });
+                }, pose);
 
         this.zeroHeading();
 
@@ -143,7 +141,7 @@ public class Drive extends SubsystemBase {
                         m_frontLeft.getPosition(),
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
-                        m_rearRight.getPosition()
+                        m_rearRight.getPosition(),
                 });
 
         // Read wheel deltas from each module
@@ -159,13 +157,7 @@ public class Drive extends SubsystemBase {
         var twist = DriveConstants.kDriveKinematics.toTwist2d(wheelDeltas);
         // Apply the twist (change since last sample) to the current pose
         pose = pose.exp(twist);
-
-        if(Left.getLatestResult().hasTargets()){
-        var update = VisionPose.update();
-        Pose3d Vpose = update.get().estimatedPose;
-        pose = Vpose.toPose2d();
-    }
-
+    
         Logger.recordOutput("Odometry", getPose());
         Logger.recordOutput("Simulated Pose", pose);
         Logger.recordOutput("Swerve/SwerveStates", this.getModuleStates());
@@ -178,8 +170,7 @@ public class Drive extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_odometry.getPoseMeters();
-
+    return pose;
     }
 
     /**
@@ -389,5 +380,11 @@ public class Drive extends SubsystemBase {
                 speeds.omegaRadiansPerSecond / DriveConstants.kMaxAngularSpeed,
                 false,
                 false);
+    }
+
+    public void addVisionMeasurement(
+        Pose2d Vpose, double timestamp
+    ){
+        m_odometry.addVisionMeasurement(Vpose, timestamp);
     }
 }
