@@ -5,12 +5,9 @@
 package frc.robot.subsystems.mechanisms.shooter;
 
 import com.revrobotics.CANSparkBase;
+import com.revrobotics.CANSparkFlex;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-
-
-
-import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
@@ -19,45 +16,45 @@ import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
 public class ShooterIOSparkMax implements ShooterIO {
-    private CANSparkMax m_TopShooter;
-    private CANSparkMax  m_BottomShooter;
+    private CANSparkFlex m_TopShooter;
+    private CANSparkFlex  m_BottomShooter;
     private RelativeEncoder topShooterEncoder;
     private RelativeEncoder bottomShooterEncoder;
     private SparkPIDController topShooterController;
     private SparkPIDController bottomShooterController;
 
     public ShooterIOSparkMax(){
-        m_BottomShooter = new CANSparkMax(MechanismConstants.kBottomShooterCanId, MotorType.kBrushless);
-        m_TopShooter = new CANSparkMax(MechanismConstants.kTopShooterCanId, MotorType.kBrushless);
+        m_BottomShooter = new CANSparkFlex(MechanismConstants.kBottomShooterCanId, MotorType.kBrushless);
+        m_TopShooter = new CANSparkFlex(MechanismConstants.kTopShooterCanId, MotorType.kBrushless);
 
         bottomShooterEncoder =  m_BottomShooter.getEncoder();
         topShooterEncoder =  m_TopShooter.getEncoder();
 
        
-        m_BottomShooter.setIdleMode(IdleMode.kBrake);
-        m_BottomShooter.setIdleMode(IdleMode.kBrake);
+        m_BottomShooter.setIdleMode(IdleMode.kCoast);
+        m_TopShooter.setIdleMode(IdleMode.kCoast);
         m_BottomShooter.setInverted(false);
-        m_BottomShooter.setInverted(true);
-        m_BottomShooter.setSmartCurrentLimit(30);
-        m_BottomShooter.setSmartCurrentLimit(30);
+        m_TopShooter.setInverted(true);
+        m_BottomShooter.setSmartCurrentLimit(60);
+        m_TopShooter.setSmartCurrentLimit(60);
         
         bottomShooterController = m_BottomShooter.getPIDController();
         bottomShooterController.setFeedbackDevice(bottomShooterEncoder);
-        bottomShooterController.setP(1);
+        bottomShooterController.setP(0.0006);
         bottomShooterController.setI(0);
         bottomShooterController.setD(0);
         bottomShooterController.setIZone(0);
-        bottomShooterController.setFF(0);
-        bottomShooterController.setOutputRange(-.25,.25);
+        bottomShooterController.setFF(0.000155);
+        bottomShooterController.setOutputRange(-1, 1);
 
         topShooterController = m_TopShooter.getPIDController();
         topShooterController.setFeedbackDevice(topShooterEncoder);
-        topShooterController.setP(1);
+        topShooterController.setP(0.0006);
         topShooterController.setP(0);
         topShooterController.setP(0);
         topShooterController.setIZone(0);
-        topShooterController.setFF(0);
-        topShooterController.setOutputRange(-.25,.25);
+        topShooterController.setFF(0.000155);
+        topShooterController.setOutputRange(-1, 1);
 
         m_BottomShooter.burnFlash();
         m_TopShooter.burnFlash();
@@ -74,12 +71,12 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     @Override
     public void setTopShooterRPM(double rpm) {
-        topShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity);
+        topShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5600
     }
     
      @Override
     public void setBottomShooterRPM(double rpm) {
-        bottomShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity);
+        bottomShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5900
     }
  
 

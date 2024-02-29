@@ -38,8 +38,8 @@ public class ClimberIOSparkMax implements ClimberIO {
         m_RightClimber.setIdleMode(IdleMode.kCoast);
         m_LeftClimber.setInverted(false);
         m_RightClimber.setInverted(false);
-        m_LeftClimber.setSmartCurrentLimit(30);
-        m_RightClimber.setSmartCurrentLimit(30);
+        m_LeftClimber.setSmartCurrentLimit(40);
+        m_RightClimber.setSmartCurrentLimit(40);
         
         rightClimberLimitSwitch = m_RightClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         leftClimberLimitSwitch = m_LeftClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
@@ -59,8 +59,9 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
-        inputs.leftClimberPosition = leftClimberEncoder.getPosition();
-        inputs.rightClimberPosition = rightClimberEncoder.getPosition();
+        inputs.climberPosition = rightClimberEncoder.getPosition();
+
+        
 
         if(rightClimberLimitSwitch.isPressed()) {
             rightClimberEncoder.setPosition(0);
@@ -73,14 +74,15 @@ public class ClimberIOSparkMax implements ClimberIO {
     }
 
     @Override
-    public void setElevatorMotors(double rightClimberPosition) {
-       climberController.setReference(rightClimberPosition, CANSparkMax.ControlType.kPosition);
+    public void setclimberMotors(double climberPosition) {
+       climberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
     }
 
     @Override
-    public void setclimbCommand(double percent) {
-        m_RightClimber.set(percent);
-    }
+    public void stop() {
+        m_LeftClimber.stopMotor();
+        m_RightClimber.stopMotor();
+     }
     
 
 }

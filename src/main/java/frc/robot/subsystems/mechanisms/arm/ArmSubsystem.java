@@ -4,25 +4,21 @@
 
 package frc.robot.subsystems.mechanisms.arm;
 
-
-import frc.robot.subsystems.mechanisms.MechanismConstants;
-
 import org.littletonrobotics.junction.Logger;
-
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ArmSubsystem extends SubsystemBase {
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private boolean pickup = false;
-  private boolean shootPosition = false;
-  private boolean home = false;
-  
+  private double armPos = 0;
+  private double armExtenderPos = 0;
+    
   public ArmSubsystem(ArmIO io) {
     System.out.println("[Init] Creating Arm");
     this.io = io;
-   
   }
 
   @Override
@@ -30,30 +26,27 @@ public class ArmSubsystem extends SubsystemBase {
     io.updateInputs(inputs);
     Logger.processInputs("Arm", inputs);
 
-    
-
     if (DriverStation.isDisabled()) {
       stop();
     } else {
-      if (pickup) {
-        io.setArmMotors(MechanismConstants.kArmPickupPOS);
-        io.setArmExternerMotor(MechanismConstants.kArmExtenderPickupPOS);
-      } else if (shootPosition) {
-        io.setArmMotors(MechanismConstants.kArmShootPOS);
-        io.setArmExternerMotor(MechanismConstants.kArmShootPOS);
-      } else if (home) {
-        io.setArmMotors(MechanismConstants.kArmHomePOS);
-        io.setArmExternerMotor(MechanismConstants.kArmExtenderHomePOS);
-      }  
+        io.setArmPositions(armPos, armExtenderPos);
     }
-
   }
 
+  public void requestArmPosition(double armPos, double armExtenderPos) {
+      this.armPos = armPos;
+      this.armExtenderPos = armExtenderPos;
+  } 
+  
+
   private void stop() {
-    pickup = false;
-    shootPosition = false;
-    home = false;
+    armPos = 10;
+    armExtenderPos = 0;
     io.stop();
-}
+  }
+
+  public Command stopCommand() {
+    return Commands.runOnce(this::stop);
+  }
 
 }

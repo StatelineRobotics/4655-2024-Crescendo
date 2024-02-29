@@ -16,10 +16,8 @@ import org.littletonrobotics.junction.Logger;
 public class ClimberSubsystem  extends SubsystemBase {
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged() ;
-    private boolean chainGrab = false;
-    private boolean climb = false;
-    private boolean reset = false;
-    private double percent = 0.0;
+    private double climberPosition = 0.0;
+ 
 
 
   public ClimberSubsystem(ClimberIO io){
@@ -31,81 +29,26 @@ public class ClimberSubsystem  extends SubsystemBase {
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Climber", inputs);
+    
     if (DriverStation.isDisabled()) {
       stop();
     } else {
-      io.setclimbCommand(percent);
- //           
- //           if (chainGrab) {
- //               io.setElevatorMotors(MechanismConstants.kClimberGrabPosition);
- //           } else if (climb) {
- //               io.setElevatorMotors(MechanismConstants.kClimberClimbPosition);
- //           } else if (reset) {
- //               io.setElevatorMotors(MechanismConstants.kClimberResetPosition);
-    }  
-        
+      io.setclimberMotors(climberPosition);
+   }  
+  }
+  
+  public void requestClimberPosition(double climberPosition){
+    this.climberPosition = climberPosition;
   }
 
 
-  public boolean grabing() {
-    return chainGrab;
-  }
-        
-  public boolean climbing() {
-    return climb;
-  }
-    
-  public boolean reseting() {
-    return reset;
-  }
-
-  public boolean running() {
-    return chainGrab || climb || reset;
-  }
-    
-  private void chainGrab() {
-    chainGrab = true;
-    climb = false;
-    reset = false;
-  }
-    
-  private void climb() {
-    chainGrab = false;
-    climb = true;
-    reset = false;
-  }
-    
-  private void reset() {
-    chainGrab = false;
-    climb = false;
-    reset = true;
-  }
-    
   private void stop() {
-    chainGrab = false;
-    climb = false;
-    reset = false;
+    climberPosition = 0;
     io.stop();
   }
 
-  public Command chainGrabCommand() {
-    return Commands.runOnce(this::chainGrab);
-  }
-
-  public Command climbCommand() {
-    return Commands.runOnce(this::climb);
-  }
-
-  public Command resetCommand() {
-    return Commands.runOnce(this::reset);
-  }
-
-  public Command stopCommand() {
+   public Command stopCommand() {
     return Commands.runOnce(this::stop);
-  }
-
-  public static Object setclimbCommand(double percent) {
-    return percent;
   }
 
 

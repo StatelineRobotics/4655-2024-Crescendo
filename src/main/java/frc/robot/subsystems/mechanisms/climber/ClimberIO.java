@@ -10,18 +10,15 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimberIO {
    @AutoLog
    class ClimberIOInputs {
-     public double leftClimberPosition = 0.0;
-     public double rightClimberPosition = 0.0;
-     public double percent = 0.0;
+    public double climberPosition = 0.0;
+
    }
 
   /** Update inputs */
   default void updateInputs(ClimberIOInputs inputs) {}
 
   /** Set Elevator motor positions */
-  default void setElevatorMotors(double rightClimberPosition) {}
-
-  default void setclimbCommand(double percent) {}
+  default void setclimberMotors(double climberPosition) {}
 
   /** Stop intake */
   default void stop() {}   

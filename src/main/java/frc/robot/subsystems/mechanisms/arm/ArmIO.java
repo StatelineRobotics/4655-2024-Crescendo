@@ -11,17 +11,14 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ArmIO {
     @AutoLog
     class ArmIOInputs{
-        public double armRightPos = 0.0;
-        public double armExtenderPos = 0/0; 
+        public double armPos = 0.0;
+        public double armExtenderPos = 0.0; 
     }
   
-        /** Update inputs */
+    /** Update inputs */
     default void updateInputs(ArmIOInputs inputs) {}
-
-        /** Set Arm motor positions */
-    default void setArmMotors(double rightArmPosition) {}
-
-    default void setArmExternerMotor(double armExtenderPostion) {}
+    
+    default void setArmPositions(double armPos, double armExtenderPos) {}
 
     /** Stop Arm */
     default void stop() {}   

@@ -34,7 +34,10 @@ import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
 import frc.robot.subsystems.mechanisms.shooter.ShooterSubsystem;
 import frc.robot.subsystems.mechanisms.MechanisimControl;
-
+import frc.robot.subsystems.mechanisms.arm.ArmIOSparkMax;
+import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
+import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
+import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -49,6 +52,8 @@ public class RobotContainer {
   private final Drive drive;
   private final ShooterSubsystem shooterSubsystem;
   private final IntakeSubsystem intakeSubsystem;
+  private final ArmSubsystem armSubsystem;
+  private final ClimberSubsystem climberSubsystem;
   private final MechanisimControl mechanisimControl;
   public static PhotonVision pvPoseCamera;
   // Dashboard inputs
@@ -69,9 +74,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
-      //  climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-      //  mechanisimControl = new MechanisimControl(intakeSubsystem);
+        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
+        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+   
         break;
 
       case SIM:
@@ -85,7 +91,9 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
+        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
+        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
         break;
 
       default:
@@ -99,7 +107,9 @@ public class RobotContainer {
                 new ModuleIO() {});
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
+        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
+        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
         break;
     }
 
@@ -153,13 +163,14 @@ public class RobotContainer {
                 .onTrue(Commands.runOnce(
                         () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
 
+      new JoystickButton(OIConstants.kauxController, 2) // A Button 
+                .onTrue(Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
+
       new JoystickButton(OIConstants.kauxController, 4) // Y PREPARE_SHOOT
                 .onTrue( Commands.runOnce(
                         () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
 
-      new JoystickButton(OIConstants.kauxController, 3) // X IDLE
-                .onTrue( Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
 
       new JoystickButton(OIConstants.kauxController, 6) // Right Bump SHOOT
                 .onTrue( Commands.runOnce(

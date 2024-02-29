@@ -31,31 +31,30 @@ public class IntakeIOSparkMax implements IntakeIO{
     public IntakeIOSparkMax() {
         m_Wrist = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
         m_Intake = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
-        
+    
+        m_Wrist.restoreFactoryDefaults();
+        m_Intake.restoreFactoryDefaults();
+
         wristEncoder = m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
         intakeEncoder =  m_Intake.getEncoder();
         
-        wristEncoder.setInverted(false);
-        
+        wristEncoder.setInverted(false);    
         wristEncoder.setPositionConversionFactor(360);
     
-
-
-
-        m_Wrist.setIdleMode(IdleMode.kBrake);
+        m_Wrist.setIdleMode(IdleMode.kCoast);
         m_Intake.setIdleMode(IdleMode.kCoast);
         m_Wrist.setInverted(false);
         m_Intake.setInverted(false);
-        m_Wrist.setSmartCurrentLimit(30);
-        m_Intake.setSmartCurrentLimit(30);
+        m_Wrist.setSmartCurrentLimit(20);
+        m_Intake.setSmartCurrentLimit(20);
     
         intakeController = m_Intake.getPIDController();
         intakeController.setFeedbackDevice(intakeEncoder);
-        intakeController.setP(.000007);
+        intakeController.setP(.000008);
         intakeController.setI(0);
         intakeController.setD(0);
         intakeController.setIZone(0);
-        intakeController.setFF(0);
+        intakeController.setFF(.0007);
         intakeController.setOutputRange(-.40,.40);
 
         wristController = m_Wrist.getPIDController();

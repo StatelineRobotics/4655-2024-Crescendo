@@ -21,10 +21,10 @@ public class ArmIOSparkMax implements ArmIO {
     private CANSparkMax m_ArmRight;
     private CANSparkMax  m_ArmLeft;
     private CANSparkMax  m_ArmExtender;
-    private AbsoluteEncoder armRightEncoder;
+    private AbsoluteEncoder armEncoder;
     private RelativeEncoder armExtenderEncoder;
     
-    private SparkPIDController armRightController;
+    private SparkPIDController armController;
     private SparkPIDController armExtenderController;
     private SparkLimitSwitch extendLimitSwitch;
 
@@ -33,39 +33,50 @@ public class ArmIOSparkMax implements ArmIO {
         m_ArmLeft = new CANSparkMax(MechanismConstants.kArmRightCanId, MotorType.kBrushless);
         m_ArmExtender = new CANSparkMax(MechanismConstants.kArmExtenderCanId, MotorType.kBrushless);
             
-        armRightEncoder =  m_ArmRight.getAbsoluteEncoder(Type.kDutyCycle);
-        armRightEncoder.setInverted(false);
+        m_ArmRight.restoreFactoryDefaults();;
+        m_ArmLeft.restoreFactoryDefaults();;
+        m_ArmExtender.restoreFactoryDefaults();
+
+        armEncoder =  m_ArmRight.getAbsoluteEncoder(Type.kDutyCycle);
+        armEncoder.setInverted(true);
+        armEncoder.setPositionConversionFactor(360);
 
         armExtenderEncoder = m_ArmExtender.getEncoder();
-        
-       
+              
+   
         m_ArmRight.setIdleMode(IdleMode.kBrake);
         m_ArmLeft.setIdleMode(IdleMode.kBrake);
-        m_ArmExtender.setIdleMode(IdleMode.kBrake);
+        m_ArmExtender.setIdleMode(IdleMode.kCoast);
         m_ArmRight.setInverted(false);
         m_ArmLeft.setInverted(false);
-        m_ArmExtender.setInverted(false);
+        m_ArmExtender.setInverted(true);
         m_ArmRight.setSmartCurrentLimit(40);
         m_ArmLeft.setSmartCurrentLimit(40);
-        m_ArmExtender.setSmartCurrentLimit(10);
+        m_ArmExtender.setSmartCurrentLimit(20);
     
-        armRightController = m_ArmRight.getPIDController();
-        armRightController.setFeedbackDevice(armRightEncoder);
-        armRightController.setP(4);
-        armRightController.setI(0);
-        armRightController.setD(0);
-        armRightController.setIZone(0);
-        armRightController.setFF(0);
-        armRightController.setOutputRange(-.25,.25);
+        armController = m_ArmRight.getPIDController();
+        armController.setFeedbackDevice(armEncoder);
+        armController.setP(.02);
+        armController.setI(0);
+        armController.setD(0);
+        armController.setIZone(0);
+        armController.setFF(.000355);
+        armController.setOutputRange(-.25,.50);
+        
 
-        armExtenderController = m_ArmRight.getPIDController();
+        armExtenderController = m_ArmExtender.getPIDController();
         armExtenderController.setFeedbackDevice(armExtenderEncoder);
-        armExtenderController.setP(.5);
+        armExtenderController.setP(.00006);
         armExtenderController.setP(0);
         armExtenderController.setP(0);
         armExtenderController.setIZone(0);
-        armExtenderController.setFF(0);
-        armExtenderController.setOutputRange(-.25,.25);
+        armExtenderController.setFF(0.0025);
+        armExtenderController.setOutputRange(-.9,.9);
+        int smartMotionSlot = 0;
+        armExtenderController.setSmartMotionMaxVelocity(1000, smartMotionSlot);
+        armExtenderController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
+        armExtenderController.setSmartMotionMaxAccel(500, smartMotionSlot);
+        armExtenderController.setSmartMotionAllowedClosedLoopError(1, smartMotionSlot);
         extendLimitSwitch = m_ArmExtender.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         extendLimitSwitch.enableLimitSwitch(true);
 
@@ -77,7 +88,7 @@ public class ArmIOSparkMax implements ArmIO {
 
      @Override
     public void updateInputs(ArmIOInputs inputs) {
-        inputs.armRightPos = armRightEncoder.getPosition();
+        inputs.armPos = armEncoder.getPosition();
         inputs.armExtenderPos = armExtenderEncoder.getPosition();
           if(extendLimitSwitch.isPressed()) {
             armExtenderEncoder.setPosition(0);
@@ -86,14 +97,12 @@ public class ArmIOSparkMax implements ArmIO {
 
    
 
-    @Override
-    public void setArmMotors(double rightArmPosition) {
-       armRightController.setReference(rightArmPosition, CANSparkMax.ControlType.kPosition);
-    }
-
-    @Override
-    public void setArmExternerMotor(double armExtenderPostion) {
-        armExtenderController.setReference(armExtenderPostion, CANSparkMax.ControlType.kPosition);
+     @Override
+    public void setArmPositions(double armPos, double armExtenderPos) {
+        armController.setReference(armPos, CANSparkMax.ControlType.kPosition);
+        if (armExtenderEncoder.getPosition() > 90 && armPos > 9){
+        armExtenderController.setReference(armExtenderPos, CANSparkMax.ControlType.kSmartMotion);
+        }
     }
 
 
