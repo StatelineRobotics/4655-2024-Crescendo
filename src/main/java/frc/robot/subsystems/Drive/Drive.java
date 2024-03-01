@@ -4,9 +4,15 @@
 
 package frc.robot.subsystems.Drive;
 
+import java.util.Optional;
+
 import org.littletonrobotics.junction.Logger;
 
+<<<<<<< Updated upstream
 
+=======
+import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
+>>>>>>> Stashed changes
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -25,11 +31,13 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import frc.robot.Constants;
 import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
+import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.SwerveUtils;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Drive extends SubsystemBase {
@@ -38,6 +46,7 @@ public class Drive extends SubsystemBase {
     private final Module m_frontRight;
     private final Module m_rearLeft;
     private final Module m_rearRight;
+    //private final SwerveModule[] modules;
 
     // The gyro sensor
     private GyroIO gyro;
@@ -53,8 +62,22 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
+<<<<<<< Updated upstream
     private SwerveDrivePoseEstimator m_odometry;
+=======
+    SwerveDrivePoseEstimator m_odometry;
+>>>>>>> Stashed changes
     private Pose2d pose = new Pose2d();
+    private final PhotonVision photonVision;
+    private Field2d field;
+    private SwerveSetpoint swerveSetpoint = new SwerveSetpoint(
+        new ChassisSpeeds(),
+        new SwerveModuleState[] {
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState(),
+            new SwerveModuleState()
+        });
 
     
 
@@ -64,8 +87,10 @@ public class Drive extends SubsystemBase {
 
     
     /** Creates a new DriveSubsystem. */
-    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br) {
+    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, PhotonVision photonVision) {
         this.gyro = gyro;
+        this.photonVision = photonVision;
+        
         m_frontLeft = new Module(fl, 0);
         m_frontRight = new Module(fr, 1);
         m_rearLeft = new Module(bl, 2);
@@ -76,7 +101,13 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
+<<<<<<< Updated upstream
 
+=======
+        // this.modules = new SwerveModule[] { new SwerveModule(fl, 0), new SwerveModule(fr, 1),
+        //     new SwerveModule(bl, 2), new SwerveModule(br, 3) };
+    
+>>>>>>> Stashed changes
         m_odometry = new SwerveDrivePoseEstimator(
                 DriveConstants.kDriveKinematics,
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
@@ -84,8 +115,13 @@ public class Drive extends SubsystemBase {
                         m_frontLeft.getPosition(),
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
+<<<<<<< Updated upstream
                         m_rearRight.getPosition(),
                 }, pose);
+=======
+                        m_rearRight.getPosition()
+                },new Pose2d());
+>>>>>>> Stashed changes
 
         this.zeroHeading();
 
@@ -127,6 +163,23 @@ public class Drive extends SubsystemBase {
 
     @Override
     public void periodic() {
+    Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
+        if (estimatedPose.isPresent()){
+          m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
+        field.setRobotPose(getPose());
+        SmartDashboard.putString("Pose", getPose().toString());
+        Logger.recordOutput("Odometry", getPose());
+        gyro.updateInputs(gyroInputs);
+        Logger.processInputs("Drive/Gyro", gyroInputs);
+    //     for (var module : modules) {
+    //     module.periodic();
+    // }
+}
+
+
+
+
+
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Gyro", gyroInputs);
         m_frontLeft.updateInputs();
@@ -170,7 +223,11 @@ public class Drive extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
+<<<<<<< Updated upstream
     return pose;
+=======
+        return pose;
+>>>>>>> Stashed changes
     }
 
     /**
@@ -382,9 +439,14 @@ public class Drive extends SubsystemBase {
                 false);
     }
 
+<<<<<<< Updated upstream
     public void addVisionMeasurement(
         Pose2d Vpose, double timestamp
     ){
         m_odometry.addVisionMeasurement(Vpose, timestamp);
+=======
+    public void addVisionMeasurement(Pose2d vPose2d, double timestamp){
+        m_odometry.addVisionMeasurement(vPose2d,timestamp);
+>>>>>>> Stashed changes
     }
 }

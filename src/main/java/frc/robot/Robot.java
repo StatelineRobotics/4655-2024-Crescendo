@@ -13,8 +13,14 @@
 
 package frc.robot;
 
+<<<<<<< Updated upstream
 
 import edu.wpi.first.math.geometry.Pose3d;
+=======
+import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.networktables.DoubleArrayEntry;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+>>>>>>> Stashed changes
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Drive.Drive;
@@ -38,6 +44,7 @@ import org.littletonrobotics.urcl.URCL;
 public class Robot extends LoggedRobot {
   private Command autonomousCommand;
   private RobotContainer robotContainer;
+<<<<<<< Updated upstream
    private PhotonVision Left;
    private Drive drive;
   // private Pose2d pose;
@@ -47,6 +54,13 @@ public class Robot extends LoggedRobot {
 
 
     
+=======
+  private PhotonVision photonVision;
+  private Drive drive;
+  private Double timestamp;
+  private Pose3d pose = new Pose3d();
+  
+>>>>>>> Stashed changes
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -113,12 +127,14 @@ public class Robot extends LoggedRobot {
   /** This function is called periodically during all modes. */
   @Override
   public void robotPeriodic() {
+    
     // Runs the Scheduler. This is responsible for polling buttons, adding
     // newly-scheduled commands, running already-scheduled commands, removing
     // finished or interrupted commands, and running subsystem periodic() methods.
     // This must be called from the robot's periodic block in order for anything in
     // the Command-based framework to work.
     CommandScheduler.getInstance().run();
+<<<<<<< Updated upstream
     if(Left != null){
     var estimatedPose = Left.getEstimatedPose();
     if(estimatedPose.isPresent()){
@@ -133,7 +149,23 @@ public class Robot extends LoggedRobot {
 
     
   }
+=======
+>>>>>>> Stashed changes
 
+    //  if (photonVision.getEstimatedPose().isPresent()) {
+    //  var estimatedPose = photonVision.getEstimatedPose();
+    //  if(estimatedPose.isPresent()){
+    //    pose = estimatedPose.get().estimatedPose;
+    //    timestamp = estimatedPose.get().timestampSeconds;
+    //   drive.addVisionMeasurement(pose.toPose2d(),timestamp);
+    //  }
+    
+  
+  //     SmartDashboard.putNumber("VisionPoseX", pose.getY());
+  //    SmartDashboard.putNumber("VisionPoseY", pose.getX());
+      
+  //  }
+  }
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {}

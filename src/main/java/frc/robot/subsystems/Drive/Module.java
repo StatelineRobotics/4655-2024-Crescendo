@@ -79,6 +79,11 @@ public class Module {
     moduleIO.setDesiredState(desiredState);
   }
 
+  public void periodic() {
+    moduleIO.updateInputs(inputs);
+    moduleIO.periodic();
+  }
+
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     moduleIO.resetEncoders();

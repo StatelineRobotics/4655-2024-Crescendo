@@ -28,15 +28,20 @@ import edu.wpi.first.util.sendable.SendableBuilder;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Drive.Drive;
+import frc.robot.subsystems.Vision.PhotonVisionIO.PhotonVisionIOInputs;
 
 
 public class PhotonVision extends SubsystemBase {
-  private PhotonCamera            camera = new PhotonCamera("Left");
+  private PhotonCamera            Left = new PhotonCamera("Left");
+  private PhotonCamera            Right = new PhotonCamera("Right");
   private PhotonPipelineResult    latestResult;
   private VisionLEDMode           ledMode = VisionLEDMode.kOff;
-
+  private Pose2d inintal = new Pose2d(0,0, new Rotation2d());
   private Field2d field = new Field2d();
-
+  private Drive drive;
+  private PhotonVisionIO Io;
+  private final PhotonVisionIOInputs inputs = new PhotonVisionIOInputsAutoLogged();  
   // adams code ==========
   private final AprilTagFields fields = AprilTagFields.k2024Crescendo;
   private AprilTagFieldLayout FIELD_LAYOUT;
@@ -44,6 +49,7 @@ public class PhotonVision extends SubsystemBase {
 
   // end adams code=============
 
+<<<<<<< Updated upstream
       private static final Transform3d Robot_to_cam = new Transform3d(
         new Translation3d(-.3,-.127,.711),    //Converstion from itches to meters
         new Rotation3d(0,0,Math.PI)
@@ -62,8 +68,36 @@ public PhotonVision()
       setLedMode(ledMode);
 
 //NJ  Util.consoleLog("PhotonVision created!");
+=======
+public PhotonVision(PhotonVisionIO Io) 
+{
+this.Io = Io;
+}
 
-      SmartDashboard.putData(field);
+public Optional<Pose2d> getEstimatedPose(Pose2d Odometry){
+Pose2d averagePose = null;
+Double sumX = 0.0;
+Double sumY = 0.0;
+Rotation2d sumRotation = new Rotation2d();
+double sumConfidence = 0;
+Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
+if (inputs.LeftConfidence > .2 && LeftPose.minus(Odometry).getTranslation().getNorm() < .2) {
+    sumX += LeftPose.getX() * inputs.LeftConfidence;
+    sumY += LeftPose.getY() * inputs.LeftConfidence;
+    sumRotation = sumRotation.plus(LeftPose.getRotation().times(inputs.LeftConfidence));
+    sumConfidence += inputs.LeftConfidence;
+}
+Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
+if (inputs.RightConfidence > .2 && RightPose.minus(Odometry).getTranslation().getNorm() < .2) {
+    sumX += RightPose.getX() * inputs.RightConfidence;
+    sumY += RightPose.getY() * inputs.RightConfidence;
+    sumRotation = sumRotation.plus(RightPose.getRotation().times(inputs.RightConfidence));
+    sumConfidence += inputs.RightConfidence;
+}
+>>>>>>> Stashed changes
+
+if (sumConfidence != 0) averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
+return Optional.ofNullable(averagePose);
 }
 
   /**
@@ -72,11 +106,13 @@ public PhotonVision()
    */
   public PhotonPipelineResult getLatestResult()
   {
-      latestResult = camera.getLatestResult();
-
+      latestResult = Left.getLatestResult();
       return latestResult;
   }
 
+  public double getTimestamp() {
+    return inputs.estimatedRightPoseTimestamp > inputs.estimatedLeftPoseTimestamp ? inputs.estimatedRightPoseTimestamp : inputs.estimatedLeftPoseTimestamp;
+}
   /**
    * Indicates if lastest camera results list contains targets. Must 
    * call getLatestResult() before calling.
@@ -186,9 +222,14 @@ public PhotonVision()
    */
   public void selectPipeline(int index)
   {
+<<<<<<< Updated upstream
  //NJ     Util.consoleLog("%d", index);
 
       camera.setPipelineIndex(index);
+=======
+ 
+      Left.setPipelineIndex(index);
+>>>>>>> Stashed changes
   }
 
   /**
@@ -199,7 +240,7 @@ public PhotonVision()
   {
 //NJ      Util.consoleLog("%d", mode.value);
 
-      camera.setLED(mode);
+      Left.setLED(mode);
 
       ledMode = mode;
   }
@@ -224,7 +265,7 @@ public PhotonVision()
   {
 //NJ      Util.consoleLog();
 
-      camera.takeInputSnapshot();
+      Left.takeInputSnapshot();
   }
 
   /**
@@ -234,7 +275,7 @@ public PhotonVision()
   {
 //NJ      Util.consoleLog();
 
-      camera.takeOutputSnapshot();
+      Left.takeOutputSnapshot();
   }
       
   @Override
@@ -255,6 +296,7 @@ public void initSendable( SendableBuilder builder )
    * 
    * @return the Optional estimated pose (empty optional means no pose or uncertain/bad pose)
    */
+<<<<<<< Updated upstream
   public Optional<EstimatedRobotPose> getEstimatedPose() {
       Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update();
       var poses = poseEstimator.update();
@@ -282,5 +324,8 @@ public void initSendable( SendableBuilder builder )
   
 
   }
+=======
+    
+>>>>>>> Stashed changes
 }
 
