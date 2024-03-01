@@ -112,7 +112,6 @@ public class CANSpark {
                 throw new IllegalArgumentException("Not a Recognized Motor Controller Type");
         }
 
- //NJ       motor.restoreFactoryDefaults();
 
         motor.setSmartCurrentLimit(build.currentLimit);
         motor.setIdleMode(build.mode);

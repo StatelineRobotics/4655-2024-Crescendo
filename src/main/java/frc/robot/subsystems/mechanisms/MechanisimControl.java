@@ -16,45 +16,8 @@ import frc.robot.util.LoggedTunableNumber;
 
 public class MechanisimControl extends SubsystemBase {
 
-  //Home Setting
-  private static LoggedTunableNumber wristHomePos =
-    new LoggedTunableNumber("Tune Wrist Home POS", 75);
-  private static LoggedTunableNumber armHomePos =
-    new LoggedTunableNumber("Tune Arm Home POS", 15);
-  private static LoggedTunableNumber armExtenderHomePos =
-    new LoggedTunableNumber("Tune Arm Exterder Home POS", 0);
   
-  //MOVE Setting
-
-  private static LoggedTunableNumber wristMovePos =
-    new LoggedTunableNumber("Tune Wrist Move POS", 75);
-  private static LoggedTunableNumber armMovePos =
-    new LoggedTunableNumber("Tune Arm Move POS", 25);
-  private static LoggedTunableNumber armExtenderMovePos =
-    new LoggedTunableNumber("Tune Arm Exterder Move POS", 0);
-
-  //Shooting Settings    
-  private static LoggedTunableNumber wristShootingPos =
-    new LoggedTunableNumber("Tune Wrist Whooting POS", 240);
-  private static LoggedTunableNumber shootingTopRPM =
-    new LoggedTunableNumber("Tune Shooting Top RPM", 5600);
-  private static LoggedTunableNumber shootingBottomRPM =
-    new LoggedTunableNumber("Tune Shooting Bottom RPM", 5900);
-  private static LoggedTunableNumber armShootingPos =
-    new LoggedTunableNumber("Tune Arm Shooting POS", 10);
-  private static LoggedTunableNumber armExtenderShootingPos =
-    new LoggedTunableNumber("Tune ArmExterder Shooting POS", 0);
-  
-  
-  //pickup Settings
-  private static LoggedTunableNumber wristPickupPos =
-    new LoggedTunableNumber("Tune Wrist Pickup POS", 90);
-  private static LoggedTunableNumber intakePickupRPM =
-    new LoggedTunableNumber("Tune Intake PickUp RPM", 100);
-   private static LoggedTunableNumber armPickupPos =
-    new LoggedTunableNumber("Tune Arm PickUp POS", 5);
-  private static LoggedTunableNumber armExtenderPickupPos =
-    new LoggedTunableNumber("Tune ArmExterder PickUp POS", 100);
+ 
 
   //climb Settings
   private static LoggedTunableNumber wristClimbPos =
@@ -71,6 +34,7 @@ public class MechanisimControl extends SubsystemBase {
 
   public enum State {
     PREPARE_SHOOT,
+    PREPARE_PICKUP,
     SHOOT,
     PICKUP,
     HOME,
@@ -100,37 +64,64 @@ public class MechanisimControl extends SubsystemBase {
     
     switch (currentState) {
       case HOME -> {
-        intakeSubsystem.requestIntake(0, wristHomePos.get());
+        intakeSubsystem.requestIntake(0, 75);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(armHomePos.get(), armExtenderHomePos.get());
+        armSubsystem.requestArmPosition(20, 0);
         climberSubsystem.requestClimberPosition(0);
 
        }
 
-      case MOVE -> {
-        intakeSubsystem.requestIntake(0, wristMovePos.get());
+      case PREPARE_PICKUP -> {
+        intakeSubsystem.requestIntake(0, 75);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(armMovePos.get(), armExtenderMovePos.get());
+        armSubsystem.requestArmPosition(25, 100);
         climberSubsystem.requestClimberPosition(0);
 
        }
+
+        case MOVE -> {
+        intakeSubsystem.requestIntake(0, 75);
+        shooterSubsystem.requestRPM(0, 0);
+        armSubsystem.requestArmPosition(25, 0);
+        climberSubsystem.requestClimberPosition(0);
+
+       }
+
       case PICKUP -> {
-        intakeSubsystem.requestIntake(intakePickupRPM.get(),wristPickupPos.get());
+        intakeSubsystem.requestIntake(100, 90);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(armPickupPos.get(), armExtenderPickupPos.get());
+        armSubsystem.requestArmPosition(5, 100);
         climberSubsystem.requestClimberPosition(0);
         }
+
       case PREPARE_SHOOT -> {
         intakeSubsystem.requestIntake(0,wristShootingPos.get());
         shooterSubsystem.requestRPM(shootingTopRPM.get(), shootingBottomRPM.get());
         armSubsystem.requestArmPosition(armShootingPos.get(), armExtenderShootingPos.get());
         climberSubsystem.requestClimberPosition(0);
       }
+
+
+       //Shooting Settings    
+  private static LoggedTunableNumber wristShootingPos =
+    new LoggedTunableNumber("Tune Wrist Whooting POS", 240);
+  private static LoggedTunableNumber shootingTopRPM =
+    new LoggedTunableNumber("Tune Shooting Top RPM", 5600);
+  private static LoggedTunableNumber shootingBottomRPM =
+    new LoggedTunableNumber("Tune Shooting Bottom RPM", 5900);
+  private static LoggedTunableNumber armShootingPos =
+    new LoggedTunableNumber("Tune Arm Shooting POS", 10);
+  private static LoggedTunableNumber armExtenderShootingPos =
+    new LoggedTunableNumber("Tune ArmExterder Shooting POS", 0);
+  
+  
+ 
+
       case SHOOT -> {
 //        if (!atShootingSetpoint()) {
           currentState = State.PREPARE_SHOOT;
 //        } else {
-           intakeSubsystem.requestIntake(20,wristShootingPos.get());
+           intakeSubsystem.requestIntake(20,240;
            shooterSubsystem.requestRPM(5600, 5900);
            armSubsystem.requestArmPosition(armShootingPos.get(), armExtenderShootingPos.get());
 //        }
@@ -142,7 +133,7 @@ public class MechanisimControl extends SubsystemBase {
         climberSubsystem.requestClimberPosition(climberElevatePos.get());
       }
       case GRAB -> {
-        intakeSubsystem.requestIntake(0,wristShootingPos.get());
+        intakeSubsystem.requestIntake(0,240);
         shooterSubsystem.requestRPM(shootingTopRPM.get(), shootingBottomRPM.get());
         armSubsystem.requestArmPosition(armClimbPos.get(), armExtenderClimbPos.get());
         climberSubsystem.requestClimberPosition(climberGrabPos.get());

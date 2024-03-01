@@ -13,7 +13,7 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+//NJP import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -53,7 +53,8 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
-    SwerveDrivePoseEstimator m_odometry;
+//NJP    SwerveDrivePoseEstimator m_odometry;
+    SwerveDriveOdometry m_odometry;   //NJP
     private Pose2d pose = new Pose2d();
 
     /** Creates a new DriveSubsystem. */
@@ -69,7 +70,8 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
-        m_odometry = new SwerveDrivePoseEstimator(
+//NJP       m_odometry = new SwerveDrivePoseEstimator(
+        m_odometry = new SwerveDriveOdometry(      //NJP
                 DriveConstants.kDriveKinematics,
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
                 new SwerveModulePosition[] {
@@ -77,7 +79,8 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                },pose);
+//NJP                },pose);
+                });  //NJP
 
         this.zeroHeading();
 
@@ -165,7 +168,8 @@ public class Drive extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return pose;
+//NJP        return pose;
+        return m_odometry.getPoseMeters(); //NJP
     }
 
     /**

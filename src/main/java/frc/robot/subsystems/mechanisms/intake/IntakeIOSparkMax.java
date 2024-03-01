@@ -32,8 +32,6 @@ public class IntakeIOSparkMax implements IntakeIO{
         m_Wrist = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
         m_Intake = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
     
-        m_Wrist.restoreFactoryDefaults();
-        m_Intake.restoreFactoryDefaults();
 
         wristEncoder = m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
         intakeEncoder =  m_Intake.getEncoder();

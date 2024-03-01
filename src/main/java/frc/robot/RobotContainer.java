@@ -29,6 +29,7 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.Vision.PhotonVisionReal;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
@@ -55,7 +56,7 @@ public class RobotContainer {
   private final ArmSubsystem armSubsystem;
   private final ClimberSubsystem climberSubsystem;
   private final MechanisimControl mechanisimControl;
-  public static PhotonVision pvPoseCamera;
+  public static PhotonVision photonVision;
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
  
@@ -77,6 +78,7 @@ public class RobotContainer {
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+        new PhotonVision(new PhotonVisionReal());
    
         break;
 

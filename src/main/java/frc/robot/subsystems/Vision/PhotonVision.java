@@ -1,271 +1,96 @@
-// Copyright (c) FIRST and other WPILib contributors.
-// Open Source Software; you can modify and/or share it under the terms of
-// the WPILib BSD license file in the root directory of this project.
-
 package frc.robot.subsystems.Vision;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.photonvision.EstimatedRobotPose;
-import org.photonvision.PhotonCamera;
-import org.photonvision.PhotonPoseEstimator;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.common.hardware.VisionLEDMode;
-import org.photonvision.targeting.PhotonPipelineResult;
+import org.littletonrobotics.junction.Logger;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.util.sendable.SendableBuilder;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import frc.robot.Constants.VisionConstants;
 
 public class PhotonVision extends SubsystemBase {
-  private PhotonCamera            camera = new PhotonCamera("Left");
-  private PhotonPipelineResult    latestResult;
-  private VisionLEDMode           ledMode = VisionLEDMode.kOff;
+    private final PhotonVisionIO io;
+    private final PhotonVisionIOInputsAutoLogged inputs = new PhotonVisionIOInputsAutoLogged();
+    
+    public PhotonVision(PhotonVisionIO io) {
+       this.io = io;
+    }
 
-  private Field2d field = new Field2d();
+    /**
+     * Get the estimated pose from both cameras.
+     * @param odometryPose The current pose returned by the robot odometry to filter the vision estimate in comparison to.
+     * @return The estimated pose.
+     */
+    public Optional<Pose2d> getEstimatedPose(Pose2d odometryPose) {
+        Pose2d averagePose = null;
+        double sumX = 0;
+        double sumY = 0;
+        Rotation2d sumRotation = new Rotation2d();
+        double sumConfidence = 0;
+        Pose2d frontPose = inputs.estimatedFrontPose.toPose2d();
+        if (inputs.frontConfidence > VisionConstants.POSE_CONFIDENCE_FILTER_THRESHOLD && frontPose.minus(odometryPose).getTranslation().getNorm() < VisionConstants.VISION_ODOMETRY_DIFFERENCE_FILTER_THRESHOLD) {
+            sumX += frontPose.getX() * inputs.frontConfidence;
+            sumY += frontPose.getY() * inputs.frontConfidence;
+            sumRotation = sumRotation.plus(frontPose.getRotation().times(inputs.frontConfidence));
+            sumConfidence += inputs.frontConfidence;
+        }
+        Pose2d rearPose = inputs.estimatedRearPose.toPose2d();
+        if (inputs.rearConfidence > VisionConstants.POSE_CONFIDENCE_FILTER_THRESHOLD && rearPose.minus(odometryPose).getTranslation().getNorm() < VisionConstants.VISION_ODOMETRY_DIFFERENCE_FILTER_THRESHOLD) {
+            sumX += rearPose.getX() * inputs.rearConfidence;
+            sumY += rearPose.getY() * inputs.rearConfidence;
+            sumRotation = sumRotation.plus(rearPose.getRotation().times(inputs.rearConfidence));
+            sumConfidence += inputs.rearConfidence;
+        }
 
-  // adams code ==========
-  private final AprilTagFields fields = AprilTagFields.k2024Crescendo;
-  private AprilTagFieldLayout FIELD_LAYOUT;
-  private PhotonPoseEstimator poseEstimator;
+        if (sumConfidence != 0) averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
+        return Optional.ofNullable(averagePose);
+    }
 
-  // end adams code=============
+    /**
+     * Get the timestamp of the pose capture.
+     * @return The latest timestamp.
+     */
+    public double getTimestamp() {
+        return inputs.estimatedRearPoseTimestamp > inputs.estimatedFrontPoseTimestamp ? inputs.estimatedRearPoseTimestamp : inputs.estimatedFrontPoseTimestamp;
+    }
 
-public PhotonVision() 
-{
-      FIELD_LAYOUT = fields.loadAprilTagLayoutField();
-      // setup the AprilTag pose etimator
-      poseEstimator = new PhotonPoseEstimator(
-          FIELD_LAYOUT,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, // strategy to use for tag to pose calculation
-          camera, // the PhotonCamera
-          new Transform3d() // a series of transformations from Camera pos. to robot pos. (where camera is on robot)
-      );
-      setLedMode(ledMode);
+    /**
+     * Get the tracked targets from the front camera.
+     * @return The tracked targets.
+     */
 
+    public List<PhotonTrackedTarget> getFrontTargets() {
+        return io.getFrontTrackedTargets();
+    }
 
-      SmartDashboard.putData(field);
-}
+    /**
+     * Get the tracked targets from the rear camera.
+     * @return The tracked targets.
+     */
+    public List<PhotonTrackedTarget> getRearTargets() {
+        return io.getRearTrackedTargets();
+    }
 
-  /**
-   * Get the lastest target results object returned by the camera.
-   * @return Results object.
-   */
-  public PhotonPipelineResult getLatestResult()
-  {
-      latestResult = camera.getLatestResult();
+    /**
+     * Get the fiducial IDs of the targets in the front camera.
+     * @return A list of the IDs.
+     */
+    public int[] getFrontFiducialIDs() {
+        return inputs.visibleFrontFiducialIDs;
+    }
 
-      return latestResult;
-  }
+    /**
+     * Get the fiducial IDs of the targets in the rear camera.
+     * @return A list of the IDs.
+     */
+    public int[] getRearFiducialIDs() {
+        return inputs.visibleRearFiducialIDs;
+    }
 
-  /**
-   * Indicates if lastest camera results list contains targets. Must 
-   * call getLatestResult() before calling.
-   * @return True if targets available, false if not.
-   */
-  public boolean hasTargets()
-  {
-      getLatestResult();
-
-      return latestResult.hasTargets();
-  }
-
-  /**
-   * Returns the target with the given Fiducial ID
-   * @param id the desired Fiducial ID
-   * @return the target or null if the ID is not currently being tracked
-   */
-  public PhotonTrackedTarget getTarget(int id)
-  {
-      if (hasTargets()) {
-          List<PhotonTrackedTarget> targets = latestResult.getTargets();
-          for (int i=0;i<targets.size();i++) {
-              PhotonTrackedTarget target = targets.get(i);
-              if (target.getFiducialId() == id) return target;
-          }
-          return null;
-      }
-      else
-          return null;
-  }
-  
-  /**
-   * Get an array of the currently tracked Fiducial IDs
-   * 
-   * @return an ArrayList of the tracked IDs
-   */
-  public ArrayList<Integer> getTrackedIDs() {
-      ArrayList<Integer> ids = new ArrayList<Integer>();
-      if (hasTargets()) {
-          List<PhotonTrackedTarget> targets = latestResult.getTargets();
-          for (int i=0;i<targets.size();i++) {
-              ids.add(targets.get(i).getFiducialId());
-          }
-      }
-      return ids;
-  }
-
-  /**
-   * Checks whether or not the camera currently sees a target
-   * with the given Fiducial ID
-   * 
-   * @param id the Fiducial ID
-   * @return whether the camera sees the ID
-   */
-  public boolean hasTarget(int id) {
-      return getTrackedIDs().contains(id);
-  }
-
-  // Best Target Methods =============================================================
-
-  /**
-   * Returns the yaw angle of the best target in the latest camera results
-   * list. Must call hasTargets() before calling this function.
-   * @return Best target yaw value from straight ahead or zero. -yaw means
-   * target is left of robot center.
-   */
-  public double getYaw()
-  {
-      if (hasTargets()) 
-          return latestResult.getBestTarget().getYaw();
-      else
-          return 0;
-  }
-
-
-  /**
-   * Returns the Fiducial ID of the current best target, you should call
-   * hasTargets() first!
-   * @return the ID or -1 if no targets
-   */
-  public int getFiducialID()
-  {
-      if (hasTargets()) 
-          return latestResult.getBestTarget().getFiducialId();
-      else
-          return -1;
-  }
-
-  /**
-   * Returns the area of the best target in the latest camera results
-   * list. Must call hasTargets() before calling this function.
-   * @return Best target area value.
-   */
-  public double getArea()
-  {
-      if (hasTargets()) 
-          return latestResult.getBestTarget().getArea();
-      else
-          return 0;
-  }
-
-  // Utility Methods =============================================================
-
-  /**
-   * Select camera's image processing pipeline.
-   * @param index Zero based number of desired pipeline.
-   */
-  public void selectPipeline(int index)
-  {
- 
-      camera.setPipelineIndex(index);
-  }
-
-  /**
-   * Set the LED mode.
-   * @param mode Desired LED mode.
-   */
-  public void setLedMode(VisionLEDMode mode)
-  {
-
-      camera.setLED(mode);
-
-      ledMode = mode;
-  }
-
-  /**
-   * Toggle LED mode on/off.
-   */
-  public void toggleLedMode()
-  {
-      if (ledMode == VisionLEDMode.kOff)
-          ledMode = VisionLEDMode.kOn;
-      else
-          ledMode = VisionLEDMode.kOff;
-      
-      setLedMode(ledMode);
-  }
-
-  /**
-   * Save pre-processed image from camera stream.
-   */
-  public void inputSnapshot()
-  {
-//NJ      Util.consoleLog();
-
-      camera.takeInputSnapshot();
-  }
-
-  /**
-   * Save post-processed image from camera stream.
-   */
-  public void outputSnapshot()
-  {
-
-      camera.takeOutputSnapshot();
-  }
-      
-  @Override
-public void initSendable( SendableBuilder builder )
-{
-      //super.initSendable(builder);
-      builder.setSmartDashboardType("Subsystem");
-
-      builder.addBooleanProperty("has Targets", () -> hasTargets(), null);
-      builder.addDoubleProperty("target yaw", () -> getYaw(), null);
-      builder.addDoubleProperty("target area", () -> getArea(), null);
-}
-  
-  /**
-   * returns an Optional value of the robot's estimated 
-   * field-centric pose given current tags that it sees.
-   * (and also the timestamp)
-   * 
-   * @return the Optional estimated pose (empty optional means no pose or uncertain/bad pose)
-   */
-  public Optional<EstimatedRobotPose> getEstimatedPose() {
-      Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update();
-      if (estimatedPoseOptional.isPresent()) {
-          EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
-          Pose3d pose = estimatedPose.estimatedPose;
-
-          // pose2d to pose3d (ignore the Z axis which is height off ground)
-          Pose2d pose2d = new Pose2d(pose.getX(), pose.getY(), new Rotation2d(pose.getRotation().getAngle()));
-
-          // update the field2d object in NetworkTables to visualize where the camera thinks it's at
-          field.setRobotPose(pose2d);
-
-          // logic for checking if pose is valid would go here:
-          // for example:
-          for (int i=0;i<estimatedPose.targetsUsed.size();i++) {
-              // if a target was used with ID > 16 then return no estimated pose
-              if (estimatedPose.targetsUsed.get(i).getFiducialId() > 16) {
-                  return Optional.empty();
-              }
-          }
-
-          return Optional.of(estimatedPose);
-      } else return Optional.empty();
-  }
+    public void periodic() {
+        Logger.processInputs("PhotonVision", inputs);
+    }
 }

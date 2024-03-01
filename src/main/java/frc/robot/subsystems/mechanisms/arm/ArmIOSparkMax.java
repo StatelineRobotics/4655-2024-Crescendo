@@ -33,9 +33,6 @@ public class ArmIOSparkMax implements ArmIO {
         m_ArmLeft = new CANSparkMax(MechanismConstants.kArmRightCanId, MotorType.kBrushless);
         m_ArmExtender = new CANSparkMax(MechanismConstants.kArmExtenderCanId, MotorType.kBrushless);
             
-        m_ArmRight.restoreFactoryDefaults();;
-        m_ArmLeft.restoreFactoryDefaults();;
-        m_ArmExtender.restoreFactoryDefaults();
 
         armEncoder =  m_ArmRight.getAbsoluteEncoder(Type.kDutyCycle);
         armEncoder.setInverted(true);
