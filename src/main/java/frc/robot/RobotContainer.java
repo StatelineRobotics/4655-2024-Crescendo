@@ -23,18 +23,11 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
-<<<<<<< Updated upstream
-=======
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.subsystems.Vision.PhotonVisionPoseEstimation;
-import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
-import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
-import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
-import frc.robot.subsystems.mechanisms.shooter.ShooterSubsystem;
-import frc.robot.subsystems.mechanisms.MechanisimControl;
 
 
->>>>>>> Stashed changes
+
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -65,17 +58,10 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
-<<<<<<< Updated upstream
-                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
-
-=======
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset), null);
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
+
       //  climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
       //  mechanisimControl = new MechanisimControl(intakeSubsystem);
->>>>>>> Stashed changes
         break;
 
       case SIM:
@@ -86,15 +72,8 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
-<<<<<<< Updated upstream
-                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
-
-=======
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),new PhotonVision(new PhotonVisionPoseEstimation()));
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
->>>>>>> Stashed changes
+
         break;
 
       default:
@@ -105,16 +84,9 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-<<<<<<< Updated upstream
-                new ModuleIO() {});
-        // flywheel = new Flywheel(new FlywheelIO() {});
-=======
                 new ModuleIO() {},
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem);
->>>>>>> Stashed changes
+
         break;
     }
 

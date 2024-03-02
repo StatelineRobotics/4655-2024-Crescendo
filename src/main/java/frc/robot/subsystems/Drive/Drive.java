@@ -8,11 +8,7 @@ import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
 
-<<<<<<< Updated upstream
-
-=======
 import com.ctre.phoenix6.mechanisms.swerve.SwerveModule;
->>>>>>> Stashed changes
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
@@ -62,11 +58,7 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
-<<<<<<< Updated upstream
-    private SwerveDrivePoseEstimator m_odometry;
-=======
     SwerveDrivePoseEstimator m_odometry;
->>>>>>> Stashed changes
     private Pose2d pose = new Pose2d();
     private final PhotonVision photonVision;
     private Field2d field;
@@ -101,13 +93,9 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
-<<<<<<< Updated upstream
-
-=======
         // this.modules = new SwerveModule[] { new SwerveModule(fl, 0), new SwerveModule(fr, 1),
         //     new SwerveModule(bl, 2), new SwerveModule(br, 3) };
     
->>>>>>> Stashed changes
         m_odometry = new SwerveDrivePoseEstimator(
                 DriveConstants.kDriveKinematics,
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
@@ -115,13 +103,8 @@ public class Drive extends SubsystemBase {
                         m_frontLeft.getPosition(),
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
-<<<<<<< Updated upstream
-                        m_rearRight.getPosition(),
-                }, pose);
-=======
                         m_rearRight.getPosition()
                 },new Pose2d());
->>>>>>> Stashed changes
 
         this.zeroHeading();
 
@@ -177,9 +160,6 @@ public class Drive extends SubsystemBase {
 }
 
 
-
-
-
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Gyro", gyroInputs);
         m_frontLeft.updateInputs();
@@ -223,11 +203,7 @@ public class Drive extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-<<<<<<< Updated upstream
-    return pose;
-=======
         return pose;
->>>>>>> Stashed changes
     }
 
     /**
@@ -439,14 +415,7 @@ public class Drive extends SubsystemBase {
                 false);
     }
 
-<<<<<<< Updated upstream
-    public void addVisionMeasurement(
-        Pose2d Vpose, double timestamp
-    ){
-        m_odometry.addVisionMeasurement(Vpose, timestamp);
-=======
     public void addVisionMeasurement(Pose2d vPose2d, double timestamp){
         m_odometry.addVisionMeasurement(vPose2d,timestamp);
->>>>>>> Stashed changes
     }
 }

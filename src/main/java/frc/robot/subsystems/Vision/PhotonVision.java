@@ -49,26 +49,16 @@ public class PhotonVision extends SubsystemBase {
 
   // end adams code=============
 
-<<<<<<< Updated upstream
+
       private static final Transform3d Robot_to_cam = new Transform3d(
         new Translation3d(-.3,-.127,.711),    //Converstion from itches to meters
         new Rotation3d(0,0,Math.PI)
         );
 
-public PhotonVision() 
-{
-      FIELD_LAYOUT = fields.loadAprilTagLayoutField();
-      // setup the AprilTag pose etimator
-      poseEstimator = new PhotonPoseEstimator(
-          FIELD_LAYOUT,
-          PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, // strategy to use for tag to pose calculation
-          camera, // the PhotonCamera
-          Robot_to_cam // a series of transformations from Camera pos. to robot pos. (where camera is on robot)
-      );
-      setLedMode(ledMode);
+
 
 //NJ  Util.consoleLog("PhotonVision created!");
-=======
+
 public PhotonVision(PhotonVisionIO Io) 
 {
 this.Io = Io;
@@ -94,7 +84,7 @@ if (inputs.RightConfidence > .2 && RightPose.minus(Odometry).getTranslation().ge
     sumRotation = sumRotation.plus(RightPose.getRotation().times(inputs.RightConfidence));
     sumConfidence += inputs.RightConfidence;
 }
->>>>>>> Stashed changes
+
 
 if (sumConfidence != 0) averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
 return Optional.ofNullable(averagePose);
@@ -222,14 +212,8 @@ return Optional.ofNullable(averagePose);
    */
   public void selectPipeline(int index)
   {
-<<<<<<< Updated upstream
- //NJ     Util.consoleLog("%d", index);
-
-      camera.setPipelineIndex(index);
-=======
  
       Left.setPipelineIndex(index);
->>>>>>> Stashed changes
   }
 
   /**
@@ -296,36 +280,6 @@ public void initSendable( SendableBuilder builder )
    * 
    * @return the Optional estimated pose (empty optional means no pose or uncertain/bad pose)
    */
-<<<<<<< Updated upstream
-  public Optional<EstimatedRobotPose> getEstimatedPose() {
-      Optional<EstimatedRobotPose> estimatedPoseOptional = poseEstimator.update();
-      var poses = poseEstimator.update();
-      if (estimatedPoseOptional.isPresent()) {
-          EstimatedRobotPose estimatedPose = estimatedPoseOptional.get();
-          Pose3d pose = estimatedPose.estimatedPose;
-
-          // pose2d to pose3d (ignore the Z axis which is height off ground)
-          Pose2d pose2d = new Pose2d(pose.getX(), pose.getY(), new Rotation2d(pose.getRotation().getAngle()));
-
-          // update the field2d object in NetworkTables to visualize where the camera thinks it's at
-          field.setRobotPose(pose2d);
-
-          // logic for checking if pose is valid would go here:
-          // for example:
-          for (int i=0;i<estimatedPose.targetsUsed.size();i++) {
-              // if a target was used with ID > 16 then return no estimated pose
-              if (estimatedPose.targetsUsed.get(i).getFiducialId() > 16) {
-                  return Optional.empty();
-              }
-          }
-
-          return poses;
-      } else return Optional.empty();
-  
-
-  }
-=======
     
->>>>>>> Stashed changes
 }
 

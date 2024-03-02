@@ -11,6 +11,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class Module {
+  private int moduleID;
   private ModuleIO moduleIO;
   private ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private int index;
@@ -28,6 +29,7 @@ public class Module {
     moduleIO = io;
     this.updateInputs();
     this.index = index;
+    this.moduleID = moduleID;
   }
 
   public void updateInputs() {
@@ -81,6 +83,7 @@ public class Module {
 
   public void periodic() {
     moduleIO.updateInputs(inputs);
+    Logger.processInputs("Drive/Module" + Integer.toString(moduleID), inputs);
     moduleIO.periodic();
   }
 
