@@ -13,6 +13,7 @@ public interface ArmIO {
     class ArmIOInputs{
         public double armPos = 0.0;
         public double armExtenderPos = 0.0; 
+        public boolean armExtendOK = false;
     }
   
     /** Update inputs */

@@ -5,6 +5,7 @@
 package frc.robot.subsystems.mechanisms.arm;
 
 import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -21,6 +22,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.io = io;
   }
 
+  
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -31,16 +33,17 @@ public class ArmSubsystem extends SubsystemBase {
     } else {
         io.setArmPositions(armPos, armExtenderPos);
     }
+
   }
 
   public void requestArmPosition(double armPos, double armExtenderPos) {
       this.armPos = armPos;
       this.armExtenderPos = armExtenderPos;
-  } 
+  }
   
-
+  
   private void stop() {
-    armPos = 10;
+    armPos = 15;
     armExtenderPos = 0;
     io.stop();
   }

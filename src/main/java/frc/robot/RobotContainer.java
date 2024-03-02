@@ -161,22 +161,23 @@ public class RobotContainer {
 
 
 //Mechanisim Control
-      new JoystickButton(OIConstants.kauxController, 1) // A Button PICKUP
-                .onTrue(Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+ //     new JoystickButton(OIConstants.kauxController, 2) // B Button PICKUP
+ //               .onTrue(Commands.runOnce(
+ //                       () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
 
-      new JoystickButton(OIConstants.kauxController, 2) // A Button 
+      new JoystickButton(OIConstants.kauxController, 1) // A Button 
                 .onTrue(Commands.runOnce(
                         () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
 
-      new JoystickButton(OIConstants.kauxController, 4) // Y PREPARE_SHOOT
-                .onTrue( Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+//      new JoystickButton(OIConstants.kauxController, 4) // Y PREPARE_SHOOT
+//                .onTrue( Commands.runOnce(
+//                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
 
 
-      new JoystickButton(OIConstants.kauxController, 6) // Right Bump SHOOT
-                .onTrue( Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+//      new JoystickButton(OIConstants.kauxController, 6) // Right Bump SHOOT
+//                .onTrue( Commands.runOnce(
+//                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
   
   }
 

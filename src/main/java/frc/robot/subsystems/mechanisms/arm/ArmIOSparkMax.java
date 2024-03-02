@@ -90,16 +90,27 @@ public class ArmIOSparkMax implements ArmIO {
           if(extendLimitSwitch.isPressed()) {
             armExtenderEncoder.setPosition(0);
         }
+        inputs.armExtendOK = armExtendOK();
     }
-
-   
+ 
+    public boolean armExtendOK() {
+        if (armEncoder.getPosition() > 90) {
+            return (true);
+          }
+          else {
+            return (false);
+          }
+    }
+     
 
      @Override
     public void setArmPositions(double armPos, double armExtenderPos) {
+        
         armController.setReference(armPos, CANSparkMax.ControlType.kPosition);
-        if (armExtenderEncoder.getPosition() > 90 && armPos > 9){
-        armExtenderController.setReference(armExtenderPos, CANSparkMax.ControlType.kSmartMotion);
-        }
+        if (armExtendOK() ){
+                armExtenderController.setReference(armExtenderPos, CANSparkMax.ControlType.kSmartMotion);
+         }
+        
     }
 
 
