@@ -20,7 +20,8 @@ public class ClimberIOSparkMax implements ClimberIO {
     private CANSparkMax  m_RightClimber;
     private RelativeEncoder rightClimberEncoder;
     private RelativeEncoder leftClimberEncoder;
-    private SparkPIDController climberController;
+    private SparkPIDController rightClimberController;
+    private SparkPIDController leftClimberController;
     private SparkLimitSwitch rightClimberLimitSwitch;
     private SparkLimitSwitch leftClimberLimitSwitch;
    
@@ -29,13 +30,15 @@ public class ClimberIOSparkMax implements ClimberIO {
         m_LeftClimber = new CANSparkMax(MechanismConstants.kLeftClimberCanId, MotorType.kBrushless);
         m_RightClimber = new CANSparkMax(MechanismConstants.kRightClimberCanId, MotorType.kBrushless);
 
-        m_LeftClimber.follow(m_RightClimber);
+        m_LeftClimber.restoreFactoryDefaults();
+        m_RightClimber.restoreFactoryDefaults();
 
         rightClimberEncoder =  m_RightClimber.getEncoder();
+        leftClimberEncoder =  m_LeftClimber.getEncoder();
 
        
-        m_LeftClimber.setIdleMode(IdleMode.kCoast);
-        m_RightClimber.setIdleMode(IdleMode.kCoast);
+        m_LeftClimber.setIdleMode(IdleMode.kCoast);     //MOTORBRAKE
+        m_RightClimber.setIdleMode(IdleMode.kCoast);    //MOTORBRAKE
         m_LeftClimber.setInverted(false);
         m_RightClimber.setInverted(false);
         m_LeftClimber.setSmartCurrentLimit(40);
@@ -44,14 +47,23 @@ public class ClimberIOSparkMax implements ClimberIO {
         rightClimberLimitSwitch = m_RightClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         leftClimberLimitSwitch = m_LeftClimber.getReverseLimitSwitch(SparkLimitSwitch.Type.kNormallyOpen);
         
-        climberController = m_RightClimber.getPIDController();
-        climberController.setFeedbackDevice(rightClimberEncoder);
-        climberController.setP(1);
-        climberController.setI(0);
-        climberController.setD(0);
-        climberController.setIZone(0);
-        climberController.setFF(0);
-        climberController.setOutputRange(-.2,.2);
+        rightClimberController = m_RightClimber.getPIDController();
+        rightClimberController.setFeedbackDevice(rightClimberEncoder);
+        rightClimberController.setP(1);
+        rightClimberController.setI(0);
+        rightClimberController.setD(0);
+        rightClimberController.setIZone(0);
+        rightClimberController.setFF(0);
+        rightClimberController.setOutputRange(-.2,.2);
+
+        leftClimberController = m_RightClimber.getPIDController();
+        leftClimberController.setFeedbackDevice(rightClimberEncoder);
+        leftClimberController.setP(1);
+        leftClimberController.setI(0);
+        leftClimberController.setD(0);
+        leftClimberController.setIZone(0);
+        leftClimberController.setFF(0);
+        leftClimberController.setOutputRange(-.2,.2);
 
         m_LeftClimber.burnFlash();
         m_RightClimber.burnFlash();
@@ -75,7 +87,8 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     @Override
     public void setclimberMotors(double climberPosition) {
-       climberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
+       leftClimberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
+       rightClimberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
     }
 
     @Override

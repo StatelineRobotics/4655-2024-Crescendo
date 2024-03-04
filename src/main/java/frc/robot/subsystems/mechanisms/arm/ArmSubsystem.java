@@ -10,12 +10,13 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 public class ArmSubsystem extends SubsystemBase {
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
-  private double armPos = 0;
-  private double armExtenderPos = 0;
+  private double armPosSet = MechanismConstants.kArmHomePOS;
+  private double armExtenderPosSet = MechanismConstants.kArmExtenderHomePOS;;
     
   public ArmSubsystem(ArmIO io) {
     System.out.println("[Init] Creating Arm");
@@ -31,20 +32,22 @@ public class ArmSubsystem extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       stop();
     } else {
-        io.setArmPositions(armPos, armExtenderPos);
+        io.setArmPositions(armPosSet, armExtenderPosSet);
     }
-
+    
   }
 
-  public void requestArmPosition(double armPos, double armExtenderPos) {
-      this.armPos = armPos;
-      this.armExtenderPos = armExtenderPos;
+  public void requestArmPosition(double armPosSet, double armExtenderPosSet) {
+    this.armPosSet = armPosSet;
+    this.armExtenderPosSet = armExtenderPosSet;
+
   }
   
-  
+   
+
   private void stop() {
-    armPos = 15;
-    armExtenderPos = 0;
+    //armPos = 15;
+    //armExtenderPos = 0;
     io.stop();
   }
 

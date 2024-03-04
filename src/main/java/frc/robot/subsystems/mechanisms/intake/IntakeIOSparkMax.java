@@ -39,10 +39,10 @@ public class IntakeIOSparkMax implements IntakeIO{
         wristEncoder.setInverted(false);    
         wristEncoder.setPositionConversionFactor(360);
     
-        m_Wrist.setIdleMode(IdleMode.kCoast);
-        m_Intake.setIdleMode(IdleMode.kCoast);
+        m_Wrist.setIdleMode(IdleMode.kCoast);       //MOTORBRAKE
+        m_Intake.setIdleMode(IdleMode.kCoast);      //MOTORBRAKE
         m_Wrist.setInverted(false);
-        m_Intake.setInverted(false);
+        m_Intake.setInverted(true);
         m_Wrist.setSmartCurrentLimit(20);
         m_Intake.setSmartCurrentLimit(20);
     

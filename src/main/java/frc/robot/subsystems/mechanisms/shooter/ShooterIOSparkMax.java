@@ -71,12 +71,22 @@ public class ShooterIOSparkMax implements ShooterIO {
 
     @Override
     public void setTopShooterRPM(double rpm) {
-        topShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5600
+        if (rpm > 100) { 
+            topShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5600
+        }
+        else {
+            m_TopShooter.set(0);
+        }    
     }
     
      @Override
     public void setBottomShooterRPM(double rpm) {
-        bottomShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5900
+        if (rpm > 100) { 
+            bottomShooterController.setReference(rpm, CANSparkBase.ControlType.kVelocity); //5900
+        }
+        else {
+            m_BottomShooter.set(0);
+        }
     }
  
 

@@ -13,10 +13,6 @@
 
 package frc.robot;
 
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 
@@ -52,12 +48,8 @@ public final class Constants {
 
   }
 
-  public static class VisionConstants {
-    public static final PoseStrategy POSE_STRATEGY = PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR;
-    public static final Transform3d ROBOT_TO_FRONT_CAMERA = new Transform3d(0, 0, 0, new Rotation3d());
-    public static final Transform3d ROBOT_TO_REAR_CAMERA = new Transform3d(0, 0, 0, new Rotation3d());
-    public static final double POSE_CONFIDENCE_FILTER_THRESHOLD = 0.2;
-    public static final double VISION_ODOMETRY_DIFFERENCE_FILTER_THRESHOLD = 0.5;
-  }
+
   
 }
+  
+

@@ -25,4 +25,6 @@ public interface ModuleIO {
         return null;
     }
 
+    default void stop() {} 
+
 }

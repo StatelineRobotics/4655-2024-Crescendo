@@ -6,20 +6,27 @@ package frc.robot.subsystems.mechanisms.arm;
 
 import org.littletonrobotics.junction.AutoLog;
 
+import frc.robot.subsystems.mechanisms.MechanismConstants;
+
 
 /** Add your docs here. */
 public interface ArmIO {
     @AutoLog
     class ArmIOInputs{
-        public double armPos = 0.0;
-        public double armExtenderPos = 0.0; 
-        public boolean armExtendOK = false;
+        public double armPosCurrent = 0.0;
+        public double armExtenderPosCurrent = 0.0; 
+        public double armRightOutput = 0.0;
+        public double armLeftOutput = 0.0;
+        public double armExtenderOutput = 0.0;  
+        public double armPosSet = MechanismConstants.kArmHomePOS;
+        public double armExtenderPosSet = MechanismConstants.kArmExtenderHomePOS;
+
     }
   
     /** Update inputs */
     default void updateInputs(ArmIOInputs inputs) {}
     
-    default void setArmPositions(double armPos, double armExtenderPos) {}
+    default void setArmPositions(double armPosSet, double armExtenderPosSet) {}
 
     /** Stop Arm */
     default void stop() {}   

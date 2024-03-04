@@ -28,8 +28,6 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
-import frc.robot.subsystems.Vision.PhotonVision;
-import frc.robot.subsystems.Vision.PhotonVisionReal;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
@@ -56,7 +54,7 @@ public class RobotContainer {
   private final ArmSubsystem armSubsystem;
   private final ClimberSubsystem climberSubsystem;
   private final MechanisimControl mechanisimControl;
-  public static PhotonVision photonVision;
+
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
  
@@ -78,8 +76,7 @@ public class RobotContainer {
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
-        new PhotonVision(new PhotonVisionReal());
-   
+           
         break;
 
       case SIM:
@@ -161,23 +158,27 @@ public class RobotContainer {
 
 
 //Mechanisim Control
- //     new JoystickButton(OIConstants.kauxController, 2) // B Button PICKUP
- //               .onTrue(Commands.runOnce(
- //                       () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
 
-      new JoystickButton(OIConstants.kauxController, 1) // A Button 
-                .onTrue(Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
+      new JoystickButton(OIConstants.kauxController, 5) // Right Bump HOME
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
+
+      new JoystickButton(OIConstants.kauxController, 1) // A Button PICKUP
+            .onTrue(Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+
+      new JoystickButton(OIConstants.kauxController, 2) // B Button 
+            .onTrue(Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
 
 
-//      new JoystickButton(OIConstants.kauxController, 4) // Y PREPARE_SHOOT
-//                .onTrue( Commands.runOnce(
-//                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+      new JoystickButton(OIConstants.kauxController, 4) // U Button PREPARE_SHOOT
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
 
-
-//      new JoystickButton(OIConstants.kauxController, 6) // Right Bump SHOOT
-//                .onTrue( Commands.runOnce(
-//                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+      new JoystickButton(OIConstants.kauxController, 6) // Left Bump SHOOT
+                .onTrue( Commands.runOnce(
+                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
   
   }
 

@@ -65,9 +65,17 @@ public class MechanismConstants {
     public static final double kArmShootPOS = 1;
     public static final double kArmExtenderShootPOS = 1;
 
-    public static final double kArmHomePOS = 1;
-    public static final double kArmExtenderHomePOS = 1;
+    //Home Postion   
+    public static final double kArmHomePOS = 22;
+    public static final double kArmExtenderHomePOS = 0;
+    public static final double kWristHomePos = 75;
 
+    //Move
+    public static final double kArmMovePOS = 25;
+    public static final double kArmExtenderMovePOS = 150;
+    public static final double kWristMovePOS = 90;
+
+    
 
 
 }
