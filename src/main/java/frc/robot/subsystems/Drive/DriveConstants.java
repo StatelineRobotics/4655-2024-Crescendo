@@ -56,7 +56,7 @@ public final class DriveConstants {
 
     public static final Rotation2d kChassisAngularOffset = Rotation2d.fromDegrees(0);
 
-    public static final int kPigeonCanId = 20;
+    public static final int kPigeonCanId = 19;
 
     public static final boolean kGyroReversed = true;
 

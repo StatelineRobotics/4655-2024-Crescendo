@@ -16,6 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class PhotonVisionPoseEstimation implements PhotonVisionIO {
     private PhotonCamera Left;
@@ -32,9 +33,9 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
         this.Left = new PhotonCamera("Left");
         this.Right = new PhotonCamera("Right");
         this.LeftPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,Left,Leftpose);
-        this.RightPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,Left,Rightpose);
+        this.RightPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,Right,Rightpose);
     }
-
+    
         public void updateInputs(PhotonVisionIOInputs inputs) {
         double LeftAmbiguitySum = 0;
         double RightAmbiguitySum = 0;
@@ -42,13 +43,15 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
         inputs.RightConfidence = 0;
         inputs.LeftConfidence = 0;
 
-        Optional<EstimatedRobotPose> frontPoseOptional = LeftPoseEstimator.update();
-        if (frontPoseOptional.isPresent()) {
-            estimatedLeftPose = frontPoseOptional.get();
-
+        Optional<EstimatedRobotPose> LeftPoseOptional = LeftPoseEstimator.update();
+        if (LeftPoseOptional.isPresent()) {
+            estimatedLeftPose = LeftPoseOptional.get();
+            var leftVisionPoseUpdate = LeftPoseEstimator.update();
+            var leftVisionPose = leftVisionPoseUpdate.get().estimatedPose;
             inputs.estimatedLeftPose = estimatedLeftPose.estimatedPose;
             inputs.estimatedLeftPoseTimestamp = estimatedLeftPose.timestampSeconds;
-
+            SmartDashboard.getNumber("Left Vision Pose X", leftVisionPose.getX());
+            SmartDashboard.getNumber("Left Vision Pose Y", leftVisionPose.getY());
             var LeftTargetsSeen = estimatedLeftPose.targetsUsed.size();
             inputs.visibleLeftFiducialIDs = new int[LeftTargetsSeen];
 
@@ -60,10 +63,10 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
 
             inputs.LeftConfidence = 1 - (LeftAmbiguitySum / inputs.visibleLeftFiducialIDs.length);
         }
-        Optional<EstimatedRobotPose> rearPoseOptional = RightPoseEstimator.update();
+        Optional<EstimatedRobotPose> RightPoseOptional = RightPoseEstimator.update();
         
-        if (rearPoseOptional.isPresent()) {
-            estimatedRightPose = rearPoseOptional.get();
+        if (RightPoseOptional.isPresent()) {
+            estimatedRightPose = RightPoseOptional.get();
 
             inputs.estimatedRightPose = estimatedRightPose.estimatedPose;
             inputs.estimatedRightPoseTimestamp = estimatedRightPose.timestampSeconds;
@@ -90,17 +93,17 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
     }
 
     @AutoLogOutput
-    public Pose3d[] getFrontTagPoses() {
-        var frontTargets = estimatedLeftPose.targetsUsed;
-        Pose3d[] frontTagPoses = new Pose3d[frontTargets.size()];
-        for(int i = 0; i < frontTagPoses.length; i++) {
-            frontTagPoses[i] = aprilTagFieldLayout.getTagPose(frontTargets.get(i).getFiducialId()).get();
+    public Pose3d[] getLeftTagPoses() {
+        var LeftTargets = estimatedLeftPose.targetsUsed;
+        Pose3d[] LeftTagPoses = new Pose3d[LeftTargets.size()];
+        for(int i = 0; i < LeftTagPoses.length; i++) {
+            LeftTagPoses[i] = aprilTagFieldLayout.getTagPose(LeftTargets.get(i).getFiducialId()).get();
         }
-        return frontTagPoses;
+        return LeftTagPoses;
     }
 
     @AutoLogOutput
-    public Pose3d[] getRearTagPoses() {
+    public Pose3d[] getRightTagPoses() {
         var RightTargets = estimatedRightPose.targetsUsed;
         Pose3d[] RightTagPoses = new Pose3d[RightTargets.size()];
         for(int i = 0; i < RightTagPoses.length; i++) {

@@ -42,7 +42,7 @@ public class Drive extends SubsystemBase {
     private final Module m_frontRight;
     private final Module m_rearLeft;
     private final Module m_rearRight;
-    //private final SwerveModule[] modules;
+    private final Module[] modules;
 
     // The gyro sensor
     private GyroIO gyro;
@@ -58,9 +58,9 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
-    SwerveDrivePoseEstimator m_odometry;
+    private SwerveDrivePoseEstimator m_odometry;
     private Pose2d pose = new Pose2d();
-    private final PhotonVision photonVision;
+    private PhotonVision photonVision;
     private Field2d field;
     private SwerveSetpoint swerveSetpoint = new SwerveSetpoint(
         new ChassisSpeeds(),
@@ -93,8 +93,8 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
-        // this.modules = new SwerveModule[] { new SwerveModule(fl, 0), new SwerveModule(fr, 1),
-        //     new SwerveModule(bl, 2), new SwerveModule(br, 3) };
+         this.modules = new Module[] { new Module(fl, 0), new Module(fr, 1),
+             new Module(bl, 2), new Module(br, 3) };
     
         m_odometry = new SwerveDrivePoseEstimator(
                 DriveConstants.kDriveKinematics,
@@ -144,20 +144,39 @@ public class Drive extends SubsystemBase {
                 }); // Adds a way for PathPlanner to log what pose it's currently trying to go to
     }
 
+
+
+        public Pose2d getPose() {
+        return m_odometry.getEstimatedPosition();
+    }
+
+    
     @Override
     public void periodic() {
+
+
     Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
           m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
+          var Vpose = estimatedPose.get();
         field.setRobotPose(getPose());
         SmartDashboard.putString("Pose", getPose().toString());
         Logger.recordOutput("Odometry", getPose());
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
-    //     for (var module : modules) {
-    //     module.periodic();
-    // }
-}
+        SmartDashboard.getNumber("VisionPoseX", Vpose.getX());
+        SmartDashboard.getNumber("VisionPoseY", Vpose.getY());
+        for (var module : modules) {
+        module.periodic();
+     }
+    }
+    Logger.recordOutput("SwerveStates/Desired", new double[] {});
+    if (DriverStation.isDisabled()) {
+      // Stop moving while disabled
+      for (var module : modules) {
+        module.stop();
+      }
+    }
 
 
         gyro.updateInputs(gyroInputs);
@@ -202,9 +221,7 @@ public class Drive extends SubsystemBase {
      *
      * @return The pose.
      */
-    public Pose2d getPose() {
-        return pose;
-    }
+
 
     /**
      * Resets the odometry to the specified pose.

@@ -29,12 +29,10 @@ public class Module {
     moduleIO = io;
     this.updateInputs();
     this.index = index;
-    this.moduleID = moduleID;
   }
 
   public void updateInputs() {
-    moduleIO.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(index), inputs);
+
 
     double positionMeters = inputs.drivePositionMeters;
     Rotation2d angle = inputs.turnAbsolutePosition; 
@@ -42,6 +40,9 @@ public class Module {
     lastPositionMeters = positionMeters;
   }
 
+  public void stop() {
+    moduleIO.stop();
+  }
   /**
    * Returns the current state of the module.
    *
@@ -91,4 +92,5 @@ public class Module {
   public void resetEncoders() {
     moduleIO.resetEncoders();
   }
+  
 }

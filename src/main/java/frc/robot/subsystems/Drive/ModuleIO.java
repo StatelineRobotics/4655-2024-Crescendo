@@ -29,6 +29,8 @@ public interface ModuleIO {
     public default void setDesiredState(SwerveModuleState state){}
 
     public default void resetEncoders(){}
+    
+    public default void stop(){}
 
     public default SwerveModuleState getOptimizedState(){
         return null;

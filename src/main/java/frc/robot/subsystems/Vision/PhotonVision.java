@@ -7,6 +7,7 @@ package frc.robot.subsystems.Vision;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import org.littletonrobotics.junction.Logger;
 
 import org.photonvision.EstimatedRobotPose;
 import org.photonvision.PhotonCamera;
@@ -42,18 +43,10 @@ public class PhotonVision extends SubsystemBase {
   private Drive drive;
   private PhotonVisionIO Io;
   private final PhotonVisionIOInputs inputs = new PhotonVisionIOInputsAutoLogged();  
-  // adams code ==========
   private final AprilTagFields fields = AprilTagFields.k2024Crescendo;
   private AprilTagFieldLayout FIELD_LAYOUT;
   private PhotonPoseEstimator poseEstimator;
 
-  // end adams code=============
-
-
-      private static final Transform3d Robot_to_cam = new Transform3d(
-        new Translation3d(-.3,-.127,.711),    //Converstion from itches to meters
-        new Rotation3d(0,0,Math.PI)
-        );
 
 
 
@@ -87,8 +80,10 @@ if (inputs.RightConfidence > .2 && RightPose.minus(Odometry).getTranslation().ge
 
 
 if (sumConfidence != 0) averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
+
 return Optional.ofNullable(averagePose);
 }
+ 
 
   /**
    * Get the lastest target results object returned by the camera.
@@ -280,6 +275,9 @@ public void initSendable( SendableBuilder builder )
    * 
    * @return the Optional estimated pose (empty optional means no pose or uncertain/bad pose)
    */
-    
+//   @Override
+//   public void periodic() {
+//     Logger.processInputs("PhotonVision", inputs);
+// }
 }
 
