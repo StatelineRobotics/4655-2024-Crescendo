@@ -46,6 +46,7 @@ public class PhotonVision extends SubsystemBase {
   private final AprilTagFields fields = AprilTagFields.k2024Crescendo;
   private AprilTagFieldLayout FIELD_LAYOUT;
   private PhotonPoseEstimator poseEstimator;
+  private PhotonVisionPoseEstimation poseEstimation;
 
 
 
@@ -58,12 +59,16 @@ this.Io = Io;
 }
 
 public Optional<Pose2d> getEstimatedPose(Pose2d Odometry){
+poseEstimation.updateInputs(inputs);
 Pose2d averagePose = null;
 Double sumX = 0.0;
 Double sumY = 0.0;
 Rotation2d sumRotation = new Rotation2d();
 double sumConfidence = 0;
 Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
+var VisionPoseLeft = inputs.estimatedLeftPose.toPose2d();
+SmartDashboard.putNumber("VisionPoseLeftX",VisionPoseLeft.getX());
+SmartDashboard.putNumber("VisionPoseLeftY",VisionPoseLeft.getY());
 if (inputs.LeftConfidence > .2 && LeftPose.minus(Odometry).getTranslation().getNorm() < .2) {
     sumX += LeftPose.getX() * inputs.LeftConfidence;
     sumY += LeftPose.getY() * inputs.LeftConfidence;
@@ -71,6 +76,9 @@ if (inputs.LeftConfidence > .2 && LeftPose.minus(Odometry).getTranslation().getN
     sumConfidence += inputs.LeftConfidence;
 }
 Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
+var VisionPoseRight = inputs.estimatedLeftPose.toPose2d();
+SmartDashboard.putNumber("VisionPoseLeftX",VisionPoseRight.getX());
+SmartDashboard.putNumber("VisionPoseLeftY",VisionPoseRight.getY());
 if (inputs.RightConfidence > .2 && RightPose.minus(Odometry).getTranslation().getNorm() < .2) {
     sumX += RightPose.getX() * inputs.RightConfidence;
     sumY += RightPose.getY() * inputs.RightConfidence;
@@ -79,7 +87,9 @@ if (inputs.RightConfidence > .2 && RightPose.minus(Odometry).getTranslation().ge
 }
 
 
-if (sumConfidence != 0) averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
+if (sumConfidence != 0) {
+    averagePose = new Pose2d(sumX, sumY, sumRotation).div(sumConfidence);
+}
 
 return Optional.ofNullable(averagePose);
 }

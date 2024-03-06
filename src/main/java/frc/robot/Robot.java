@@ -124,8 +124,7 @@ public class Robot extends LoggedRobot {
     //    pose = estimatedPose.get().estimatedPose;
     //    timestamp = estimatedPose.get().timestampSeconds;
     //   drive.addVisionMeasurement(pose.toPose2d(),timestamp);
-    //  }
-    
+   
   
   //     SmartDashboard.putNumber("VisionPoseX", pose.getY());
   //    SmartDashboard.putNumber("VisionPoseY", pose.getX());

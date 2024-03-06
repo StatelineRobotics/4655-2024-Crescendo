@@ -24,6 +24,7 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.Vision.PhotonVisionIO;
 import frc.robot.subsystems.Vision.PhotonVisionPoseEstimation;
 
 
@@ -39,6 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
+  private final PhotonVision photonVision;
   // private final Flywheel flywheel;
 
   // Dashboard inputs
@@ -58,8 +60,9 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset), new PhotonVision(new PhotonVisionPoseEstimation()));
-
+                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset), 
+                new PhotonVision(new PhotonVisionPoseEstimation()));
+              photonVision = new PhotonVision(new PhotonVisionIO(){});
       //  climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
       //  mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
@@ -72,8 +75,9 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),new PhotonVision(new PhotonVisionPoseEstimation()));
-
+                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),
+                new PhotonVision(new PhotonVisionPoseEstimation()));
+              photonVision = new PhotonVision(new PhotonVisionIO(){});
         break;
 
       default:
@@ -86,6 +90,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new PhotonVision(new PhotonVisionPoseEstimation()));
+            photonVision = new PhotonVision(new PhotonVisionIO(){});
+                
         break;
     }
 
