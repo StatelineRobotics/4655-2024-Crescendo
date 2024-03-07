@@ -57,12 +57,12 @@ public class IntakeIOSparkMax implements IntakeIO{
 
         wristController = m_Wrist.getPIDController();
         wristController.setFeedbackDevice(wristEncoder);
-        wristController.setP(.0007);
+        wristController.setP(.0008);
         wristController.setI(0);
         wristController.setD(0);
         wristController.setIZone(0);
         wristController.setFF(0);
-        wristController.setOutputRange(-0.40,0.40);
+        wristController.setOutputRange(-0.50,0.50);
 
         int smartMotionSlot = 0;
         wristController.setSmartMotionMaxVelocity(1000, smartMotionSlot);

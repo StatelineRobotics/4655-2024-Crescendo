@@ -26,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
@@ -177,8 +178,16 @@ public class RobotContainer {
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
 
       new JoystickButton(OIConstants.kauxController, 6) // Left Bump SHOOT
-                .onTrue( Commands.runOnce(
-                        () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+  
+      new POVButton(OIConstants.kauxController, 0) // POV Up Grab
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.GRAB)));
+
+      new POVButton(OIConstants.kauxController, 180) // POV Up CLIMB
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.CLIMB)));
   
   }
 

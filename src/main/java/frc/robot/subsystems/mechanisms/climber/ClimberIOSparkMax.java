@@ -49,20 +49,20 @@ public class ClimberIOSparkMax implements ClimberIO {
         
         rightClimberController = m_RightClimber.getPIDController();
         rightClimberController.setFeedbackDevice(rightClimberEncoder);
-        rightClimberController.setP(1);
+        rightClimberController.setP(0.00006);
         rightClimberController.setI(0);
         rightClimberController.setD(0);
         rightClimberController.setIZone(0);
-        rightClimberController.setFF(0);
+        rightClimberController.setFF(0.0003);
         rightClimberController.setOutputRange(-.2,.2);
 
         leftClimberController = m_RightClimber.getPIDController();
         leftClimberController.setFeedbackDevice(rightClimberEncoder);
-        leftClimberController.setP(1);
+        leftClimberController.setP(0.00006);
         leftClimberController.setI(0);
         leftClimberController.setD(0);
         leftClimberController.setIZone(0);
-        leftClimberController.setFF(0);
+        leftClimberController.setFF(0.0003);
         leftClimberController.setOutputRange(-.2,.2);
 
         m_LeftClimber.burnFlash();
