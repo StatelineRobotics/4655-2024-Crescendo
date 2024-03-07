@@ -61,7 +61,7 @@ public class Drive extends SubsystemBase {
     private SwerveDrivePoseEstimator m_odometry;
     private Pose2d pose = new Pose2d();
     private PhotonVision photonVision;
-    private Field2d field;
+    private Field2d field = new Field2d();
     private SwerveSetpoint swerveSetpoint = new SwerveSetpoint(
         new ChassisSpeeds(),
         new SwerveModuleState[] {
@@ -157,8 +157,8 @@ public class Drive extends SubsystemBase {
 
     Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
-          m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
-          var Vpose = estimatedPose.get();
+        m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
+        var Vpose = estimatedPose.get();
         field.setRobotPose(getPose());
         SmartDashboard.putString("Pose", getPose().toString());
         Logger.recordOutput("Odometry", getPose());

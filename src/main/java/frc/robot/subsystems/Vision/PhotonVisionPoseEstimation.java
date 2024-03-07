@@ -36,7 +36,7 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
         this.RightPoseEstimator = new PhotonPoseEstimator(aprilTagFieldLayout,PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR,Right,Rightpose);
     }
     
-        public void updateInputs(PhotonVisionIOInputs inputs) {
+        public void updateInputs(PhotonVisionIOInputsAutoLogged inputs) {
         double LeftAmbiguitySum = 0;
         double RightAmbiguitySum = 0;
 
@@ -46,12 +46,12 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
         Optional<EstimatedRobotPose> LeftPoseOptional = LeftPoseEstimator.update();
         if (LeftPoseOptional.isPresent()) {
             estimatedLeftPose = LeftPoseOptional.get();
-            var leftVisionPoseUpdate = LeftPoseEstimator.update();
+            var leftVisionPoseUpdate = LeftPoseOptional;
             var leftVisionPose = leftVisionPoseUpdate.get().estimatedPose;
             inputs.estimatedLeftPose = estimatedLeftPose.estimatedPose;
             inputs.estimatedLeftPoseTimestamp = estimatedLeftPose.timestampSeconds;
-            SmartDashboard.getNumber("Left Vision Pose X", leftVisionPose.getX());
-            SmartDashboard.getNumber("Left Vision Pose Y", leftVisionPose.getY());
+            SmartDashboard.putNumber("Left Vision Pose X", leftVisionPose.getX());
+            SmartDashboard.putNumber("Left Vision Pose Y", leftVisionPose.getY());
             var LeftTargetsSeen = estimatedLeftPose.targetsUsed.size();
             inputs.visibleLeftFiducialIDs = new int[LeftTargetsSeen];
 

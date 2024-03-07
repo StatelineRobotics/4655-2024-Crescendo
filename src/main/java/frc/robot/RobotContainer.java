@@ -40,7 +40,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final PhotonVision photonVision;
+  //private final PhotonVision photonVision;
   // private final Flywheel flywheel;
 
   // Dashboard inputs
@@ -62,7 +62,7 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset), 
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-              photonVision = new PhotonVision(new PhotonVisionIO(){});
+              //photonVision = new PhotonVision(new PhotonVisionIO(){});
       //  climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
       //  mechanisimControl = new MechanisimControl(intakeSubsystem);
         break;
@@ -77,7 +77,7 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-              photonVision = new PhotonVision(new PhotonVisionIO(){});
+              //photonVision = new PhotonVision(new PhotonVisionIO(){});
         break;
 
       default:
@@ -90,8 +90,7 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-            photonVision = new PhotonVision(new PhotonVisionIO(){});
-                
+            //photonVision = new PhotonVision(new PhotonVisionIO(){});
         break;
     }
 
