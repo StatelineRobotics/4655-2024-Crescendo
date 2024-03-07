@@ -46,7 +46,7 @@ public class MechanisimControl extends SubsystemBase {
     
     switch (currentState) {
       case HOME -> {
-        intakeSubsystem.requestIntake(0, 75);
+        intakeSubsystem.requestIntake(0, 25);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(22, 0);
         climberSubsystem.requestClimberPosition(0);
@@ -55,7 +55,7 @@ public class MechanisimControl extends SubsystemBase {
 
   
         case MOVE -> {
-        intakeSubsystem.requestIntake(0, 60);
+        intakeSubsystem.requestIntake(0, 10);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(25, 100);
         //climberSubsystem.requestClimberPosition(0);
@@ -63,14 +63,14 @@ public class MechanisimControl extends SubsystemBase {
        }
 
       case PICKUP -> {
-        intakeSubsystem.requestIntake(350, 50);
+        intakeSubsystem.requestIntake(350, 3);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(10, 115);
         //climberSubsystem.requestClimberPosition(0);
         }
 
       case PREPARE_SHOOT -> {
-        intakeSubsystem.requestIntake(0,262);
+        intakeSubsystem.requestIntake(0,212);
         shooterSubsystem.requestRPM(5600, 5900);
         armSubsystem.requestArmPosition(9.5, 10);
         //climberSubsystem.requestClimberPosition(0);
@@ -81,19 +81,19 @@ public class MechanisimControl extends SubsystemBase {
 //        if (!atShootingSetpoint()) {
 //          currentState = State.PREPARE_SHOOT;
 //        } else {
-           intakeSubsystem.requestIntake(-500,262);
+           intakeSubsystem.requestIntake(-500,212);
            shooterSubsystem.requestRPM(5600, 5900);
            armSubsystem.requestArmPosition(9.5, 10);
 //        }
       }
       case CLIMB -> {
-        intakeSubsystem.requestIntake(0,262);
+        intakeSubsystem.requestIntake(0,212);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(0, 10);
         climberSubsystem.requestClimberPosition(0);
       }
       case GRAB -> {
-        intakeSubsystem.requestIntake(0,262);
+        intakeSubsystem.requestIntake(0,212);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(20, 10);
         climberSubsystem.requestClimberPosition(0);
