@@ -29,6 +29,8 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.button.POVButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
+import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.Vision.PhotonVisionPoseEstimation;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
@@ -71,7 +73,8 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
+                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset),
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
@@ -88,7 +91,8 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
+                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
@@ -104,7 +108,8 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
