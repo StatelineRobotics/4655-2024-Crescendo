@@ -14,12 +14,13 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.trajectory.TrapezoidProfile;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public final class DriveConstants {
     // Driving Parameters - Note that these are not the maximum capable speeds of
     // the robot, rather the allowed maximum speeds
-    public static final double kMaxSpeedMetersPerSecond = 4.8;
-    public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
+    public static final double kMaxSpeedMetersPerSecond = 3;
+    public static final double kMaxAngularSpeed = 1.33 * Math.PI; // radians per second
     public static final double KMaxLinearSpeed = Units.feetToMeters(14.5);
 
     public static final double kDirectionSlewRate = 10.0; // radians per second
@@ -55,6 +56,17 @@ public final class DriveConstants {
     public static final int kFrontLeftDrivingCanId = 8;
     public static final int kRearLeftTurningCanId = 10;
     public static final int kRearLeftDrivingCanId = 9;
+
+    //TestingBot constants
+    public static final int TestBackLeftSteerid = 9;
+    public static final int TestBackLeftDriveid = 10;
+    public static final int TestFrontLeftSteerid = 7;
+    public static final int TestFrontLeftDriveid = 8;
+    public static final int TestBackRightSteerid = 3;
+    public static final int TestBackRightDriveid = 4;
+    public static final int TestFrontRightSteerid = 5;
+    public static final int TestFrontRightDriveid = 6;
+    public static final int TestPigeonCanID = 20;
 
 
     public static final Rotation2d kChassisAngularOffset = Rotation2d.fromDegrees(0);
@@ -92,7 +104,8 @@ public final class DriveConstants {
         public static final double kTurningEncoderPositionPIDMinInput = 0; // radians
         public static final double kTurningEncoderPositionPIDMaxInput = kTurningEncoderPositionFactor; // radians
 
-        public static final double kDrivingP = 0.04;
+        
+        public static final double kDrivingP = .004;
         public static final double kDrivingI = 0;
         public static final double kDrivingD = 0;
         public static final double kDrivingFF = 1 / kDriveWheelFreeSpeedRps;

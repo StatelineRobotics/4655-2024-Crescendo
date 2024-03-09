@@ -45,13 +45,14 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
 
         Optional<EstimatedRobotPose> LeftPoseOptional = LeftPoseEstimator.update();
         if (LeftPoseOptional.isPresent()) {
+            if(Left.getLatestResult().hasTargets());
             estimatedLeftPose = LeftPoseOptional.get();
-            // var leftVisionPoseUpdate = LeftPoseOptional;
-            // var leftVisionPose = leftVisionPoseUpdate.get().estimatedPose;
+             var leftVisionPoseUpdate = LeftPoseOptional;
+             var leftVisionPose = leftVisionPoseUpdate.get().estimatedPose;
             inputs.estimatedLeftPose = estimatedLeftPose.estimatedPose;
             inputs.estimatedLeftPoseTimestamp = estimatedLeftPose.timestampSeconds;
-            // SmartDashboard.putNumber("Left Vision Pose X", leftVisionPose.getX());
-            // SmartDashboard.putNumber("Left Vision Pose Y", leftVisionPose.getY());
+            SmartDashboard.putNumber("Left Vision Pose X", leftVisionPose.getX());
+            SmartDashboard.putNumber("Left Vision Pose Y", leftVisionPose.getY());
             var LeftTargetsSeen = estimatedLeftPose.targetsUsed.size();
             inputs.visibleLeftFiducialIDs = new int[LeftTargetsSeen];
 

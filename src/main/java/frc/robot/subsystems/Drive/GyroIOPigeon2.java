@@ -6,7 +6,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 
 public class GyroIOPigeon2 implements GyroIO{
 
-    private Pigeon2 pigeon = new Pigeon2(DriveConstants.kPigeonCanId);
+    private Pigeon2 pigeon = new Pigeon2(DriveConstants.TestPigeonCanID);
 
     public GyroIOPigeon2(){
         pigeon.reset();

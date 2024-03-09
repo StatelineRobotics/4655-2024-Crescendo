@@ -31,15 +31,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
 import frc.robot.subsystems.Vision.PhotonVision;
 import frc.robot.subsystems.Vision.PhotonVisionPoseEstimation;
-import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
-import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
-import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
-import frc.robot.subsystems.mechanisms.shooter.ShooterSubsystem;
-import frc.robot.subsystems.mechanisms.MechanisimControl;
-import frc.robot.subsystems.mechanisms.arm.ArmIOSparkMax;
-import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
-import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
-import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
+
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -52,11 +44,7 @@ import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 public class RobotContainer {
   // Subsystems
   private final Drive drive;
-  private final ShooterSubsystem shooterSubsystem;
-  private final IntakeSubsystem intakeSubsystem;
-  private final ArmSubsystem armSubsystem;
-  private final ClimberSubsystem climberSubsystem;
-  private final MechanisimControl mechanisimControl;
+
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -70,18 +58,12 @@ public class RobotContainer {
             new Drive(
                 //new GyroIONavx(),
                 new GyroIOPigeon2(),
-                new ModuleIOSparkMax(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset),
+                new ModuleIOSparkMax(DriveConstants.TestFrontLeftDriveid, DriveConstants.TestFrontLeftSteerid, DriveConstants.kFrontLeftChassisAngularOffset),
+                new ModuleIOSparkMax(DriveConstants.TestFrontRightDriveid, DriveConstants.TestFrontRightSteerid, DriveConstants.kFrontRightChassisAngularOffset),
+                new ModuleIOSparkMax(DriveConstants.TestBackLeftDriveid, DriveConstants.TestBackLeftSteerid, DriveConstants.kBackLeftChassisAngularOffset),
+                new ModuleIOSparkMax(DriveConstants.TestBackRightDriveid, DriveConstants.TestBackRightSteerid, DriveConstants.kBackRightChassisAngularOffset),
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
-        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
-           
-        break;
+                break;
 
       case SIM:
         // Sim robot, instantiate physics sim IO implementations
@@ -93,11 +75,6 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
-        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
         break;
 
       default:
@@ -110,11 +87,6 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new PhotonVision(new PhotonVisionPoseEstimation()));
-        shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
-        intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
-        armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
-        climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
         break;
     }
 
@@ -162,48 +134,8 @@ public class RobotContainer {
                     drive)
                 .ignoringDisable(true));
 
-
+  }
 //Mechanisim Control
-
-      new JoystickButton(OIConstants.kauxController, 5) // Right Bump HOME
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
-
-      new JoystickButton(OIConstants.kauxController, 1) // A Button PICKUP
-            .onTrue(Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
-
-      new JoystickButton(OIConstants.kauxController, 2) // B Button 
-            .onTrue(Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
-
-
-      new JoystickButton(OIConstants.kauxController, 4) // U Button PREPARE_SHOOT
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
-
-      new JoystickButton(OIConstants.kauxController, 6) // Left Bump SHOOT
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
-  
-      new POVButton(OIConstants.kauxController, 0) // POV Up Grab
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.GRAB)));
-
-      new POVButton(OIConstants.kauxController, 180) // POV Up CLIMB
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.CLIMB)));
-  
-  }
-
-
-  public IntakeSubsystem getIntakeSubsystem(){
-    return intakeSubsystem;
-  }
-
-  public ShooterSubsystem getShooterSubsystem(){
-    return shooterSubsystem;
-  }
 
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.

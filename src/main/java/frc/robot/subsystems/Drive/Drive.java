@@ -136,8 +136,7 @@ public class Drive extends SubsystemBase {
 
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
-        var odometryposeupdate = photonVision.getEstimatedPose(getPose());
-        var odometrypose = odometryposeupdate.get();
+        var odometrypose = m_odometry.getEstimatedPosition();
         SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
         SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
         m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
@@ -215,8 +214,7 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                },
-                pose);
+                },new Pose2d());
 
         this.pose = pose;
     }
