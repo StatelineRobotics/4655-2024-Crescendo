@@ -10,7 +10,8 @@ import org.littletonrobotics.junction.AutoLog;
 public interface ClimberIO {
    @AutoLog
    class ClimberIOInputs {
-    public double climberPosition = 0.0;
+    public double rightClimberPosition = 0.0;
+    public double leftClimberPosition = 0.0;
 
    }
 

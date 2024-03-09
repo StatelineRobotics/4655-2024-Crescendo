@@ -46,7 +46,7 @@ public class MechanisimControl extends SubsystemBase {
     
     switch (currentState) {
       case HOME -> {
-        intakeSubsystem.requestIntake(0, 25);
+        intakeSubsystem.requestIntake(0, 50);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(22, 0);
         climberSubsystem.requestClimberPosition(0);
@@ -55,31 +55,31 @@ public class MechanisimControl extends SubsystemBase {
 
   
         case MOVE -> {
-        intakeSubsystem.requestIntake(0, 10);
+        intakeSubsystem.requestIntake(0, 35);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(25, 100);
+        armSubsystem.requestArmPosition(25, 115);
         //climberSubsystem.requestClimberPosition(0);
 
        }
 
       case PICKUP -> {
-          if (intakeSubsystem.OkToPickup()){ 
+         // if (intakeSubsystem.OkToPickup()){ 
         
-            intakeSubsystem.requestIntake(350, 3);
+            intakeSubsystem.requestIntake(350, 25);
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(10, 115);
+            armSubsystem.requestArmPosition(10, 127);
             //climberSubsystem.requestClimberPosition(0);
-          } else {
-            intakeSubsystem.requestIntake(0, 10);
-            shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(25, 100);
-            //climberSubsystem.requestClimberPosition(0); 
-          }
+        //  } else {
+        //    intakeSubsystem.requestIntake(0, 10);
+        //    shooterSubsystem.requestRPM(0, 0);
+        //    armSubsystem.requestArmPosition(25, 100);
+        //    //climberSubsystem.requestClimberPosition(0); 
+        //  }
 
         }
 
       case PREPARE_SHOOT -> {
-        intakeSubsystem.requestIntake(0,212);
+        intakeSubsystem.requestIntake(0,238);
         shooterSubsystem.requestRPM(5600, 5900);
         armSubsystem.requestArmPosition(9.5, 10);
         //climberSubsystem.requestClimberPosition(0);
@@ -90,21 +90,21 @@ public class MechanisimControl extends SubsystemBase {
 //        if (!atShootingSetpoint()) {
 //          currentState = State.PREPARE_SHOOT;
 //        } else {
-           intakeSubsystem.requestIntake(-500,212);
+           intakeSubsystem.requestIntake(-500,238);
            shooterSubsystem.requestRPM(5600, 5900);
            armSubsystem.requestArmPosition(9.5, 10);
 //        }
       }
       case CLIMB -> {
-        intakeSubsystem.requestIntake(0,212);
+   //     intakeSubsystem.requestIntake(0,212);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(140, 10);
+   //     armSubsystem.requestArmPosition(140, 10);
         climberSubsystem.requestClimberPosition(0);
       }
       case GRAB -> {
-        intakeSubsystem.requestIntake(0,212);
+    //    intakeSubsystem.requestIntake(0,212);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(140, 10);
+    //    armSubsystem.requestArmPosition(140, 10);
         climberSubsystem.requestClimberPosition(120);
       }
     }

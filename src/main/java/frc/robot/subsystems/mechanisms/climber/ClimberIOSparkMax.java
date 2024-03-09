@@ -24,6 +24,19 @@ public class ClimberIOSparkMax implements ClimberIO {
     private SparkPIDController leftClimberController;
     private SparkLimitSwitch rightClimberLimitSwitch;
     private SparkLimitSwitch leftClimberLimitSwitch;
+
+    // PID coefficients
+    public double kP = 0.00049; 
+    public double kI = 0;
+    public double kD = 0; 
+    public double kIz = 0; 
+    public double kFF = .00004; 
+    public double kMaxOutput = .5; 
+    public double kMinOutput = -.5;
+    public double maxRPM = 5700;
+    public double maxVel = 1500; 
+    public double maxAcc = 1000;
+    public double minVel = 0;
    
 
     public ClimberIOSparkMax(){
@@ -49,29 +62,29 @@ public class ClimberIOSparkMax implements ClimberIO {
         
         rightClimberController = m_RightClimber.getPIDController();
         rightClimberController.setFeedbackDevice(rightClimberEncoder);
-        rightClimberController.setP(0.00006);
-        rightClimberController.setI(0);
-        rightClimberController.setD(0);
-        rightClimberController.setIZone(0);
-        rightClimberController.setFF(0.0003);
-        rightClimberController.setOutputRange(-.5,.5);
+        rightClimberController.setP(kP);
+        rightClimberController.setI(kI);
+        rightClimberController.setD(kD);
+        rightClimberController.setIZone(kIz);
+        rightClimberController.setFF(kFF);
+        rightClimberController.setOutputRange(kMinOutput,  kMaxOutput);
         int smartMotionSlot = 0;
-        rightClimberController.setSmartMotionMaxVelocity(1500, smartMotionSlot);
-        rightClimberController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
-        rightClimberController.setSmartMotionMaxAccel(1000, smartMotionSlot);
+        rightClimberController.setSmartMotionMaxVelocity(maxVel, smartMotionSlot);
+        rightClimberController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+        rightClimberController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
        
 
         leftClimberController = m_RightClimber.getPIDController();
         leftClimberController.setFeedbackDevice(rightClimberEncoder);
-        leftClimberController.setP(0.00006);
-        leftClimberController.setI(0);
-        leftClimberController.setD(0);
-        leftClimberController.setIZone(0);
-        leftClimberController.setFF(0.0003);
-        leftClimberController.setOutputRange(-.5,.5);
-        rightClimberController.setSmartMotionMaxVelocity(1500, smartMotionSlot);
-        rightClimberController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
-        rightClimberController.setSmartMotionMaxAccel(1000, smartMotionSlot);
+        leftClimberController.setP(kP);
+        leftClimberController.setI(kI);
+        leftClimberController.setD(kD);
+        leftClimberController.setIZone(kIz);
+        leftClimberController.setFF(kFF);
+        leftClimberController.setOutputRange(kMinOutput,  kMaxOutput);
+        leftClimberController.setSmartMotionMaxVelocity(maxRPM, smartMotionSlot);
+        leftClimberController.setSmartMotionMinOutputVelocity(minVel, smartMotionSlot);
+        leftClimberController.setSmartMotionMaxAccel(maxAcc, smartMotionSlot);
 
         m_LeftClimber.burnFlash();
         m_RightClimber.burnFlash();
@@ -79,7 +92,8 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     @Override
     public void updateInputs(ClimberIOInputs inputs) {
-        inputs.climberPosition = rightClimberEncoder.getPosition();
+        inputs.rightClimberPosition = rightClimberEncoder.getPosition();
+        inputs.leftClimberPosition = leftClimberEncoder.getPosition();
 
         
 
@@ -99,11 +113,6 @@ public class ClimberIOSparkMax implements ClimberIO {
        rightClimberController.setReference(climberPosition, CANSparkMax.ControlType.kSmartMotion);
     }
 
-    @Override
-    public void setclimberSpeed(double climberSpeed) {
-        m_LeftClimber.set(climberSpeed);
-        m_RightClimber.set(climberSpeed);
-    }
 
     @Override
     public void stop() {
