@@ -45,6 +45,14 @@ public class ArmSubsystem extends SubsystemBase {
   }
 
    
+  public double arrCurrentPosition() {
+    return inputs.armPosCurrent;
+  }
+
+  public double arrExtenderCurrentPosition() {
+    return inputs.armExtenderPosCurrent;
+  }
+
 
   private void stop() {
     //armPos = 15;

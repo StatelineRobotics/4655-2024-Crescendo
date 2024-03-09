@@ -7,6 +7,7 @@ package frc.robot.subsystems.mechanisms;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
 import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
@@ -21,6 +22,7 @@ public class MechanisimControl extends SubsystemBase {
     PICKUP,
     HOME,
     CLIMB,
+    CLIMBSHOOT,
     GRAB,
     MOVE
   }
@@ -58,7 +60,7 @@ public class MechanisimControl extends SubsystemBase {
         intakeSubsystem.requestIntake(0, 35);
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(25, 115);
-        //climberSubsystem.requestClimberPosition(0);
+        climberSubsystem.requestClimberPosition(0);
 
        }
 
@@ -96,23 +98,38 @@ public class MechanisimControl extends SubsystemBase {
 //        }
       }
       case CLIMB -> {
-   //     intakeSubsystem.requestIntake(0,212);
+        intakeSubsystem.requestIntake(0,165);
         shooterSubsystem.requestRPM(0, 0);
-   //     armSubsystem.requestArmPosition(140, 10);
+        armSubsystem.requestArmPosition(86.5, 43);
         climberSubsystem.requestClimberPosition(0);
       }
-      case GRAB -> {
-    //    intakeSubsystem.requestIntake(0,212);
+
+      case CLIMBSHOOT -> {
+        intakeSubsystem.requestIntake(500,165);
         shooterSubsystem.requestRPM(0, 0);
-    //    armSubsystem.requestArmPosition(140, 10);
-        climberSubsystem.requestClimberPosition(120);
+        armSubsystem.requestArmPosition(86.5, 43);
+        climberSubsystem.requestClimberPosition(0);
       }
+
+      case GRAB -> {
+        intakeSubsystem.requestIntake(0,165);
+        shooterSubsystem.requestRPM(0, 0);
+        armSubsystem.requestArmPosition(86.5, 23);
+        climberSubsystem.requestClimberPosition(180);
+      }
+
+
     }
+
+
+
 
     Logger.recordOutput("MechanisimControl/currentState", currentState.toString());
     
   }
   
+
+
   @AutoLogOutput(key = "MechanisimControl/ReadyToShoot")
   public boolean atShootingSetpoint() {
     return (currentState == State.PREPARE_SHOOT || currentState == State.SHOOT)
