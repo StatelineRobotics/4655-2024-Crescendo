@@ -90,6 +90,8 @@ public class IntakeIOSparkMax implements IntakeIO{
     public void updateInputs(IntakeIOInputs inputs) {
         inputs.intakeRPM = intakeEncoder.getVelocity();
         inputs.wristposition = wristEncoder.getPosition();
+        inputs.intakeCurrent = m_Intake.getOutputCurrent();
+        inputs.wristCurrent = m_Wrist.getOutputCurrent();
     
         
     }

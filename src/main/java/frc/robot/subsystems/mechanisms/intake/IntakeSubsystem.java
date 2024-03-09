@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.mechanisms.intake;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -50,6 +51,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
    public Command stopCommand() {
     return Commands.runOnce(this::stop);
+  }
+
+      @AutoLogOutput(key = "Wrist/OkToPickup")
+  public boolean OkToPickup() {
+    return (inputs.wristposition > 20);
   }
 
 }

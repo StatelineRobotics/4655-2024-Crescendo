@@ -17,6 +17,7 @@ public class ClimberSubsystem  extends SubsystemBase {
     private final ClimberIO io;
     private final ClimberIOInputsAutoLogged inputs = new ClimberIOInputsAutoLogged() ;
     private double climberPosition = 0.0;
+    private double ClimberSpeed = 0.0;
  
 
 
@@ -34,12 +35,16 @@ public class ClimberSubsystem  extends SubsystemBase {
       stop();
     } else {
       io.setclimberMotors(climberPosition);
-   }  
+      io.setclimberSpeed(ClimberSpeed);
+   }
+   
+   
   }
   
   public void requestClimberPosition(double climberPosition){
     this.climberPosition = climberPosition;
   }
+
 
 
   private void stop() {

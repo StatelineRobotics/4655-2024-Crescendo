@@ -20,6 +20,9 @@ public interface ClimberIO {
   /** Set Elevator motor positions */
   default void setclimberMotors(double climberPosition) {}
 
+  /** Set Elevator motor speed */
+  default void setclimberSpeed(double climberSpeed) {}
+
   /** Stop intake */
   default void stop() {}   
 } 

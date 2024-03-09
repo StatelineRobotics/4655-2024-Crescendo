@@ -10,7 +10,9 @@ public interface IntakeIO {
   @AutoLog
   class IntakeIOInputs {
     public double intakeRPM = 0.0;
+    public double intakeCurrent = 0.0;
     public double wristposition = 0.0;
+    public double wristCurrent = 0.0;
  
   }
 

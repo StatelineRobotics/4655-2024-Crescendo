@@ -54,7 +54,12 @@ public class ClimberIOSparkMax implements ClimberIO {
         rightClimberController.setD(0);
         rightClimberController.setIZone(0);
         rightClimberController.setFF(0.0003);
-        rightClimberController.setOutputRange(-.2,.2);
+        rightClimberController.setOutputRange(-.5,.5);
+        int smartMotionSlot = 0;
+        rightClimberController.setSmartMotionMaxVelocity(1500, smartMotionSlot);
+        rightClimberController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
+        rightClimberController.setSmartMotionMaxAccel(1000, smartMotionSlot);
+       
 
         leftClimberController = m_RightClimber.getPIDController();
         leftClimberController.setFeedbackDevice(rightClimberEncoder);
@@ -63,7 +68,10 @@ public class ClimberIOSparkMax implements ClimberIO {
         leftClimberController.setD(0);
         leftClimberController.setIZone(0);
         leftClimberController.setFF(0.0003);
-        leftClimberController.setOutputRange(-.2,.2);
+        leftClimberController.setOutputRange(-.5,.5);
+        rightClimberController.setSmartMotionMaxVelocity(1500, smartMotionSlot);
+        rightClimberController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
+        rightClimberController.setSmartMotionMaxAccel(1000, smartMotionSlot);
 
         m_LeftClimber.burnFlash();
         m_RightClimber.burnFlash();
@@ -87,8 +95,14 @@ public class ClimberIOSparkMax implements ClimberIO {
 
     @Override
     public void setclimberMotors(double climberPosition) {
-       leftClimberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
-       rightClimberController.setReference(climberPosition, CANSparkMax.ControlType.kPosition);
+       leftClimberController.setReference(climberPosition, CANSparkMax.ControlType.kSmartMotion);
+       rightClimberController.setReference(climberPosition, CANSparkMax.ControlType.kSmartMotion);
+    }
+
+    @Override
+    public void setclimberSpeed(double climberSpeed) {
+        m_LeftClimber.set(climberSpeed);
+        m_RightClimber.set(climberSpeed);
     }
 
     @Override

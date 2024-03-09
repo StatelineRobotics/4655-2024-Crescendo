@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.mechanisms.arm;
 
+
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -42,7 +43,7 @@ public class ArmSubsystem extends SubsystemBase {
     this.armExtenderPosSet = armExtenderPosSet;
 
   }
-  
+
    
 
   private void stop() {
@@ -54,5 +55,8 @@ public class ArmSubsystem extends SubsystemBase {
   public Command stopCommand() {
     return Commands.runOnce(this::stop);
   }
+
+
+
 
 }

@@ -181,8 +181,8 @@ public class RobotContainer {
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
   
-      new POVButton(OIConstants.kauxController, 0) // POV Up Grab
-            .onTrue( Commands.runOnce(
+     new POVButton(OIConstants.kauxController, 0) // POV Up Grab
+           .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.GRAB)));
 
       new POVButton(OIConstants.kauxController, 180) // POV Up CLIMB
