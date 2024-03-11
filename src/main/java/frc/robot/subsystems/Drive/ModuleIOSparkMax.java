@@ -11,6 +11,7 @@ import com.revrobotics.SparkPIDController;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
 import frc.robot.util.CANSpark;
 import frc.robot.util.CANSpark.Motor;
@@ -144,6 +145,8 @@ public class ModuleIOSparkMax implements ModuleIO{
     inputs.drivePositionMeters = m_drivingSparkMax.getRelativePosition();
     inputs.driveVelocityMetersPerSec = m_drivingSparkMax.getRelativeVelocity();
     
+    SmartDashboard.putNumber("Module",inputs.drivePositionMeters);
+
     inputs.turnAbsolutePosition = Rotation2d.fromRadians(m_turningSparkMax.getAbsolutePosition()).minus(m_chassisAngularOffset);
     inputs.turnVelocityRadPerSec = m_turningSparkMax.getAbsoluteVelocity();
   }

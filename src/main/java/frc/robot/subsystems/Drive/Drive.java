@@ -21,7 +21,9 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -62,7 +64,7 @@ public class Drive extends SubsystemBase {
     // Odometry class for tracking robot pose
     private SwerveDrivePoseEstimator m_odometry;
     private Pose2d Opose;
-    private Pose2d pose = new Pose2d();
+    private Pose2d Vpose = new Pose2d();
     private PhotonVision photonVision;
     private Field2d field = new Field2d();
     
@@ -89,7 +91,7 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                        },pose);
+                        },new Pose2d());
                         
                 this.modules = new Module[] { new Module(fl, 0), new Module(fr, 1),
                     new Module(bl, 2), new Module(br, 3) };
@@ -143,10 +145,10 @@ public class Drive extends SubsystemBase {
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
         var odometrypose = m_odometry.getEstimatedPosition();
-        SmartDashboard.putNumber("OdometryPoseX", pose.getX());
-        SmartDashboard.putNumber("OdometryPoseY", pose.getY());
+        SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
+        SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
+        Vpose = estimatedPose.get();
         m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
-        var Vpose = estimatedPose.get();
         field.setRobotPose(getPose());
         SmartDashboard.putString("Pose", getPose().toString());
         Logger.recordOutput("Odometry", getPose());
@@ -154,18 +156,32 @@ public class Drive extends SubsystemBase {
         Logger.processInputs("Drive/Gyro", gyroInputs);
         SmartDashboard.putNumber("VisionPoseX", Vpose.getX());
         SmartDashboard.putNumber("VisionPoseY", Vpose.getY());
-        if (photonVision.getLatestResult().hasTargets()) {
-        var odometryPose = photonVision.getEstimatedPose(getPose());
-        Opose = new Pose2d();
-        Opose = odometryPose.get();
-        pose = Opose;
+    //     for (var module : modules) {
+    //     module.periodic();
+    //  }       
+     } 
+     if (photonVision.getLatestResult().hasTargets()){
+        Opose = Vpose;
         SmartDashboard.putNumber("OdometryPoseX2", Opose.getX());
         SmartDashboard.putNumber("OdometryPoseY2", Opose.getY());
-        } 
-        for (var module : modules) {
-        module.periodic();
+        m_odometry.resetPosition(gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),               
+        new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+        }, Opose);
+     } else {
+        m_odometry.update(
+        gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+        new SwerveModulePosition[] {
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_rearLeft.getPosition(),
+        m_rearRight.getPosition()
+        });
+
      }
-    }
 
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Gyro", gyroInputs);
@@ -175,14 +191,14 @@ public class Drive extends SubsystemBase {
         m_rearRight.updateInputs();
 
         // Update the odometry in the periodic block
-        m_odometry.update(
-                gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
-                new SwerveModulePosition[] {
-                        m_frontLeft.getPosition(),
-                        m_frontRight.getPosition(),
-                        m_rearLeft.getPosition(),
-                        m_rearRight.getPosition()
-                });
+        // m_odometry.update(
+        //         gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+        //         new SwerveModulePosition[] {
+        //                 m_frontLeft.getPosition(),
+        //                 m_frontRight.getPosition(),
+        //                 m_rearLeft.getPosition(),
+        //                 m_rearRight.getPosition()
+        //         });
 
         // Read wheel deltas from each module
         SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
@@ -190,18 +206,18 @@ public class Drive extends SubsystemBase {
         wheelDeltas[1] = m_frontRight.getPositionDelta();
         wheelDeltas[2] = m_rearLeft.getPositionDelta();
         wheelDeltas[3] = m_rearRight.getPositionDelta();
-
+        SmartDashboard.putString("FrontLeftPose", m_frontLeft.getPositionDelta().toString());
         // The twist represents the motion of the robot since the last
         // sample in x, y, and theta based only on the modules, without
         // the gyro.
         var twist = DriveConstants.kDriveKinematics.toTwist2d(wheelDeltas);
         // Apply the twist (change since last sample) to the current pose
-        pose = pose.exp(twist);
+        Vpose = Vpose.exp(twist);
 
        
 
         Logger.recordOutput("Odometry", getPose());
-        Logger.recordOutput("Simulated Pose", pose);
+        Logger.recordOutput("Simulated Pose", Opose);
         Logger.recordOutput("Swerve/SwerveStates", this.getModuleStates());
         Logger.recordOutput("Swerve/OptimizedStates", this.getOptimizedStates());
     }
@@ -230,7 +246,7 @@ public class Drive extends SubsystemBase {
                         m_rearRight.getPosition()
                 },pose);
 
-        this.pose = pose;
+        this.Vpose = pose;
     }
 
     /**
@@ -314,7 +330,7 @@ public class Drive extends SubsystemBase {
                 fieldRelativeRotation = gyroInputs.yaw;
                 break;
             case SIM:
-                fieldRelativeRotation = pose.getRotation();
+                fieldRelativeRotation = Vpose.getRotation();
                 break;
             default:
                 fieldRelativeRotation = new Rotation2d();
@@ -396,7 +412,7 @@ public class Drive extends SubsystemBase {
     /** Zeroes the heading of the robot. */
     public void zeroHeading() {
         gyro.reset();
-        pose.rotateBy(pose.getRotation().times(-1)); //This may not work
+        Vpose.rotateBy(Vpose.getRotation().times(-1)); //This may not work
     }
 
     /**
