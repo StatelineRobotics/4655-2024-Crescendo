@@ -8,6 +8,9 @@ import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.CANSparkBase.IdleMode;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.SparkAbsoluteEncoder.Type;
+
+import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
@@ -26,12 +29,14 @@ public class IntakeIOSparkMax implements IntakeIO{
     private final RelativeEncoder intakeEncoder;
     private final SparkPIDController wristController;
     private final SparkPIDController intakeController;
+    private final PWMSparkMax blinken;
+
 //LC    private final LaserCan lasercan;  
 
     public IntakeIOSparkMax() {
         m_Wrist = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
         m_Intake = new CANSparkMax(MechanismConstants.kIntakeCanId, MotorType.kBrushless);
-    
+        blinken = new PWMSparkMax(9);
 
         wristEncoder = m_Wrist.getAbsoluteEncoder(Type.kDutyCycle);
         intakeEncoder =  m_Intake.getEncoder();
@@ -43,8 +48,8 @@ public class IntakeIOSparkMax implements IntakeIO{
         m_Intake.setIdleMode(IdleMode.kCoast);      //MOTORBRAKE
         m_Wrist.setInverted(false);
         m_Intake.setInverted(true);
-        m_Wrist.setSmartCurrentLimit(20);
-        m_Intake.setSmartCurrentLimit(20);
+        m_Wrist.setSmartCurrentLimit(10);
+        m_Intake.setSmartCurrentLimit(22);
     
         intakeController = m_Intake.getPIDController();
         intakeController.setFeedbackDevice(intakeEncoder);
@@ -102,6 +107,12 @@ public class IntakeIOSparkMax implements IntakeIO{
         wristController.setReference(wristPostion, CANSparkMax.ControlType.kSmartMotion);
     }
  
+    @Override
+    public void setBlinken(double blinkenValue){
+        blinken.set(blinkenValue);
+    }
+
+
     @Override
     public void stop() {
         m_Wrist.stopMotor();

@@ -13,6 +13,7 @@ public interface IntakeIO {
     public double intakeCurrent = 0.0;
     public double wristposition = 0.0;
     public double wristCurrent = 0.0;
+    public double blinkenValue = 0.53;
  
   }
 
@@ -21,6 +22,9 @@ public interface IntakeIO {
 
   /** Set Input speed and position */
   default void setIntakeMotors(double intakeRPMm, double wristPostion) {}
+
+  /** Set Input speed and position */
+  default void setBlinken(double blinkenValue) {}
 
   /** Stop intake */
   default void stop() {}

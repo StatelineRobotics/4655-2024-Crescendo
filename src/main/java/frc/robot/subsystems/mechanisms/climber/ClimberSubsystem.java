@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
  
@@ -55,6 +56,11 @@ public class ClimberSubsystem  extends SubsystemBase {
    public Command stopCommand() {
     return Commands.runOnce(this::stop);
   }
+
+  @AutoLogOutput(key = "Climber/OKToReach")
+  public boolean ClimberOkToReach() {
+  return (inputs.rightClimberPosition < 10 && inputs.leftClimberPosition < 0);
+}
 
 
 }

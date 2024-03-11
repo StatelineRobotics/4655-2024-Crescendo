@@ -114,7 +114,7 @@ public final class DriveConstants {
         public static final double kAutoTurningI = 0;
         public static final double kAutoTurningD = 0;
 
-        public static final IdleMode kDrivingMotorIdleMode = IdleMode.kCoast;
+        public static final IdleMode kDrivingMotorIdleMode = IdleMode.kBrake;
         public static final IdleMode kTurningMotorIdleMode = IdleMode.kBrake;
 
         public static final int kDrivingMotorCurrentLimit = 30; // amps

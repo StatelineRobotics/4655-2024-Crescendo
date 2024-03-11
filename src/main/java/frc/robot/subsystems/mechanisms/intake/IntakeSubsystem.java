@@ -4,6 +4,7 @@
 
 package frc.robot.subsystems.mechanisms.intake;
 
+
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -17,6 +18,7 @@ public class IntakeSubsystem extends SubsystemBase {
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
   private double intakeRPM = 0.0;
   private double wristPostion = 0.0;
+  private double blinkenValue = 0.53;
   
 
   public IntakeSubsystem(IntakeIO io) {
@@ -33,19 +35,28 @@ public class IntakeSubsystem extends SubsystemBase {
     if (DriverStation.isDisabled()) {
       stop();
     } else {
-        io.setIntakeMotors(intakeRPM, wristPostion);       
+        io.setIntakeMotors(intakeRPM, wristPostion);
+        io.setBlinken(blinkenValue);       
     }
+
+   
 
   }
   
   public void requestIntake(double intakeRPM, double wristPostion) {
     this.intakeRPM = intakeRPM;
-   this.wristPostion = wristPostion;
+    this.wristPostion = wristPostion;
+ }
+
+   public void requestBlinken(double blinkenValue) {
+    this.blinkenValue = blinkenValue;
+   
  }
  
    private void stop() {
     intakeRPM = 0;
     wristPostion = 0;
+    blinkenValue = 0.53;
     io.stop();
   }
 
@@ -53,9 +64,10 @@ public class IntakeSubsystem extends SubsystemBase {
     return Commands.runOnce(this::stop);
   }
 
-      @AutoLogOutput(key = "Wrist/OkToPickup")
-  public boolean OkToPickup() {
-    return (inputs.wristposition > 20);
+          @AutoLogOutput(key = "Intake/HasNote")
+    public boolean HasNote() {
+    return (inputs.intakeCurrent > 21);
   }
+  
 
 }

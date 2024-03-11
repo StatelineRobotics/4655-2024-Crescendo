@@ -168,9 +168,13 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
 
-      new JoystickButton(OIConstants.kauxController, 2) // B Button 
+      new JoystickButton(OIConstants.kauxController, 2) // B Button AMP
             .onTrue(Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.MOVE)));
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMP)));
+
+      new JoystickButton(OIConstants.kauxController, 3) // X Button AMPSHOOT 
+            .onTrue(Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
 
 
       new JoystickButton(OIConstants.kauxController, 4) // U Button PREPARE_SHOOT
@@ -193,9 +197,9 @@ public class RobotContainer {
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.CLIMBSHOOT)));
 
-      new POVButton(OIConstants.kauxController, 270)  // POV DRIVER Arm Manual Control 
-            .onTrue( Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.MANUALARM)));
+   //   new POVButton(OIConstants.kauxController, 270)  // POV DRIVER Arm Manual Control 
+   //         .onTrue( Commands.runOnce(
+   //           () -> mechanisimControl.setDesiredState(MechanisimControl.State.MANUALARM)));
 
 
       

@@ -5,6 +5,7 @@
 package frc.robot.subsystems.mechanisms.arm;
 
 
+import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -64,6 +65,15 @@ public class ArmSubsystem extends SubsystemBase {
     return Commands.runOnce(this::stop);
   }
 
+      @AutoLogOutput(key = "Arm/OkToPickup")
+  public boolean OkToPickup() {
+    return (inputs.armExtenderPosCurrent > 110);
+  }
+
+        @AutoLogOutput(key = "Arm/OkToHome")
+  public boolean OkToHome() {
+    return (inputs.armPosCurrent > 12);
+  }
 
 
 
