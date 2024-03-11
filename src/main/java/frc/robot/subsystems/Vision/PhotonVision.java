@@ -26,7 +26,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVision extends SubsystemBase {
   private PhotonCamera Left = new PhotonCamera("Left");
-    private PhotonCamera Right = new PhotonCamera("Right");
+  private PhotonCamera Right = new PhotonCamera("Right");
   private PhotonPipelineResult    latestResult;
   private VisionLEDMode           ledMode = VisionLEDMode.kOff;
   private PhotonVisionIO Io;
@@ -55,8 +55,8 @@ Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
 SmartDashboard.putNumber("VisionPoseLeftX",LeftPose.getX());
 SmartDashboard.putNumber("VisionPoseLeftY",LeftPose.getY());
 if (Left.getLatestResult().hasTargets()) {
-    LeftsumX += LeftPose.getX();
-    LeftsumY += LeftPose.getY();
+    LeftsumX = LeftPose.getX();
+    LeftsumY = LeftPose.getY();
     sumRotation = sumRotation.plus(LeftPose.getRotation());
     sumConfidence += inputs.LeftConfidence;
 }
@@ -67,8 +67,8 @@ Double RightsumY = 0.0;
 SmartDashboard.putNumber("VisionPoseRightX",VisionPoseRight.getX());
 SmartDashboard.putNumber("VisionPoseRightY",VisionPoseRight.getY());
 if (Right.getLatestResult().hasTargets()) {
-    RightsumX += RightPose.getX() * inputs.RightConfidence;
-    RightsumY += RightPose.getY() * inputs.RightConfidence;
+    RightsumX = RightPose.getX() * inputs.RightConfidence;
+    RightsumY = RightPose.getY() * inputs.RightConfidence;
     sumRotation = sumRotation.plus(RightPose.getRotation().times(inputs.RightConfidence));
     sumConfidence += inputs.RightConfidence;
 }
@@ -87,8 +87,7 @@ else if(Left.getLatestResult().hasTargets()){
  sumY = LeftsumY;
 }
 
-    SmartDashboard.putNumber("Vision Pose X", sumX);
-    SmartDashboard.putNumber("Vision Pose Y", sumY);
+
     averagePose = new Pose2d(sumX, sumY, sumRotation);
 
 

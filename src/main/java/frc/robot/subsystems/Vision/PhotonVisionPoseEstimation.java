@@ -16,7 +16,7 @@ import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 
 public class PhotonVisionPoseEstimation implements PhotonVisionIO {
     private PhotonCamera Left;
@@ -47,12 +47,8 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
         if (LeftPoseOptional.isPresent()) {
             if(Left.getLatestResult().hasTargets());
             estimatedLeftPose = LeftPoseOptional.get();
-             var leftVisionPoseUpdate = LeftPoseOptional;
-             var leftVisionPose = leftVisionPoseUpdate.get().estimatedPose;
             inputs.estimatedLeftPose = estimatedLeftPose.estimatedPose;
             inputs.estimatedLeftPoseTimestamp = estimatedLeftPose.timestampSeconds;
-            SmartDashboard.putNumber("Left Vision Pose X", leftVisionPose.getX());
-            SmartDashboard.putNumber("Left Vision Pose Y", leftVisionPose.getY());
             var LeftTargetsSeen = estimatedLeftPose.targetsUsed.size();
             inputs.visibleLeftFiducialIDs = new int[LeftTargetsSeen];
 

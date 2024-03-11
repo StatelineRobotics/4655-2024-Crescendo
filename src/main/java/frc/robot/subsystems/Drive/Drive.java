@@ -61,12 +61,14 @@ public class Drive extends SubsystemBase {
 
     // Odometry class for tracking robot pose
     private SwerveDrivePoseEstimator m_odometry;
+    private Pose2d Opose;
     private Pose2d pose = new Pose2d();
     private PhotonVision photonVision;
     private Field2d field = new Field2d();
+    
 
     /** Creates a new DriveSubsystem. */
-    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br,PhotonVision photonVision) {
+    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, PhotonVision photonVision) {
         this.gyro = gyro;
         this.photonVision = photonVision;
         m_frontLeft = new Module(fl, 0);
@@ -87,8 +89,8 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                        },new Pose2d());
-
+                        },pose);
+                        
                 this.modules = new Module[] { new Module(fl, 0), new Module(fr, 1),
                     new Module(bl, 2), new Module(br, 3) };
 
@@ -131,14 +133,18 @@ public class Drive extends SubsystemBase {
                 }); // Adds a way for PathPlanner to log what pose it's currently trying to go to
     }
 
+    
+
     @Override
     public void periodic() {
+
+        
 
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
         var odometrypose = m_odometry.getEstimatedPosition();
-        SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
-        SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
+        SmartDashboard.putNumber("OdometryPoseX", pose.getX());
+        SmartDashboard.putNumber("OdometryPoseY", pose.getY());
         m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
         var Vpose = estimatedPose.get();
         field.setRobotPose(getPose());
@@ -146,8 +152,16 @@ public class Drive extends SubsystemBase {
         Logger.recordOutput("Odometry", getPose());
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
-        SmartDashboard.getNumber("VisionPoseX", Vpose.getX());
-        SmartDashboard.getNumber("VisionPoseY", Vpose.getY());
+        SmartDashboard.putNumber("VisionPoseX", Vpose.getX());
+        SmartDashboard.putNumber("VisionPoseY", Vpose.getY());
+        if (photonVision.getLatestResult().hasTargets()) {
+        var odometryPose = photonVision.getEstimatedPose(getPose());
+        Opose = new Pose2d();
+        Opose = odometryPose.get();
+        pose = Opose;
+        SmartDashboard.putNumber("OdometryPoseX2", Opose.getX());
+        SmartDashboard.putNumber("OdometryPoseY2", Opose.getY());
+        } 
         for (var module : modules) {
         module.periodic();
      }
@@ -214,7 +228,7 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                },new Pose2d());
+                },pose);
 
         this.pose = pose;
     }
