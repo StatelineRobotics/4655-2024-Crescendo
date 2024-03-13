@@ -52,8 +52,8 @@ public class ClimberIOSparkMax implements ClimberIO {
         //double minVel = 0;
 
        
-        m_LeftClimber.setIdleMode(IdleMode.kCoast);     //MOTORBRAKE
-        m_RightClimber.setIdleMode(IdleMode.kCoast);    //MOTORBRAKE
+        m_LeftClimber.setIdleMode(IdleMode.kBrake);     //MOTORBRAKE
+        m_RightClimber.setIdleMode(IdleMode.kBrake);    //MOTORBRAKE
         m_LeftClimber.setInverted(false);
         m_RightClimber.setInverted(false);
         m_LeftClimber.setSmartCurrentLimit(50);

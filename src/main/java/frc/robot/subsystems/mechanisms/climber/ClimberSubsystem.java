@@ -59,7 +59,7 @@ public class ClimberSubsystem  extends SubsystemBase {
 
   @AutoLogOutput(key = "Climber/OKToReach")
   public boolean ClimberOkToReach() {
-  return (inputs.rightClimberPosition < 10 && inputs.leftClimberPosition < 0);
+  return (inputs.rightClimberPosition < 10 && inputs.leftClimberPosition < 10);
 }
 
 

@@ -56,7 +56,7 @@ public class IntakeSubsystem extends SubsystemBase {
    private void stop() {
     intakeRPM = 0;
     wristPostion = 0;
-    blinkenValue = 0.53;
+    blinkenValue = 1525;
     io.stop();
   }
 
@@ -64,10 +64,14 @@ public class IntakeSubsystem extends SubsystemBase {
     return Commands.runOnce(this::stop);
   }
 
-          @AutoLogOutput(key = "Intake/HasNote")
+    @AutoLogOutput(key = "Intake/HasNote")
     public boolean HasNote() {
     return (inputs.intakeCurrent > 21);
   }
   
+    @AutoLogOutput(key = "Arm/OkToEject")
+  public boolean OkToEject() {
+    return (Math.abs(inputs.wristCurrent - 50) > 4);
+  }
 
 }

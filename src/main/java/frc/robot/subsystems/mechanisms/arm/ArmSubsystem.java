@@ -65,14 +65,19 @@ public class ArmSubsystem extends SubsystemBase {
     return Commands.runOnce(this::stop);
   }
 
-      @AutoLogOutput(key = "Arm/OkToPickup")
+  @AutoLogOutput(key = "Arm/OkToPickup")
   public boolean OkToPickup() {
     return (inputs.armExtenderPosCurrent > 110);
   }
 
-        @AutoLogOutput(key = "Arm/OkToHome")
+  @AutoLogOutput(key = "Arm/OkToHome")
   public boolean OkToHome() {
     return (inputs.armPosCurrent > 12);
+  }
+
+   @AutoLogOutput(key = "Arm/OkToClimbWrist")
+  public boolean OkToClimbWrist() {
+    return (inputs.armExtenderPosCurrent > 42);
   }
 
 

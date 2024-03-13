@@ -25,7 +25,8 @@ public class MechanisimControl extends SubsystemBase {
     CLIMBSHOOT,
     GRAB,
     AMP,
-    AMPSHOOT
+    AMPSHOOT,
+    EJECT
   }
 
   private State currentState = State.HOME;
@@ -64,6 +65,26 @@ public class MechanisimControl extends SubsystemBase {
           }
        }
 
+      case EJECT -> {
+          if (armSubsystem.OkToHome()){ 
+            if (intakeSubsystem.OkToEject()) {
+              intakeSubsystem.requestIntake(-600, 50);
+            } else {
+              intakeSubsystem.requestIntake(0, 50);
+            }
+                        shooterSubsystem.requestRPM(0, 0);
+            armSubsystem.requestArmPosition(24, 0);
+            climberSubsystem.requestClimberPosition(0);
+            intakeSubsystem.requestBlinken(0.53);
+            } else {
+            intakeSubsystem.requestIntake(0, 35);
+            shooterSubsystem.requestRPM(0, 0);
+            armSubsystem.requestArmPosition(25, 115);
+            climberSubsystem.requestClimberPosition(0);
+            intakeSubsystem.requestBlinken(0.53);
+            }
+        
+       } 
   
       case AMP -> {
         intakeSubsystem.requestIntake(0, 158);
@@ -126,16 +147,21 @@ public class MechanisimControl extends SubsystemBase {
 //        }
       }
       case CLIMB -> {
-        intakeSubsystem.requestIntake(0,165);
+        if (armSubsystem.OkToClimbWrist()){
+          intakeSubsystem.requestIntake(0,165);
+        } else {
+          intakeSubsystem.requestIntake(0,50);
+        }
+        
         shooterSubsystem.requestRPM(0, 0);
           if (climberSubsystem.ClimberOkToReach()) {
             armSubsystem.requestArmPosition(86.5, 43);
           }
           else {
-            armSubsystem.requestArmPosition(110, 43);
+            armSubsystem.requestArmPosition(110, 0);
           }
         climberSubsystem.requestClimberPosition(0);
-        intakeSubsystem.requestBlinken(0.53);
+        intakeSubsystem.requestBlinken(-0.57);
       }
 
       case CLIMBSHOOT -> {
@@ -143,7 +169,7 @@ public class MechanisimControl extends SubsystemBase {
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(86.5, 43);
         climberSubsystem.requestClimberPosition(0);
-        intakeSubsystem.requestBlinken(0.53);
+        intakeSubsystem.requestBlinken(-.57);
       }
 
       case GRAB -> {
@@ -151,7 +177,7 @@ public class MechanisimControl extends SubsystemBase {
         shooterSubsystem.requestRPM(0, 0);
         armSubsystem.requestArmPosition(110,0);
         climberSubsystem.requestClimberPosition(180);
-        intakeSubsystem.requestBlinken(0.53);
+        intakeSubsystem.requestBlinken(-.57);
       }
 
 
