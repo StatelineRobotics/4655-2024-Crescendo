@@ -130,7 +130,7 @@ public class RobotContainer {
         .onTrue(Commands.runOnce(
                     () ->
                         drive.resetOdometry(
-                            new Pose2d(drive.getPose().getTranslation(), new Rotation2d())),
+                            new Pose2d(drive.getVPose().getTranslation(), new Rotation2d())),
                     drive)
                 .ignoringDisable(true));
 

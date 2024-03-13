@@ -16,7 +16,9 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
+
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.wpilibj2.command.Commands;
 //NJP import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -67,6 +69,8 @@ public class Drive extends SubsystemBase {
     private Pose2d Vpose = new Pose2d();
     private PhotonVision photonVision;
     private Field2d field = new Field2d();
+    private boolean feeshy = false;
+    private double VisionTime;
     
 
     /** Creates a new DriveSubsystem. */
@@ -156,32 +160,34 @@ public class Drive extends SubsystemBase {
         Logger.processInputs("Drive/Gyro", gyroInputs);
         SmartDashboard.putNumber("VisionPoseX", Vpose.getX());
         SmartDashboard.putNumber("VisionPoseY", Vpose.getY());
-    //     for (var module : modules) {
-    //     module.periodic();
-    //  }       
+        SmartDashboard.putBoolean("feeshy", feeshy);
+        for (var module : modules) {
+        module.periodic();
+        }       
      } 
      if (photonVision.getLatestResult().hasTargets()){
-        Opose = Vpose;
+        Opose = new Pose2d(new Translation2d(Vpose.getX(),Vpose.getY()),gyroInputs.yaw);
+        VisionTime = photonVision.getLatestResult().getTimestampSeconds();
         SmartDashboard.putNumber("OdometryPoseX2", Opose.getX());
         SmartDashboard.putNumber("OdometryPoseY2", Opose.getY());
-        m_odometry.resetPosition(gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),               
-        new SwerveModulePosition[] {
-        m_frontLeft.getPosition(),
-        m_frontRight.getPosition(),
-        m_rearLeft.getPosition(),
-        m_rearRight.getPosition()
-        }, Opose);
-     } else {
-        m_odometry.update(
+        feeshy = true;
+     }
+     if (feeshy){
+        m_odometry.resetPosition(
         gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
         new SwerveModulePosition[] {
         m_frontLeft.getPosition(),
         m_frontRight.getPosition(),
         m_rearLeft.getPosition(),
         m_rearRight.getPosition()
-        });
+        },Opose);
+        if (VisionTime + 1.3 < photonVision.getLatestResult().getTimestampSeconds()){
+            feeshy = false;
+        }
+    }
 
-     }
+    
+
 
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Gyro", gyroInputs);
@@ -189,16 +195,18 @@ public class Drive extends SubsystemBase {
         m_frontRight.updateInputs();
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
+    
+    
 
         // Update the odometry in the periodic block
-        // m_odometry.update(
-        //         gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
-        //         new SwerveModulePosition[] {
-        //                 m_frontLeft.getPosition(),
-        //                 m_frontRight.getPosition(),
-        //                 m_rearLeft.getPosition(),
-        //                 m_rearRight.getPosition()
-        //         });
+        m_odometry.update(
+                gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+                new SwerveModulePosition[] {
+                        m_frontLeft.getPosition(),
+                        m_frontRight.getPosition(),
+                        m_rearLeft.getPosition(),
+                        m_rearRight.getPosition()
+                });
 
         // Read wheel deltas from each module
         SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
@@ -216,6 +224,8 @@ public class Drive extends SubsystemBase {
 
        
 
+ 
+
         Logger.recordOutput("Odometry", getPose());
         Logger.recordOutput("Simulated Pose", Opose);
         Logger.recordOutput("Swerve/SwerveStates", this.getModuleStates());
@@ -230,6 +240,20 @@ public class Drive extends SubsystemBase {
     public Pose2d getPose() {
         return m_odometry.getEstimatedPosition(); 
     }
+        public Pose2d getVPose() {
+        return Opose; 
+    }
+            public boolean UpdateVpose() {
+        return feeshy; 
+    }
+                public boolean StopUpdate() {
+                    feeshy = false;
+        return feeshy; 
+    }
+
+    public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
+        m_odometry.addVisionMeasurement(visionPose, timestamp);
+      }
 
     /**
      * Resets the odometry to the specified pose.
