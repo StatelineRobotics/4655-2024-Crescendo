@@ -15,10 +15,10 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.SparkPIDController;
 
-
-//LC import au.grapplerobotics.ConfigurationFailedException;
-//LC import au.grapplerobotics.LaserCan;
-
+import au.grapplerobotics.ConfigurationFailedException;
+import au.grapplerobotics.LaserCan;
+import au.grapplerobotics.LaserCan.RangingMode;
+import au.grapplerobotics.LaserCan.TimingBudget;
 import frc.robot.subsystems.mechanisms.MechanismConstants;
 
 /** Add your docs here. */
@@ -31,7 +31,8 @@ public class IntakeIOSparkMax implements IntakeIO{
     private final SparkPIDController intakeController;
     private final PWMSparkMax blinken;
 
-//LC    private final LaserCan lasercan;  
+    private LaserCan laserCAN;
+
 
     public IntakeIOSparkMax() {
         m_Wrist = new CANSparkMax(MechanismConstants.kWristCanId, MotorType.kBrushless);
@@ -80,16 +81,16 @@ public class IntakeIOSparkMax implements IntakeIO{
         m_Wrist.burnFlash();
         m_Intake.burnFlash();
 
-    
+        laserCAN = new LaserCan(MechanismConstants.kLaserCanId);
 
-  //LC      lasercan = new LaserCan(MechanismConstants.kLaserCanId);
-  //LC      try {
-  //LC      lasercan.setRangingMode(LaserCan.RangingMode.SHORT);
-  //LC      lasercan.setRegionOfInterest(new LaserCan.RegionOfInterest(8, 8, 16, 16));
-  //LC      lasercan.setTimingBudget(LaserCan.TimingBudget.TIMING_BUDGET_33MS);
-  //LC      } catch (ConfigurationFailedException e) {
-  //LC      System.out.println("Configuration failed! " + e);
-  //LC      }
+        try {
+            laserCAN.setRangingMode(RangingMode.SHORT);
+            laserCAN.setTimingBudget(TimingBudget.TIMING_BUDGET_20MS);
+        } catch (ConfigurationFailedException e) {
+        e.printStackTrace();
+        }
+
+ 
     } 
     
     @Override
@@ -98,7 +99,8 @@ public class IntakeIOSparkMax implements IntakeIO{
         inputs.wristposition = wristEncoder.getPosition();
         inputs.intakeCurrent = m_Intake.getOutputCurrent();
         inputs.wristCurrent = m_Wrist.getOutputCurrent();
-    
+       
+        
         
     }
     @Override
@@ -111,6 +113,16 @@ public class IntakeIOSparkMax implements IntakeIO{
     public void setBlinken(double blinkenValue){
         blinken.set(blinkenValue);
     }
+
+    @Override
+    public boolean isRingLoaded() {
+        LaserCan.Measurement measurement = laserCAN.getMeasurement();
+        return measurement.distance_mm < 150;  //This will need to be adjested
+    }
+
+    public double getMeasurement() {
+        return laserCAN.getMeasurement() == null ? 0 : laserCAN.getMeasurement().distance_mm;
+      }
 
 
     @Override

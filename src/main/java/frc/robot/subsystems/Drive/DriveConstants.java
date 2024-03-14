@@ -106,7 +106,7 @@ public final class DriveConstants {
         public static final double kTurningMinOutput = -.7;
         public static final double kTurningMaxOutput = 7;
 
-        public static final double kAutoDrivingP = 0.9 ;
+        public static final double kAutoDrivingP = 0.05 ;
         public static final double kAutoDrivingI = 0;
         public static final double kAutoDrivingD = 0;
 
@@ -134,7 +134,7 @@ public final class DriveConstants {
         public static final HolonomicPathFollowerConfig follower = new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
                         new PIDConstants(ModuleConstants.kAutoDrivingP, ModuleConstants.kAutoDrivingI, ModuleConstants.kAutoDrivingD), // Translation PID constants
                         new PIDConstants(ModuleConstants.kAutoTurningP, ModuleConstants.kAutoTurningI, ModuleConstants.kAutoTurningD), // Rotation PID constants
-                        4.5, // Max module speed, in m/s ***MIGHT CHANGE***
+                        AutoConstants.kMaxSpeedMetersPerSecond, // Max module speed, in m/s ***MIGHT CHANGE***
                         kTrackRadius, // Drive base radius in meters. Distance from robot center to furthest module. ***MIGHT CHANGE***
                         new ReplanningConfig() // Default path replanning config. See the API for the options here
                 );

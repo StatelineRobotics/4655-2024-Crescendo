@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -76,7 +77,6 @@ public class RobotContainer {
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
-           
         break;
 
       case SIM:
@@ -108,18 +108,31 @@ public class RobotContainer {
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem); 
         break;
     }
 
  
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up feedforward characterization
-    // autoChooser.addOption(
-    //     "Drive FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
+    // Set up auto routines
+    NamedCommands.registerCommand("PrepToShoot",
+       Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+    NamedCommands.registerCommand("Shoot",
+       Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+
+    NamedCommands.registerCommand("Pickup",
+       Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+
+    NamedCommands.registerCommand("AmpShoot",
+       Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
+      
+
 
 
     // Configure the button bindings
@@ -229,5 +242,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+    
   }
 }

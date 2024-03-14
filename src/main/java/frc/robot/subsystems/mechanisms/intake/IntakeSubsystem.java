@@ -13,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
+
 public class IntakeSubsystem extends SubsystemBase {
   private final IntakeIO io; 
   private final IntakeIOInputsAutoLogged inputs = new IntakeIOInputsAutoLogged();
@@ -24,7 +25,10 @@ public class IntakeSubsystem extends SubsystemBase {
   public IntakeSubsystem(IntakeIO io) {
     System.out.println("[Init] Creating Intake");
     this.io = io;
+   
   }
+
+
 
   @Override
   public void periodic() {
@@ -52,7 +56,11 @@ public class IntakeSubsystem extends SubsystemBase {
     this.blinkenValue = blinkenValue;
    
  }
- 
+
+  public boolean isRingLoaded() {
+    return IntakeIO.isRingLoaded();
+  }
+
    private void stop() {
     intakeRPM = 0;
     wristPostion = 0;
@@ -73,5 +81,7 @@ public class IntakeSubsystem extends SubsystemBase {
   public boolean OkToEject() {
     return (Math.abs(inputs.wristCurrent - 50) > 4);
   }
+
+  
 
 }
