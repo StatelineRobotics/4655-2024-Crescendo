@@ -4,7 +4,6 @@
 
 package frc.robot.subsystems.Drive;
 
-import java.lang.reflect.Field;
 import java.util.Optional;
 
 import org.littletonrobotics.junction.Logger;
@@ -16,16 +15,12 @@ import com.pathplanner.lib.util.PIDConstants;
 import com.pathplanner.lib.util.PathPlannerLogging;
 import com.pathplanner.lib.util.ReplanningConfig;
 
-
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
-import edu.wpi.first.wpilibj2.command.Commands;
-//NJP import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.Odometry;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
@@ -64,17 +59,19 @@ public class Drive extends SubsystemBase {
     private double m_prevTime = WPIUtilJNI.now() * 1e-6;
 
     // Odometry class for tracking robot pose
-    private SwerveDrivePoseEstimator m_odometry;
-    private Pose2d Opose;
+    SwerveDrivePoseEstimator poseEstimator;
+    SwerveDriveOdometry m_odometry;   
+    private Pose2d pose = new Pose2d();
+    private Pose2d Opose = new Pose2d();
     private Pose2d Vpose = new Pose2d();
     private PhotonVision photonVision;
     private Field2d field = new Field2d();
     private boolean feeshy = false;
     private double VisionTime;
-    
+    private boolean Olock = true;
 
     /** Creates a new DriveSubsystem. */
-    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br, PhotonVision photonVision) {
+    public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br,PhotonVision photonVision) {
         this.gyro = gyro;
         this.photonVision = photonVision;
         m_frontLeft = new Module(fl, 0);
@@ -87,7 +84,10 @@ public class Drive extends SubsystemBase {
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
 
-     m_odometry = new SwerveDrivePoseEstimator(
+        this.modules = new Module[] { new Module(fl, 0), new Module(fr, 1),
+            new Module(bl, 2), new Module(br, 3) };
+
+        m_odometry = new SwerveDriveOdometry(      
                 DriveConstants.kDriveKinematics,
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
                 new SwerveModulePosition[] {
@@ -95,10 +95,17 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                        },new Pose2d());
-                        
-                this.modules = new Module[] { new Module(fl, 0), new Module(fr, 1),
-                    new Module(bl, 2), new Module(br, 3) };
+                });  
+
+        poseEstimator = new SwerveDrivePoseEstimator(
+            DriveConstants.kDriveKinematics,
+            gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+            new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+            },new Pose2d());
 
         this.zeroHeading();
 
@@ -139,55 +146,39 @@ public class Drive extends SubsystemBase {
                 }); // Adds a way for PathPlanner to log what pose it's currently trying to go to
     }
 
-    
-
     @Override
     public void periodic() {
 
-        
-
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
         if (estimatedPose.isPresent()){
-        var odometrypose = m_odometry.getEstimatedPosition();
+        var odometrypose = poseEstimator.getEstimatedPosition();
         SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
         SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
         Vpose = estimatedPose.get();
-        m_odometry.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
         field.setRobotPose(getPose());
         SmartDashboard.putString("Pose", getPose().toString());
         Logger.recordOutput("Odometry", getPose());
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Drive/Gyro", gyroInputs);
-        SmartDashboard.putNumber("VisionPoseX", Vpose.getX());
-        SmartDashboard.putNumber("VisionPoseY", Vpose.getY());
-        SmartDashboard.putBoolean("feeshy", feeshy);
-        for (var module : modules) {
-        module.periodic();
-        }       
+        SmartDashboard.putBoolean("feeshy", feeshy);     
+        SmartDashboard.putBoolean("Olock", Olock); 
+        SmartDashboard.putNumber("OdometryPoseX2", Opose.getX());
+        SmartDashboard.putNumber("OdometryPoseY2", Opose.getY());
      } 
      if (photonVision.getLatestResult().hasTargets()){
         Opose = new Pose2d(new Translation2d(Vpose.getX(),Vpose.getY()),gyroInputs.yaw);
         VisionTime = photonVision.getLatestResult().getTimestampSeconds();
-        SmartDashboard.putNumber("OdometryPoseX2", Opose.getX());
-        SmartDashboard.putNumber("OdometryPoseY2", Opose.getY());
         feeshy = true;
+        Olock = false;
      }
      if (feeshy){
-        m_odometry.resetPosition(
-        gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
-        new SwerveModulePosition[] {
-        m_frontLeft.getPosition(),
-        m_frontRight.getPosition(),
-        m_rearLeft.getPosition(),
-        m_rearRight.getPosition()
-        },Opose);
-        if (VisionTime + 1.3 < photonVision.getLatestResult().getTimestampSeconds()){
+        poseEstimator.addVisionMeasurement(estimatedPose.get(), photonVision.getTimestamp());
+        SetVisionPose();
+        if (VisionTime < photonVision.getLatestResult().getTimestampSeconds()){
             feeshy = false;
+            Olock = true;
         }
     }
-
-    
-
 
         gyro.updateInputs(gyroInputs);
         Logger.processInputs("Gyro", gyroInputs);
@@ -195,11 +186,20 @@ public class Drive extends SubsystemBase {
         m_frontRight.updateInputs();
         m_rearLeft.updateInputs();
         m_rearRight.updateInputs();
-    
-    
+               
+        
+        m_odometry.update(
+            gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+            new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+            });
 
         // Update the odometry in the periodic block
-        m_odometry.update(
+
+                poseEstimator.update(
                 gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
                 new SwerveModulePosition[] {
                         m_frontLeft.getPosition(),
@@ -207,6 +207,8 @@ public class Drive extends SubsystemBase {
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
                 });
+  
+
 
         // Read wheel deltas from each module
         SwerveModulePosition[] wheelDeltas = new SwerveModulePosition[4];
@@ -214,20 +216,18 @@ public class Drive extends SubsystemBase {
         wheelDeltas[1] = m_frontRight.getPositionDelta();
         wheelDeltas[2] = m_rearLeft.getPositionDelta();
         wheelDeltas[3] = m_rearRight.getPositionDelta();
-        SmartDashboard.putString("FrontLeftPose", m_frontLeft.getPositionDelta().toString());
+
         // The twist represents the motion of the robot since the last
         // sample in x, y, and theta based only on the modules, without
         // the gyro.
         var twist = DriveConstants.kDriveKinematics.toTwist2d(wheelDeltas);
         // Apply the twist (change since last sample) to the current pose
-        Vpose = Vpose.exp(twist);
+        pose = pose.exp(twist);
 
        
 
- 
-
         Logger.recordOutput("Odometry", getPose());
-        Logger.recordOutput("Simulated Pose", Opose);
+        Logger.recordOutput("Simulated Pose", pose);
         Logger.recordOutput("Swerve/SwerveStates", this.getModuleStates());
         Logger.recordOutput("Swerve/OptimizedStates", this.getOptimizedStates());
     }
@@ -238,22 +238,23 @@ public class Drive extends SubsystemBase {
      * @return The pose.
      */
     public Pose2d getPose() {
-        return m_odometry.getEstimatedPosition(); 
-    }
-        public Pose2d getVPose() {
-        return Opose; 
-    }
-            public boolean UpdateVpose() {
-        return feeshy; 
-    }
-                public boolean StopUpdate() {
-                    feeshy = false;
-        return feeshy; 
+        return poseEstimator.getEstimatedPosition(); 
     }
 
-    public void addVisionMeasurement(Pose2d visionPose, double timestamp) {
-        m_odometry.addVisionMeasurement(visionPose, timestamp);
-      }
+    public Pose2d getVPose() {
+        return Opose; 
+    }
+
+    public void SetVisionPose(){
+        poseEstimator.resetPosition(
+            gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
+            new SwerveModulePosition[] {
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_rearLeft.getPosition(),
+            m_rearRight.getPosition()
+            },getVPose());
+    }
 
     /**
      * Resets the odometry to the specified pose.
@@ -268,9 +269,10 @@ public class Drive extends SubsystemBase {
                         m_frontRight.getPosition(),
                         m_rearLeft.getPosition(),
                         m_rearRight.getPosition()
-                },pose);
+                },
+                pose);
 
-        this.Vpose = pose;
+        this.pose = pose;
     }
 
     /**
@@ -354,7 +356,7 @@ public class Drive extends SubsystemBase {
                 fieldRelativeRotation = gyroInputs.yaw;
                 break;
             case SIM:
-                fieldRelativeRotation = Vpose.getRotation();
+                fieldRelativeRotation = pose.getRotation();
                 break;
             default:
                 fieldRelativeRotation = new Rotation2d();
@@ -436,7 +438,7 @@ public class Drive extends SubsystemBase {
     /** Zeroes the heading of the robot. */
     public void zeroHeading() {
         gyro.reset();
-        Vpose.rotateBy(Vpose.getRotation().times(-1)); //This may not work
+        pose.rotateBy(pose.getRotation().times(-1)); //This may not work
     }
 
     /**
