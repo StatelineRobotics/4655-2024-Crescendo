@@ -25,6 +25,8 @@ public interface ModuleIO {
         return null;
     }
 
+    public default void periodic() {}
+
     default void stop() {} 
 
 }

@@ -28,6 +28,9 @@ import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.*;
+import frc.robot.subsystems.Vision.PhotonVision;
+import frc.robot.subsystems.Vision.PhotonVisionPoseEstimation;
+import frc.robot.subsystems.Vision.ShooterAlignments;
 import frc.robot.subsystems.mechanisms.intake.IntakeIOSparkMax;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterIOSparkMax;
@@ -37,6 +40,7 @@ import frc.robot.subsystems.mechanisms.arm.ArmIOSparkMax;
 import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
 import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
+
 
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
@@ -53,7 +57,9 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ArmSubsystem armSubsystem;
   private final ClimberSubsystem climberSubsystem;
+  private final ShooterAlignments shooterAlignments;
   private final MechanisimControl mechanisimControl;
+  
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -70,12 +76,14 @@ public class RobotContainer {
                 new ModuleIOSparkMax(DriveConstants.kFrontLeftDrivingCanId, DriveConstants.kFrontLeftTurningCanId, DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kFrontRightDrivingCanId, DriveConstants.kFrontRightTurningCanId, DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSparkMax(DriveConstants.kRearLeftDrivingCanId, DriveConstants.kRearLeftTurningCanId, DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset));
+                new ModuleIOSparkMax(DriveConstants.kRearRightDrivingCanId, DriveConstants.kRearRightTurningCanId, DriveConstants.kBackRightChassisAngularOffset),
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
            
         break;
 
@@ -87,12 +95,14 @@ public class RobotContainer {
                 new ModuleIOSim(DriveConstants.kFrontLeftChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kFrontRightChassisAngularOffset),
                 new ModuleIOSim(DriveConstants.kBackLeftChassisAngularOffset),
-                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset));
+                new ModuleIOSim(DriveConstants.kBackRightChassisAngularOffset),
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+        shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
         break;
 
       default:
@@ -103,12 +113,14 @@ public class RobotContainer {
                 new ModuleIO() {},
                 new ModuleIO() {},
                 new ModuleIO() {},
-                new ModuleIO() {});
+                new ModuleIO() {},
+                new PhotonVision(new PhotonVisionPoseEstimation()));
         shooterSubsystem = new ShooterSubsystem(new ShooterIOSparkMax());
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem);
+        shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
         break;
     }
 
@@ -175,10 +187,17 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMP)));
 
-     OIConstants.m_driverController.leftTrigger()// AMPSHOOT 
+      OIConstants.m_driverController.leftTrigger()// AMPSHOOT 
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
 
+      OIConstants.m_driverController.leftBumper()// AUTO_AIM 
+              .onTrue(Commands.runOnce(
+                () -> drive.drive(0, 0, shooterAlignments.getRotation(), false, false) ));
+      
+      OIConstants.m_driverController.leftBumper()
+              .onTrue(Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AUTO_AIM)));
 
       new JoystickButton(OIConstants.kauxController, 4) // PREPARE_SHOOT
             .onTrue( Commands.runOnce(

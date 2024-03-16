@@ -84,6 +84,12 @@ public class FieldConstants {
 
     public static Translation2d centerSpeakerOpening =
         new Translation2d(topLeftSpeaker.getX() / 2, fieldWidth - Units.inchesToMeters(104.0));
+
+    public static Translation2d bluecenterSpeakerOpening =
+        new Translation2d(topLeftSpeaker.getX() / 2, fieldWidth - Units.inchesToMeters(104.0));
+    
+    public static Translation2d redcenterSpeakerOpening =
+        new Translation2d(fieldLength - (topLeftSpeaker.getX() / 2), fieldWidth - Units.inchesToMeters(104.0));
   }
 
   public static double aprilTagWidth = Units.inchesToMeters(6.50);

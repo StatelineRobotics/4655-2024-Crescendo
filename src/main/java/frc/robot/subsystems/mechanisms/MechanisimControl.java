@@ -9,10 +9,12 @@ import org.littletonrobotics.junction.Logger;
 
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.subsystems.Vision.ShooterAlignments;
 import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
 import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
 import frc.robot.subsystems.mechanisms.intake.IntakeSubsystem;
 import frc.robot.subsystems.mechanisms.shooter.ShooterSubsystem;
+import frc.robot.subsystems.Vision.ShooterAlignments;
 
 public class MechanisimControl extends SubsystemBase {
  
@@ -26,7 +28,8 @@ public class MechanisimControl extends SubsystemBase {
     GRAB,
     AMP,
     AMPSHOOT,
-    EJECT
+    EJECT,
+    AUTO_AIM
   }
 
   private State currentState = State.HOME;
@@ -36,13 +39,15 @@ public class MechanisimControl extends SubsystemBase {
   private final ShooterSubsystem shooterSubsystem;
   private final ArmSubsystem armSubsystem;
   private final ClimberSubsystem climberSubsystem;
+  private final ShooterAlignments shooterAlignments;
 
   /** Creates a new MechanisimControl. */
-  public MechanisimControl(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, ArmSubsystem armSubsystem, ClimberSubsystem climberSubsystem) {
+  public MechanisimControl(IntakeSubsystem intakeSubsystem, ShooterSubsystem shooterSubsystem, ArmSubsystem armSubsystem, ClimberSubsystem climberSubsystem, ShooterAlignments shooterAlignments) {
     this.intakeSubsystem = intakeSubsystem;
     this.shooterSubsystem = shooterSubsystem;
     this.armSubsystem = armSubsystem;
     this.climberSubsystem = climberSubsystem; 
+    this.shooterAlignments = shooterAlignments;
   }
 
   @Override
@@ -135,14 +140,24 @@ public class MechanisimControl extends SubsystemBase {
         intakeSubsystem.requestBlinken(0.53);
       }
 
+        case AUTO_AIM -> {
+          double armAngle = shooterAlignments.angleArmToSpeaker();
+          intakeSubsystem.requestIntake(0,238);
+          shooterSubsystem.requestRPM(5600, 5900);
+          armSubsystem.requestArmPosition(armAngle, 10);
+          climberSubsystem.requestClimberPosition(0);
+          intakeSubsystem.requestBlinken(0.53);
+      }
+
 
       case SHOOT -> {
 //        if (!atShootingSetpoint()) {
 //          currentState = State.PREPARE_SHOOT;
 //        } else {
+           double armAngle = shooterAlignments.angleArmToSpeaker();
            intakeSubsystem.requestIntake(-500,238);
            shooterSubsystem.requestRPM(5600, 5900);
-           armSubsystem.requestArmPosition(9.5, 10);
+           armSubsystem.requestArmPosition(armAngle, 10);
            intakeSubsystem.requestBlinken(0.53);
 //        }
       }
