@@ -50,7 +50,7 @@ public class IntakeIOSparkMax implements IntakeIO{
         m_Wrist.setInverted(false);
         m_Intake.setInverted(true);
         m_Wrist.setSmartCurrentLimit(10);
-        m_Intake.setSmartCurrentLimit(22);
+        m_Intake.setSmartCurrentLimit(25);
     
         intakeController = m_Intake.getPIDController();
         intakeController.setFeedbackDevice(intakeEncoder);
@@ -63,18 +63,18 @@ public class IntakeIOSparkMax implements IntakeIO{
 
         wristController = m_Wrist.getPIDController();
         wristController.setFeedbackDevice(wristEncoder);
-        wristController.setP(.0007);
+        wristController.setP(.00025);
         wristController.setI(0);
         wristController.setD(0);
         wristController.setIZone(0);
-        wristController.setFF(0);
-        wristController.setOutputRange(-0.50,0.50);
+        wristController.setFF(0.0002);
+        wristController.setOutputRange(-0.70,0.70);
         wristController.setPositionPIDWrappingEnabled(false);
 
         int smartMotionSlot = 0;
-        wristController.setSmartMotionMaxVelocity(1000, smartMotionSlot);
+        wristController.setSmartMotionMaxVelocity(1200, smartMotionSlot);
         wristController.setSmartMotionMinOutputVelocity(0, smartMotionSlot);
-        wristController.setSmartMotionMaxAccel(500, smartMotionSlot);
+        wristController.setSmartMotionMaxAccel(700, smartMotionSlot);
         wristController.setSmartMotionAllowedClosedLoopError(1, smartMotionSlot);
 
 
@@ -99,7 +99,7 @@ public class IntakeIOSparkMax implements IntakeIO{
         inputs.wristposition = wristEncoder.getPosition();
         inputs.intakeCurrent = m_Intake.getOutputCurrent();
         inputs.wristCurrent = m_Wrist.getOutputCurrent();
-       
+        inputs.lcMeasurement =  laserCAN.getMeasurement() == null ? 0 : laserCAN.getMeasurement().distance_mm;
         
         
     }
@@ -114,17 +114,12 @@ public class IntakeIOSparkMax implements IntakeIO{
         blinken.set(blinkenValue);
     }
 
-    @Override
-    public boolean isRingLoaded() {
-        LaserCan.Measurement measurement = laserCAN.getMeasurement();
-        return measurement.distance_mm < 150;  //This will need to be adjested
-    }
 
     public double getMeasurement() {
         return laserCAN.getMeasurement() == null ? 0 : laserCAN.getMeasurement().distance_mm;
-      }
+    }
 
-
+    
     @Override
     public void stop() {
         m_Wrist.stopMotor();

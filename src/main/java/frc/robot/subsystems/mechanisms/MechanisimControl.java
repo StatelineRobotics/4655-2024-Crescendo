@@ -7,7 +7,6 @@ package frc.robot.subsystems.mechanisms;
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
 
-
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
 import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
@@ -26,7 +25,11 @@ public class MechanisimControl extends SubsystemBase {
     GRAB,
     AMP,
     AMPSHOOT,
-    EJECT
+    EJECT,
+    STORE,
+    SPEAKERSHOOT,
+    SPEAKER,
+    WINGPREP
   }
 
   private State currentState = State.HOME;
@@ -53,16 +56,17 @@ public class MechanisimControl extends SubsystemBase {
           if (armSubsystem.OkToHome()){ 
             intakeSubsystem.requestIntake(0, 50);
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(24, 0);
+            armSubsystem.requestArmPosition(37, 0);
             climberSubsystem.requestClimberPosition(0);
             intakeSubsystem.requestBlinken(0.53);
           } else{
             intakeSubsystem.requestIntake(0, 35);
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(25, 115);
+            armSubsystem.requestArmPosition(38, 115);
             climberSubsystem.requestClimberPosition(0);
             intakeSubsystem.requestBlinken(0.53);
           }
+          break;
        }
 
       case EJECT -> {
@@ -73,46 +77,91 @@ public class MechanisimControl extends SubsystemBase {
               intakeSubsystem.requestIntake(0, 50);
             }
                         shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(24, 0);
+            armSubsystem.requestArmPosition(37, 0);
             climberSubsystem.requestClimberPosition(0);
             intakeSubsystem.requestBlinken(0.53);
             } else {
             intakeSubsystem.requestIntake(0, 35);
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(25, 115);
+            armSubsystem.requestArmPosition(38, 115);
             climberSubsystem.requestClimberPosition(0);
             intakeSubsystem.requestBlinken(0.53);
             }
-        
+        break;
        } 
   
       case AMP -> {
         intakeSubsystem.requestIntake(0, 158);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(64, 40);
+        armSubsystem.requestArmPosition(77, 40);
         climberSubsystem.requestClimberPosition(0);
         intakeSubsystem.requestBlinken(0.53);
-
+        break;
        }
 
       case AMPSHOOT -> {
         intakeSubsystem.requestIntake(600, 158);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(64, 40);
+        armSubsystem.requestArmPosition(77, 40);
+        climberSubsystem.requestClimberPosition(0);
+        intakeSubsystem.requestBlinken(0.53);
+        break;
+       } 
+
+
+       case SPEAKER -> {
+        if (intakeSubsystem.OkToSpeeker()){ 
+          armSubsystem.requestArmPosition(12, 0);
+        } else {
+          armSubsystem.requestArmPosition(37, 0 );
+        }
+        
+        intakeSubsystem.requestIntake(0, 240);
+        shooterSubsystem.requestRPM(5600, 5900);
         climberSubsystem.requestClimberPosition(0);
         intakeSubsystem.requestBlinken(0.53);
 
+        break;
+       }
+
+
+       case WINGPREP -> {
+        if (intakeSubsystem.OkToSpeeker()){ 
+          armSubsystem.requestArmPosition(24, 0);
+        } else {
+          armSubsystem.requestArmPosition(37, 0 );
+        }
+        
+        intakeSubsystem.requestIntake(0, 238);
+        shooterSubsystem.requestRPM(5600, 5900);
+        climberSubsystem.requestClimberPosition(0);
+        intakeSubsystem.requestBlinken(0.53);
+
+        break;
+       }
+
+
+      case SPEAKERSHOOT -> {
+        intakeSubsystem.requestIntake(600, 240);
+        shooterSubsystem.requestRPM(5600, 5900);
+        armSubsystem.requestArmPosition(6, 0);
+        climberSubsystem.requestClimberPosition(0);
+        intakeSubsystem.requestBlinken(0.53);
+        break;
        } 
 
       case PICKUP -> {
           if (armSubsystem.OkToPickup()){ 
         
-            intakeSubsystem.requestIntake(450, 25);
+            
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(10, 127);
+            armSubsystem.requestArmPosition(23, 127);
               if(intakeSubsystem.HasNote()){
+                intakeSubsystem.requestIntake(0, 25);
                 intakeSubsystem.requestBlinken(-.05);
+                currentState = State.STORE;
               } else {
+                intakeSubsystem.requestIntake(650 , 25);
                 intakeSubsystem.requestBlinken(0.53);
               }
 
@@ -120,19 +169,33 @@ public class MechanisimControl extends SubsystemBase {
           } else {
             intakeSubsystem.requestIntake(0, 35);
             shooterSubsystem.requestRPM(0, 0);
-            armSubsystem.requestArmPosition(25, 115);
+            armSubsystem.requestArmPosition(38, 115);
             //climberSubsystem.requestClimberPosition(0);
             intakeSubsystem.requestBlinken(0.53); 
           }
-
+          break;
         }
 
-      case PREPARE_SHOOT -> {
-        intakeSubsystem.requestIntake(0,238);
+      case STORE -> {
+        intakeSubsystem.requestIntake(0,240);
+        shooterSubsystem.requestRPM(0, 0);
+        armSubsystem.requestArmPosition(22.5, 10);
+        climberSubsystem.requestClimberPosition(0);
+        if(intakeSubsystem.HasNote()){
+          intakeSubsystem.requestBlinken(-.05);
+        }else{
+          intakeSubsystem.requestBlinken(0.53);
+        }
+        break;
+      }
+
+        case PREPARE_SHOOT -> {
+        intakeSubsystem.requestIntake(0,240);
         shooterSubsystem.requestRPM(5600, 5900);
-        armSubsystem.requestArmPosition(9.5, 10);
+        armSubsystem.requestArmPosition(22.5, 10);
         climberSubsystem.requestClimberPosition(0);
         intakeSubsystem.requestBlinken(0.53);
+        break;
       }
 
 
@@ -140,12 +203,14 @@ public class MechanisimControl extends SubsystemBase {
 //        if (!atShootingSetpoint()) {
 //          currentState = State.PREPARE_SHOOT;
 //        } else {
-           intakeSubsystem.requestIntake(-500,238);
-           shooterSubsystem.requestRPM(5600, 5900);
-           armSubsystem.requestArmPosition(9.5, 10);
+           intakeSubsystem.requestIntake(-500,240);
+  //         shooterSubsystem.requestRPM(5600, 5900);
+  //         armSubsystem.requestArmPosition(22.5, 10);
            intakeSubsystem.requestBlinken(0.53);
 //        }
+      break;
       }
+      
       case CLIMB -> {
         if (armSubsystem.OkToClimbWrist()){
           intakeSubsystem.requestIntake(0,165);
@@ -155,36 +220,36 @@ public class MechanisimControl extends SubsystemBase {
         
         shooterSubsystem.requestRPM(0, 0);
           if (climberSubsystem.ClimberOkToReach()) {
-            armSubsystem.requestArmPosition(86.5, 43);
+            armSubsystem.requestArmPosition(99.5, 43);
           }
           else {
-            armSubsystem.requestArmPosition(110, 0);
+            armSubsystem.requestArmPosition(124, 0);
           }
         climberSubsystem.requestClimberPosition(0);
         intakeSubsystem.requestBlinken(-0.57);
+        break;
       }
 
       case CLIMBSHOOT -> {
         intakeSubsystem.requestIntake(500,165);
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(86.5, 43);
+        armSubsystem.requestArmPosition(99.5, 43);
         climberSubsystem.requestClimberPosition(0);
         intakeSubsystem.requestBlinken(-.57);
+        break;
       }
 
       case GRAB -> {
         intakeSubsystem.requestIntake(0,50 );
         shooterSubsystem.requestRPM(0, 0);
-        armSubsystem.requestArmPosition(110,0);
+        armSubsystem.requestArmPosition(123,0);
         climberSubsystem.requestClimberPosition(180);
         intakeSubsystem.requestBlinken(-.57);
+        break;
       }
 
 
     }
-
-
-
 
     Logger.recordOutput("MechanisimControl/currentState", currentState.toString());
     
@@ -200,11 +265,17 @@ public class MechanisimControl extends SubsystemBase {
   }
   
 
+  @AutoLogOutput(key = "MechanisimControl/ReadyToStore")
+  public boolean atReadyToSTore() {
+    return (currentState == State.PICKUP || currentState == State.STORE)
+        && intakeSubsystem.HasNote();
+  }
+
   public void setDesiredState(State desiredState) {
-//    if (desiredState == State.PREPARE_SHOOT && currentState == State.SHOOT) {
-//      return;
+//    if (currentState == State.PICKUP && intakeSubsystem.HasNote()) {
+//     desiredState = State.STORE;
 //    }
-    currentState = desiredState;
+        currentState = desiredState;
     
   }
 

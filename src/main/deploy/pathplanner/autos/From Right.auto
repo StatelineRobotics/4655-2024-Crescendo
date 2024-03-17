@@ -2,8 +2,8 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 1.2,
-      "y": 5.49228881953771
+      "x": 0.4,
+      "y": 4.22
     },
     "rotation": 0.0
   },
@@ -12,21 +12,15 @@
     "data": {
       "commands": [
         {
-          "type": "path",
-          "data": {
-            "pathName": "Start from Speaker S1"
-          }
-        },
-        {
           "type": "named",
           "data": {
             "name": "Speaker"
           }
         },
         {
-          "type": "wait",
+          "type": "path",
           "data": {
-            "waitTime": 2.5
+            "pathName": "Start from Right"
           }
         },
         {
@@ -38,7 +32,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 2.0
+            "waitTime": 0.25
           }
         },
         {
@@ -56,25 +50,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Start from Speaker S2"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 2.0
+            "pathName": "Start from Right S1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "PrepToShoot"
+            "name": "Speaker"
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 2.0
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start from Right S2"
           }
         },
         {
@@ -86,13 +80,19 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 1.5
+            "waitTime": 0.5
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Home"
+            "name": "Pickup"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Start from Right S3"
           }
         }
       ]

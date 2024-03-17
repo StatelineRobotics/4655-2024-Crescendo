@@ -14,8 +14,7 @@ public interface IntakeIO {
     public double wristposition = 0.0;
     public double wristCurrent = 0.0;
     public double blinkenValue = 0.53;
-    public boolean isRingLoaded = false;
-    public double getMeasurement;
+    public double lcMeasurement;
  
   }
 

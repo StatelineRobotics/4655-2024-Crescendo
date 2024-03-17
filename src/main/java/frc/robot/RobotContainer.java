@@ -113,30 +113,40 @@ public class RobotContainer {
     }
 
  
+    configureNamedCommands();
+
+   
+    
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up auto routines
-    NamedCommands.registerCommand("PrepToShoot",
-       Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+    // Configure the button bindings
+     configureButtonBindings();
+  }
 
-    NamedCommands.registerCommand("Shoot",
-       Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+ 
+  private void configureNamedCommands() {
+     // Set up auto routines
+
+    NamedCommands.registerCommand("PrepToShoot",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+       NamedCommands.registerCommand("Home",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
+
+       NamedCommands.registerCommand("Shoot",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+
+       NamedCommands.registerCommand("Speaker",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.SPEAKER)));
+
+              NamedCommands.registerCommand("WingPrep",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.WINGPREP)));
 
     NamedCommands.registerCommand("Pickup",
-       Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
 
     NamedCommands.registerCommand("AmpShoot",
-       Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
-      
-
-
-
-    // Configure the button bindings
-    configureButtonBindings();
+      new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
   }
 
   /**
@@ -172,7 +182,7 @@ public class RobotContainer {
 
 //Mechanisim Control
 
-      new JoystickButton(OIConstants.kauxController, 3) // HOME
+      new JoystickButton(OIConstants.kauxController, 8) // HOME
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
 
@@ -196,6 +206,10 @@ public class RobotContainer {
       new JoystickButton(OIConstants.kauxController, 4) // PREPARE_SHOOT
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+      new JoystickButton(OIConstants.kauxController, 3) // STORE
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.STORE)));
 
       OIConstants.m_driverController.rightTrigger() // SHOOT
             .onTrue( Commands.runOnce(

@@ -106,7 +106,7 @@ public final class DriveConstants {
         public static final double kTurningMinOutput = -.7;
         public static final double kTurningMaxOutput = 7;
 
-        public static final double kAutoDrivingP = 0.05 ;
+        public static final double kAutoDrivingP = 0.9 ;
         public static final double kAutoDrivingI = 0;
         public static final double kAutoDrivingD = 0;
 

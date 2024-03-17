@@ -23,7 +23,7 @@ public class ClimberSubsystem  extends SubsystemBase {
 
 
   public ClimberSubsystem(ClimberIO io){
-    System.out.println("[Init] Creating Climber");
+  //  System.out.println("[Init] Creating Climber");
     this.io = io;
   }
 
