@@ -72,7 +72,7 @@ public class Drive extends SubsystemBase {
     private Field2d field = new Field2d();
     private boolean update = false;
     private double VisionTime;
-    private ShooterAlignments shooterAlignments;
+   
 
     /** Creates a new DriveSubsystem. */
     public Drive(GyroIO gyro, ModuleIO fl, ModuleIO fr, ModuleIO bl, ModuleIO br,PhotonVision photonVision) {
@@ -99,6 +99,7 @@ public class Drive extends SubsystemBase {
                         m_rearRight.getPosition()
                 });  
 
+                
         poseEstimator = new SwerveDrivePoseEstimator(
             DriveConstants.kDriveKinematics,
             gyroInputs.yaw.plus(DriveConstants.kChassisAngularOffset),
@@ -152,7 +153,7 @@ public class Drive extends SubsystemBase {
     public void periodic() {
 
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
-        if (estimatedPose.isPresent()){
+        if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity()){
         var odometrypose = poseEstimator.getEstimatedPosition();
         SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
         SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
@@ -204,6 +205,8 @@ public class Drive extends SubsystemBase {
             m_rearRight.getPosition()
             });
   
+            SmartDashboard.putString("killurparents",m_rearLeft.getPosition().toString());
+            SmartDashboard.putString("killurparentspls",m_frontLeft.getPosition().toString());
 
 
         // Read wheel deltas from each module
@@ -272,48 +275,7 @@ public class Drive extends SubsystemBase {
         this.pose = pose;
     }
 
-    public double getDistanceToSpeaker() {
-        Translation2d blueSpeaker = FieldConstants.Speaker.bluecenterSpeakerOpening;
-        Translation2d redSpeaker = FieldConstants.Speaker.redcenterSpeakerOpening;
-        double speakerX;
-        double speakerY;        
-        if (DriverStation.getAlliance().get() == Alliance.Blue){
-            speakerX = blueSpeaker.getX();
-            speakerY = blueSpeaker.getY();
-        }
-        else{
-            speakerX = redSpeaker.getX();
-            speakerY = redSpeaker.getY();
-        }
 
-        double distanceX = m_odometry.getPoseMeters().getX() - speakerX;
-        double distanceY = m_odometry.getPoseMeters().getY() - speakerY;
-        double distance = Math.sqrt(Math.exp(distanceX) + Math.exp(distanceY));
-        return distance;
-    }
-
-    public double headingToFaceSpeaker() {
-        Translation2d blueSpeaker = FieldConstants.Speaker.bluecenterSpeakerOpening;
-        Translation2d redSpeaker = FieldConstants.Speaker.redcenterSpeakerOpening;
-        double speakerX;
-        double speakerY;
-        double offset = 0;
-        if (DriverStation.getAlliance().get() == Alliance.Blue){
-            speakerX = blueSpeaker.getX();
-            speakerY = blueSpeaker.getY();
-            offset = 180;
-        }
-        else{
-            speakerX = redSpeaker.getX();
-            speakerY = redSpeaker.getY();
-            offset = 0;
-        }
-        double distanceX = m_odometry.getPoseMeters().getX() - speakerX;
-        double distanceY = m_odometry.getPoseMeters().getY() - speakerY;
-        double angle = Math.toDegrees(Math.atan2(distanceY, distanceX));
-        angle = Math.toRadians((angle + offset + 360) % 360);
-        return angle;
-    }
 
     /**
      * Method to drive the robot using joystick info.
@@ -461,7 +423,7 @@ public class Drive extends SubsystemBase {
      */
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(
-                desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(desiredStates[0]);
         m_frontRight.setDesiredState(desiredStates[1]);
         m_rearLeft.setDesiredState(desiredStates[2]);

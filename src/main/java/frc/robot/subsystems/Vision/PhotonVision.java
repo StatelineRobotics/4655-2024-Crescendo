@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 public class PhotonVision extends SubsystemBase {
   private PhotonCamera Left = new PhotonCamera("Left");
   private PhotonCamera Right = new PhotonCamera("Right");
+private PhotonCamera Back = new PhotonCamera("Back");
   private PhotonPipelineResult    latestResult;
   private VisionLEDMode           ledMode = VisionLEDMode.kOff;
   private PhotonVisionIO Io;
@@ -46,44 +47,50 @@ this.Io = Io;
 public Optional<Pose2d> getEstimatedPose(Pose2d Odometry){
 
 Pose2d averagePose = null;
-Double LeftsumX = 0.0;
-Double LeftsumY = 0.0;
+Double sumX = 0.0;
+Double sumY = 0.0;
+double poses = 0.0;
 Rotation2d sumRotation = new Rotation2d();
 double sumConfidence = 0;
 Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
 SmartDashboard.putNumber("VisionPoseLeftX",LeftPose.getX());
 SmartDashboard.putNumber("VisionPoseLeftY",LeftPose.getY());
 if (Left.getLatestResult().hasTargets()) {
-    LeftsumX = LeftPose.getX();
-    LeftsumY = LeftPose.getY();
+    sumX += LeftPose.getX();
+    sumY += LeftPose.getY();
     sumRotation = sumRotation.plus(LeftPose.getRotation());
-    
+    poses +=1;
 }
 Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
 Double RightsumX = 0.0;
 Double RightsumY = 0.0;
 if (Right.getLatestResult().hasTargets()) {
-    RightsumX = RightPose.getX();
-    RightsumY = RightPose.getY();
+    sumX += RightPose.getX();
+    sumY += RightPose.getY();
     sumRotation = sumRotation.plus(RightPose.getRotation());
+    poses +=1;
 }
-Double sumX = 0.0;
-Double sumY = 0.0;
-if(Right.getLatestResult().hasTargets()&&Left.getLatestResult().hasTargets()){
- sumX = (LeftsumX + RightsumX)/2;
- sumY = (LeftsumY + RightsumY)/2;
-}
-else if(Right.getLatestResult().hasTargets()){
- sumX = RightsumX;
- sumY = RightsumY;
-}
-else if(Left.getLatestResult().hasTargets()){
- sumX = LeftsumX;
- sumY = LeftsumY;
+Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
+Double BacksumX = 0.0;
+Double BacksumY = 0.0;
+if (Back.getLatestResult().hasTargets()) {
+    sumX = BackPose.getX();
+    sumY = BackPose.getY();
+    sumRotation = sumRotation.plus(BackPose.getRotation());
+    poses +=1;
 }
 
 
+if(poses > 0){
+    sumX = sumX / poses;
+    sumY = sumY / poses;
     averagePose = new Pose2d(sumX, sumY, sumRotation);
+    poses = 0;
+}
+
+
+
+    
 
 
 return Optional.ofNullable(averagePose);
@@ -159,6 +166,14 @@ return Optional.ofNullable(averagePose);
    */
   public boolean hasTarget(int id) {
       return getTrackedIDs().contains(id);
+  }
+
+  public boolean getPoseAmbiguity(){
+    boolean Updateokay = true;
+    if(inputs.LeftAmbiguitySum >= .6 || inputs.RightAmbiguitySum >= .6){
+        Updateokay = false;
+    }
+    return Updateokay;
   }
 
   // Best Target Methods =============================================================

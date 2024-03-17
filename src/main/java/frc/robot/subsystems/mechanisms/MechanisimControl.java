@@ -154,11 +154,11 @@ public class MechanisimControl extends SubsystemBase {
 //        if (!atShootingSetpoint()) {
 //          currentState = State.PREPARE_SHOOT;
 //        } else {
-           double armAngle = shooterAlignments.angleArmToSpeaker();
-           intakeSubsystem.requestIntake(-500,238);
-           shooterSubsystem.requestRPM(5600, 5900);
-           armSubsystem.requestArmPosition(armAngle, 10);
-           intakeSubsystem.requestBlinken(0.53);
+          //  double armAngle = shooterAlignments.angleArmToSpeaker();
+          //  intakeSubsystem.requestIntake(-500,238);
+          //  shooterSubsystem.requestRPM(5600, 5900);
+          //  armSubsystem.requestArmPosition(armAngle, 10);
+          //  intakeSubsystem.requestBlinken(0.53);
 //        }
       }
       case CLIMB -> {

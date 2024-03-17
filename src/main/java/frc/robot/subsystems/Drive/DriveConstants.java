@@ -53,13 +53,34 @@ public final class DriveConstants {
     public static final int kFrontRightDrivingCanId = 6;
     public static final int kFrontLeftTurningCanId = 7; 
     public static final int kFrontLeftDrivingCanId = 8;
+    public static final int kRearLeftTurningCanId = 9;
+    public static final int kRearLeftDrivingCanId = 10;
+
+    /*
+    public static final int kRearRightTurningCanId = 3;
+    public static final int kRearRightDrivingCanId = 4;
+    public static final int kFrontRightTurningCanId = 5;
+    public static final int kFrontRightDrivingCanId = 6;
+    public static final int kFrontLeftTurningCanId = 7; 
+    public static final int kFrontLeftDrivingCanId = 8;
     public static final int kRearLeftTurningCanId = 10;
     public static final int kRearLeftDrivingCanId = 9;
+
+    public static final int TestBackLeftSteerid = 9;
+    public static final int TestBackLeftDriveid = 10;
+    public static final int TestFrontLeftSteerid = 7;
+    public static final int TestFrontLeftDriveid = 8;
+    public static final int TestBackRightSteerid = 3;
+    public static final int TestBackRightDriveid = 4;
+    public static final int TestFrontRightSteerid = 5;
+    public static final int TestFrontRightDriveid = 6;
+    public static final int TestPigeonCanID = 20;
+    */
 
 
     public static final Rotation2d kChassisAngularOffset = Rotation2d.fromDegrees(0);
 
-    public static final int kPigeonCanId = 19;
+    public static final int kPigeonCanId = 20;
 
     public static final boolean kGyroReversed = true;
 

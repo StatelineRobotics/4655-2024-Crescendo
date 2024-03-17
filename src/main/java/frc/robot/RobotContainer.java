@@ -82,7 +82,7 @@ public class RobotContainer {
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        shooterAlignments = new ShooterAlignments(drive);
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
            
         break;
@@ -101,7 +101,7 @@ shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        shooterAlignments = new ShooterAlignments(drive);
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
         break;
 
@@ -119,7 +119,7 @@ shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new ModuleIO() {},new PhotonVision(new PhotonVisionPoseEstimation())));
+        shooterAlignments = new ShooterAlignments(drive);
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
         break;
     }
@@ -192,8 +192,8 @@ shooterAlignments = new ShooterAlignments(new Drive(new GyroIO() {},new ModuleIO
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
 
       OIConstants.m_driverController.leftBumper()// AUTO_AIM 
-              .onTrue(Commands.runOnce(
-                () -> drive.drive(0, 0, shooterAlignments.getRotation(), false, false) ));
+              .whileTrue(Commands.run(
+                () -> shooterAlignments.periodic() ));
       
       OIConstants.m_driverController.leftBumper()
               .onTrue(Commands.runOnce(
