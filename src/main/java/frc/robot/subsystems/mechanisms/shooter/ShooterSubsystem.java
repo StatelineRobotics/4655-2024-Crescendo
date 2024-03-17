@@ -19,7 +19,7 @@ public class ShooterSubsystem  extends SubsystemBase {
     private double bottomShooterRPM = 0.0;
 
     public ShooterSubsystem(ShooterIO io){
-        System.out.println("[Init] Creating Shooter");
+      //  System.out.println("[Init] Creating Shooter");
         this.io = io;
 
     }

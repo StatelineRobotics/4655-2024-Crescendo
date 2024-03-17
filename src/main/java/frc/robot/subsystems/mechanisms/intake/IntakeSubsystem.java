@@ -7,10 +7,12 @@ package frc.robot.subsystems.mechanisms.intake;
 
 import org.littletonrobotics.junction.AutoLogOutput;
 import org.littletonrobotics.junction.Logger;
+
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
 
 
 public class IntakeSubsystem extends SubsystemBase {
@@ -22,9 +24,12 @@ public class IntakeSubsystem extends SubsystemBase {
   
 
   public IntakeSubsystem(IntakeIO io) {
-    System.out.println("[Init] Creating Intake");
+  //  System.out.println("[Init] Creating Intake");
     this.io = io;
+   
   }
+
+
 
   @Override
   public void periodic() {
@@ -52,7 +57,11 @@ public class IntakeSubsystem extends SubsystemBase {
     this.blinkenValue = blinkenValue;
    
  }
- 
+
+//  public boolean isRingLoaded() {
+ //   return IntakeIO.isRingLoaded();
+//  }
+
    private void stop() {
     intakeRPM = 0;
     wristPostion = 0;
@@ -66,12 +75,18 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @AutoLogOutput(key = "Intake/HasNote")
     public boolean HasNote() {
-    return (inputs.intakeCurrent > 21);
+    return (inputs.lcMeasurement < 50);
   }
   
-    @AutoLogOutput(key = "Arm/OkToEject")
+    @AutoLogOutput(key = "Intake/OkToEject")
   public boolean OkToEject() {
     return (Math.abs(inputs.wristCurrent - 50) > 4);
   }
+
+   @AutoLogOutput(key = "Intake/OkToSpeeker")
+  public boolean OkToSpeeker() {
+    return (inputs.wristposition > 160);
+  }
+
 
 }

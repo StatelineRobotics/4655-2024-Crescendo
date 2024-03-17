@@ -14,6 +14,7 @@ public interface IntakeIO {
     public double wristposition = 0.0;
     public double wristCurrent = 0.0;
     public double blinkenValue = 0.53;
+    public double lcMeasurement;
  
   }
 
@@ -25,6 +26,8 @@ public interface IntakeIO {
 
   /** Set Input speed and position */
   default void setBlinken(double blinkenValue) {}
+
+  default void isIndexerLoaded(Boolean isIndexerLoaded) {}
 
   /** Stop intake */
   default void stop() {}

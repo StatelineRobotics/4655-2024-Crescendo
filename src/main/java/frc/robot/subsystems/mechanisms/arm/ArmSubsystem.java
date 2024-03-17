@@ -21,7 +21,7 @@ public class ArmSubsystem extends SubsystemBase {
   private double armExtenderPosSet = MechanismConstants.kArmExtenderHomePOS;;
     
   public ArmSubsystem(ArmIO io) {
-    System.out.println("[Init] Creating Arm");
+   // System.out.println("[Init] Creating Arm");
     this.io = io;
   }
 
@@ -72,7 +72,7 @@ public class ArmSubsystem extends SubsystemBase {
 
   @AutoLogOutput(key = "Arm/OkToHome")
   public boolean OkToHome() {
-    return (inputs.armPosCurrent > 12);
+    return (inputs.armPosCurrent > 25);
   }
 
    @AutoLogOutput(key = "Arm/OkToClimbWrist")
