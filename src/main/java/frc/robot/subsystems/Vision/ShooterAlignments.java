@@ -61,8 +61,8 @@ public class ShooterAlignments{
     }
 
     public void addValuesToMap() {
-        interpolateMap.put(0.0, 0.0);
-        interpolateMap.put(100.0, 100.0);
+        interpolateMap.put(0.0, 38.0);
+        interpolateMap.put(100.0, 22.5);
     }
     public void setMotors(){ 
         rotationController.setSetpoint(getRotation());
@@ -71,7 +71,8 @@ public class ShooterAlignments{
         double rotvalue = rotationController.calculate(drive.getPose().getRotation().getRadians());
        
        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,rotvalue);
-       drive.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
+       drive.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds)); 
+       SmartDashboard.putNumber("rot",rotvalue);
     }
     
 

@@ -11,7 +11,6 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 
 public class Module {
-  private int moduleID;
   private ModuleIO moduleIO;
   private ModuleIOInputsAutoLogged inputs = new ModuleIOInputsAutoLogged();
   private int index;
@@ -70,13 +69,6 @@ public class Module {
   public SwerveModulePosition getPositionDelta() {
     return positionDelta;
   }
-
-  public void periodic() {
-    moduleIO.updateInputs(inputs);
-    Logger.processInputs("Drive/Module" + Integer.toString(moduleID), inputs);
-    moduleIO.periodic();
-  }
-
 
   /**
    * Sets the desired state for the module.

@@ -74,8 +74,8 @@ Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
 Double BacksumX = 0.0;
 Double BacksumY = 0.0;
 if (Back.getLatestResult().hasTargets()) {
-    sumX = BackPose.getX();
-    sumY = BackPose.getY();
+    sumX += BackPose.getX();
+    sumY += BackPose.getY();
     sumRotation = sumRotation.plus(BackPose.getRotation());
     poses +=1;
 }
@@ -84,11 +84,10 @@ if (Back.getLatestResult().hasTargets()) {
 if(poses > 0){
     sumX = sumX / poses;
     sumY = sumY / poses;
-    averagePose = new Pose2d(sumX, sumY, sumRotation);
     poses = 0;
 }
 
-
+    averagePose = new Pose2d(sumX, sumY, sumRotation);
 
     
 

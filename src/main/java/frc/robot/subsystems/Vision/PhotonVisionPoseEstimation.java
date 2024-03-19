@@ -31,7 +31,7 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
     private EstimatedRobotPose estimatedBackPose = new EstimatedRobotPose(new Pose3d(), 0, new ArrayList<PhotonTrackedTarget>(), PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR);
     private Transform3d Leftpose = new Transform3d(.30,.10,.61, new Rotation3d(Math.toRadians(0),Math.toRadians(112),0));
     private Transform3d Rightpose = new Transform3d(.16,-.26,0, new Rotation3d(Math.toRadians(0),Math.toRadians(72.3),0));
-    private Transform3d Backpose = new Transform3d(.28,0.0,.37, new Rotation3d(Math.toRadians(0),Math.toRadians(120),0));
+    private Transform3d Backpose = new Transform3d(-.28,0.0,.37, new Rotation3d(Math.toRadians(0),Math.toRadians(120),0));
 
     public PhotonVisionPoseEstimation(){
         this.Left = new PhotonCamera("Left");
@@ -98,7 +98,7 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
             for (int i = 0; i < BackTargetsSeen; i++) {
                 var target = estimatedBackPose.targetsUsed.get(i);
                 inputs.visibleBackFiducialIDs[i] = target.getFiducialId();
-                RightAmbiguitySum += target.getPoseAmbiguity();
+                BackAmbiguitySum += target.getPoseAmbiguity();
             }  
             inputs.BackAmbiguitySum = BackAmbiguitySum;
         } 

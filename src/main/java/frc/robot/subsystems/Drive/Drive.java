@@ -153,7 +153,7 @@ public class Drive extends SubsystemBase {
     public void periodic() {
 
         Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
-        if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity()){
+        if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity() && DriverStation.isAutonomous() == false){
         var odometrypose = poseEstimator.getEstimatedPosition();
         SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
         SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());
@@ -205,8 +205,7 @@ public class Drive extends SubsystemBase {
             m_rearRight.getPosition()
             });
   
-            SmartDashboard.putString("killurparents",m_rearLeft.getPosition().toString());
-            SmartDashboard.putString("killurparentspls",m_frontLeft.getPosition().toString());
+
 
 
         // Read wheel deltas from each module

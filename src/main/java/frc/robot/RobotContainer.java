@@ -14,6 +14,7 @@
 package frc.robot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -41,7 +42,6 @@ import frc.robot.subsystems.mechanisms.arm.ArmSubsystem;
 import frc.robot.subsystems.mechanisms.climber.ClimberIOSparkMax;
 import frc.robot.subsystems.mechanisms.climber.ClimberSubsystem;
 
-
 import org.littletonrobotics.junction.networktables.LoggedDashboardChooser;
 
 /**
@@ -57,9 +57,8 @@ public class RobotContainer {
   private final IntakeSubsystem intakeSubsystem;
   private final ArmSubsystem armSubsystem;
   private final ClimberSubsystem climberSubsystem;
-  private final ShooterAlignments shooterAlignments;
   private final MechanisimControl mechanisimControl;
-  
+  private final ShooterAlignments shooterAlignments;
 
   // Dashboard inputs
   private final LoggedDashboardChooser<Command> autoChooser;
@@ -83,8 +82,7 @@ public class RobotContainer {
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
         shooterAlignments = new ShooterAlignments(drive);
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
-           
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem, shooterAlignments);
         break;
 
       case SIM:
@@ -120,22 +118,45 @@ public class RobotContainer {
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
         shooterAlignments = new ShooterAlignments(drive);
-        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments);
+        mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem,shooterAlignments); 
         break;
     }
 
  
+    configureNamedCommands();
+
+   
+    
     autoChooser = new LoggedDashboardChooser<>("Auto Choices", AutoBuilder.buildAutoChooser());
 
-    // Set up feedforward characterization
-    // autoChooser.addOption(
-    //     "Drive FF Characterization",
-    //     new FeedForwardCharacterization(
-    //         drive, drive::runCharacterizationVolts, drive::getCharacterizationVelocity));
-
-
     // Configure the button bindings
-    configureButtonBindings();
+     configureButtonBindings();
+  }
+
+ 
+  private void configureNamedCommands() {
+     // Set up auto routines
+
+    NamedCommands.registerCommand("PrepToShoot",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+       NamedCommands.registerCommand("Home",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
+
+       NamedCommands.registerCommand("Shoot",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.SHOOT)));
+
+       NamedCommands.registerCommand("Speaker",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.SPEAKER)));
+
+              NamedCommands.registerCommand("WingPrep",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.WINGPREP)));
+
+    NamedCommands.registerCommand("Pickup",
+       new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.PICKUP)));
+
+    NamedCommands.registerCommand("AmpShoot",
+      new InstantCommand(() -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
   }
 
   /**
@@ -171,7 +192,7 @@ public class RobotContainer {
 
 //Mechanisim Control
 
-      new JoystickButton(OIConstants.kauxController, 3) // HOME
+      new JoystickButton(OIConstants.kauxController, 8) // HOME
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.HOME)));
 
@@ -187,21 +208,26 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMP)));
 
-      OIConstants.m_driverController.leftTrigger()// AMPSHOOT 
+     OIConstants.m_driverController.leftTrigger()// AMPSHOOT 
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
 
-      OIConstants.m_driverController.leftBumper()// AUTO_AIM 
+              OIConstants.m_driverController.leftBumper()// AUTO_AIM 
               .whileTrue(Commands.run(
-                () -> shooterAlignments.periodic() ));
+                () -> shooterAlignments.periodic()));
       
       OIConstants.m_driverController.leftBumper()
               .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AUTO_AIM)));
 
+
       new JoystickButton(OIConstants.kauxController, 4) // PREPARE_SHOOT
             .onTrue( Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT)));
+
+      new JoystickButton(OIConstants.kauxController, 3) // STORE
+            .onTrue( Commands.runOnce(
+              () -> mechanisimControl.setDesiredState(MechanisimControl.State.STORE)));
 
       OIConstants.m_driverController.rightTrigger() // SHOOT
             .onTrue( Commands.runOnce(
@@ -248,5 +274,6 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     return autoChooser.get();
+    
   }
 }

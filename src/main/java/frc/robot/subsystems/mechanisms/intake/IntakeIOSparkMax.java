@@ -49,8 +49,8 @@ public class IntakeIOSparkMax implements IntakeIO{
         m_Intake.setIdleMode(IdleMode.kCoast);      //MOTORBRAKE
         m_Wrist.setInverted(false);
         m_Intake.setInverted(true);
-        m_Wrist.setSmartCurrentLimit(10);
-        m_Intake.setSmartCurrentLimit(25);
+        m_Wrist.setSmartCurrentLimit(15);
+        m_Intake.setSmartCurrentLimit(30);
     
         intakeController = m_Intake.getPIDController();
         intakeController.setFeedbackDevice(intakeEncoder);
@@ -63,13 +63,13 @@ public class IntakeIOSparkMax implements IntakeIO{
 
         wristController = m_Wrist.getPIDController();
         wristController.setFeedbackDevice(wristEncoder);
-        wristController.setP(.00025);
+        wristController.setP(.00028);
         wristController.setI(0);
         wristController.setD(0);
         wristController.setIZone(0);
         wristController.setFF(0.0002);
         wristController.setOutputRange(-0.70,0.70);
-        wristController.setPositionPIDWrappingEnabled(false);
+      //  wristController.setPositionPIDWrappingEnabled(false);
 
         int smartMotionSlot = 0;
         wristController.setSmartMotionMaxVelocity(1200, smartMotionSlot);
