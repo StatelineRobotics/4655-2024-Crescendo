@@ -54,9 +54,6 @@ public class ShooterAlignments{
     public void periodic(){
         addValuesToMap();
         setMotors();
-        SmartDashboard.putNumber("distance", getDistanceToSpeaker());               
-        SmartDashboard.putString("speaker angle", SpeakerAngle.toRotation2d().toString());
-        SmartDashboard.putNumber("DriveRot", getRotation());
         SmartDashboard.putNumber("armangle",angleArmToSpeaker());
     }
 
@@ -71,8 +68,9 @@ public class ShooterAlignments{
         double rotvalue = rotationController.calculate(drive.getPose().getRotation().getRadians());
        
        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,rotvalue);
-       drive.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds)); 
-       SmartDashboard.putNumber("rot",rotvalue);
+       drive.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
+
+       
     }
     
 

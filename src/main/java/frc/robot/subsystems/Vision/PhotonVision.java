@@ -62,8 +62,6 @@ if (Left.getLatestResult().hasTargets()) {
     poses +=1;
 }
 Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
-Double RightsumX = 0.0;
-Double RightsumY = 0.0;
 if (Right.getLatestResult().hasTargets()) {
     sumX += RightPose.getX();
     sumY += RightPose.getY();
@@ -71,13 +69,11 @@ if (Right.getLatestResult().hasTargets()) {
     poses +=1;
 }
 Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
-Double BacksumX = 0.0;
-Double BacksumY = 0.0;
 if (Back.getLatestResult().hasTargets()) {
     sumX += BackPose.getX();
     sumY += BackPose.getY();
     sumRotation = sumRotation.plus(BackPose.getRotation());
-    poses +=1;
+    poses += 1;
 }
 
 
