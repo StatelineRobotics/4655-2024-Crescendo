@@ -203,12 +203,16 @@ public class MechanisimControl extends SubsystemBase {
       }
 
       case AUTO_AIM -> {
-        double armAngle = shooterAlignments.angleArmToSpeaker();
+        if (shooterAlignments.VhasTarget){
+          intakeSubsystem.requestBlinken(-0.09);
+        } else {
+          intakeSubsystem.requestBlinken(0.61);
+        }
+        double armAngle = shooterAlignments.armAngle;
         intakeSubsystem.requestIntake(0,238);
         shooterSubsystem.requestRPM(5600, 5900);
         armSubsystem.requestArmPosition(armAngle, 10);
         climberSubsystem.requestClimberPosition(0);
-        intakeSubsystem.requestBlinken(0.53);
         break;
     }
 

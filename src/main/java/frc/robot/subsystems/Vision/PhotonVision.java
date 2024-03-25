@@ -25,14 +25,14 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class PhotonVision extends SubsystemBase {
-  private PhotonCamera Left = new PhotonCamera("Left");
-  private PhotonCamera Right = new PhotonCamera("Right");
-private PhotonCamera Back = new PhotonCamera("Back");
-  private PhotonPipelineResult    latestResult;
-  private VisionLEDMode           ledMode = VisionLEDMode.kOff;
-  private PhotonVisionIO Io;
-  private final PhotonVisionIOInputsAutoLogged inputs = new PhotonVisionIOInputsAutoLogged();  
-  private PhotonVisionPoseEstimation poseEstimation = new PhotonVisionPoseEstimation();
+    private PhotonCamera Left = new PhotonCamera("Left");
+    private PhotonCamera Right = new PhotonCamera("Right");
+    private PhotonCamera Back = new PhotonCamera("Back");
+    private PhotonPipelineResult    latestResult;
+    private VisionLEDMode           ledMode = VisionLEDMode.kOff;
+    private PhotonVisionIO Io;
+    private final PhotonVisionIOInputsAutoLogged inputs = new PhotonVisionIOInputsAutoLogged();  
+    private PhotonVisionPoseEstimation poseEstimation = new PhotonVisionPoseEstimation();
 
 
 
@@ -44,51 +44,51 @@ public PhotonVision(PhotonVisionIO Io)
 this.Io = Io;
 }
 
-public Optional<Pose2d> getEstimatedPose(Pose2d Odometry){
+public Optional<Pose2d> getEstimatedPose(){
 
-Pose2d averagePose = null;
-Double sumX = 0.0;
-Double sumY = 0.0;
-double poses = 0.0;
-Rotation2d sumRotation = new Rotation2d();
-double sumConfidence = 0;
-Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
-SmartDashboard.putNumber("VisionPoseLeftX",LeftPose.getX());
-SmartDashboard.putNumber("VisionPoseLeftY",LeftPose.getY());
-if (Left.getLatestResult().hasTargets()) {
-    sumX += LeftPose.getX();
-    sumY += LeftPose.getY();
-    sumRotation = sumRotation.plus(LeftPose.getRotation());
-    poses +=1;
-}
-Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
-if (Right.getLatestResult().hasTargets()) {
-    sumX += RightPose.getX();
-    sumY += RightPose.getY();
-    sumRotation = sumRotation.plus(RightPose.getRotation());
-    poses +=1;
-}
-Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
-if (Back.getLatestResult().hasTargets()) {
-    sumX += BackPose.getX();
-    sumY += BackPose.getY();
-    sumRotation = sumRotation.plus(BackPose.getRotation());
-    poses += 1;
-}
-
-
-if(poses > 0){
-    sumX = sumX / poses;
-    sumY = sumY / poses;
-    poses = 0;
-}
-
-    averagePose = new Pose2d(sumX, sumY, sumRotation);
-
-    
+    Pose2d averagePose = null;
+    Double sumX = 0.0;
+    Double sumY = 0.0;
+    double poses = 0.0;
+    Rotation2d sumRotation = new Rotation2d();
+    //double sumConfidence = 0;
+    Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
+    SmartDashboard.putNumber("VisionPoseLeftX",LeftPose.getX());
+    SmartDashboard.putNumber("VisionPoseLeftY",LeftPose.getY());
+    if (Left.getLatestResult().hasTargets()) {
+        sumX += LeftPose.getX();
+        sumY += LeftPose.getY();
+        sumRotation = sumRotation.plus(LeftPose.getRotation());
+        poses +=1;
+    }
+    Pose2d RightPose = inputs.estimatedRightPose.toPose2d();
+    if (Right.getLatestResult().hasTargets()) {
+        sumX += RightPose.getX();
+        sumY += RightPose.getY();
+        sumRotation = sumRotation.plus(RightPose.getRotation());
+        poses +=1;
+    }
+    Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
+    if (Back.getLatestResult().hasTargets()) {
+        sumX += BackPose.getX();
+        sumY += BackPose.getY();
+        sumRotation = sumRotation.plus(BackPose.getRotation());
+        poses += 1;
+    }
 
 
-return Optional.ofNullable(averagePose);
+    if(poses > 0){
+        sumX = sumX / poses;
+        sumY = sumY / poses;
+        poses = 0;
+    }
+
+        averagePose = new Pose2d(sumX, sumY, sumRotation);
+
+        
+
+
+    return Optional.ofNullable(averagePose);
 }
  
 

@@ -1,46 +1,32 @@
 package frc.robot.subsystems.Vision;
 
-import com.revrobotics.SparkPIDController;
+import java.util.Optional;
+
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.math.interpolation.InterpolatingTreeMap;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
-import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.units.Distance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import frc.robot.Constants;
 import frc.robot.FieldConstants;
-import frc.robot.FieldConstants.Speaker;
 import frc.robot.subsystems.Drive.Drive;
 import frc.robot.subsystems.Drive.DriveConstants;
-import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
-import frc.robot.subsystems.Drive.GyroIO;
-import frc.robot.subsystems.Drive.GyroIOInputsAutoLogged;
-import frc.robot.subsystems.Drive.GyroIOPigeon2;
-import frc.robot.subsystems.Drive.ModuleIO;
-import frc.robot.subsystems.Drive.ModuleIOSim;
-import frc.robot.subsystems.Drive.ModuleIOSparkMax;
-import frc.robot.util.CANSpark;
-import frc.robot.util.CANSpark.Motor;
+
 
 public class ShooterAlignments{
     private InterpolatingTreeMap<Double, Double> interpolateMap = new InterpolatingDoubleTreeMap();
-    private Rotation3d AprilTagAngle = new Rotation3d();
     private PhotonVision photonVision;
-    private PhotonVisionIO IO;
     private Drive drive;
-    private double angle;
     private Rotation3d SpeakerAngle = new Rotation3d();
     private PIDController rotationController = new PIDController(4,0,0);
-    private GyroIOInputsAutoLogged gyroInputs = new GyroIOInputsAutoLogged();
+
+    public double armAngle;
+    public boolean VhasTarget;
 
   
 
@@ -53,28 +39,41 @@ public class ShooterAlignments{
 
     public void periodic(){
         addValuesToMap();
-        setMotors();
-        SmartDashboard.putNumber("armangle",angleArmToSpeaker());
+        Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose();
+        if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity()) {
+            VhasTarget = true;
+            Pose2d Vpose = estimatedPose.get();
+            double distanceToSpeaker = getDistanceToSpeaker(Vpose);
+            armAngle = angleArmToSpeaker(distanceToSpeaker);
+            SmartDashboard.putNumber("armangle", armAngle);
+            setMotors(Vpose);
+
+        } else {
+            VhasTarget = false;
+            armAngle = 22.5;
+
+        }
+
+
     }
 
     public void addValuesToMap() {
         interpolateMap.put(0.0, 38.0);
         interpolateMap.put(100.0, 22.5);
     }
-    public void setMotors(){ 
-        rotationController.setSetpoint(getRotation());
+
+    public void setMotors(Pose2d Vpose){ 
+        rotationController.setSetpoint(headingToFaceSpeaker(Vpose));
         rotationController.setTolerance(.05);
         rotationController.enableContinuousInput(-Math.PI, Math.PI);
         double rotvalue = rotationController.calculate(drive.getPose().getRotation().getRadians());
        
        ChassisSpeeds chassisSpeeds = new ChassisSpeeds(0,0,rotvalue);
        drive.setModuleStates(DriveConstants.kDriveKinematics.toSwerveModuleStates(chassisSpeeds));
-
-       
     }
     
 
-       public double getDistanceToSpeaker() {
+       public double getDistanceToSpeaker(Pose2d Vpose) {
         double distance;
         Translation2d blueSpeaker = FieldConstants.Speaker.bluecenterSpeakerOpening;
         Translation2d redSpeaker = FieldConstants.Speaker.redcenterSpeakerOpening;
@@ -89,13 +88,13 @@ public class ShooterAlignments{
             speakerY = redSpeaker.getY();
         }
 
-        double distanceX = drive.getPose().getX() - speakerX;
-        double distanceY = drive.getPose().getY() - speakerY;
+        double distanceX = Vpose.getX() - speakerX;
+        double distanceY = Vpose.getY() - speakerY;
         distance = Math.sqrt(Math.exp(distanceX) + Math.exp(distanceY));
         return distance;
     }
 
-    public double headingToFaceSpeaker() {
+    public double headingToFaceSpeaker(Pose2d Vpose) {
         Translation2d blueSpeaker = FieldConstants.Speaker.bluecenterSpeakerOpening;
         Translation2d redSpeaker = FieldConstants.Speaker.redcenterSpeakerOpening;
         double speakerX;
@@ -111,15 +110,18 @@ public class ShooterAlignments{
             speakerY = redSpeaker.getY();
             offset = 0;
         }
-        double distanceX = drive.getPose().getX() - speakerX;
-        double distanceY = drive.getPose().getY() - speakerY;
+        double distanceX = Vpose.getX() - speakerX;
+        double distanceY = Vpose.getY() - speakerY;
         double angle = Math.toDegrees(Math.atan2(distanceY, distanceX));
         angle = Math.toRadians((angle + offset + 360) % 360);
-        return angle;
+
+        SpeakerAngle = new Rotation3d(0, 0 , angle);
+        double targetAngle = SpeakerAngle.toRotation2d().getRadians();
+
+        return targetAngle;
     }
 
-    public double angleArmToSpeaker(){
-        double distance = getDistanceToSpeaker();
+    public double angleArmToSpeaker(double distance){
         double armAngle = interpolateMap.get(distance);
         return armAngle;
     }
@@ -127,15 +129,8 @@ public class ShooterAlignments{
 
 
 
-    public double getRotation(){
-        SpeakerAngle = new Rotation3d(0, 0 , headingToFaceSpeaker());
-        SpeakerAngle.toRotation2d();
-        double targetAngle = (SpeakerAngle.toRotation2d().getRadians());
-        
 
 
-        return targetAngle;
-}
 /* 
 public void visionAlignment(){
     if (photonVision.getLatestResult().hasTargets()){
