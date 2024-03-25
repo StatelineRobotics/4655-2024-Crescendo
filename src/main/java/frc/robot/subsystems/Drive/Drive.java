@@ -27,14 +27,14 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.util.WPIUtilJNI;
 import frc.robot.Constants;
-import frc.robot.FieldConstants;
-import frc.robot.Constants.OIConstants;
+//import frc.robot.FieldConstants;
+//import frc.robot.Constants.OIConstants;
 import frc.robot.subsystems.Drive.DriveConstants.ModuleConstants;
 import frc.robot.subsystems.Vision.PhotonVision;
-import frc.robot.subsystems.Vision.ShooterAlignments;
+//import frc.robot.subsystems.Vision.ShooterAlignments;
 import frc.robot.util.LocalADStarAK;
 import frc.robot.util.SwerveUtils;
-import edu.wpi.first.wpilibj2.command.Commands;
+//import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
@@ -152,8 +152,8 @@ public class Drive extends SubsystemBase {
     @Override
     public void periodic() {
 
-        Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose(getPose());
-        if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity() && DriverStation.isAutonomous() == false){
+     Optional<Pose2d> estimatedPose = photonVision.getEstimatedPose();
+     if (estimatedPose.isPresent() && photonVision.getPoseAmbiguity() && DriverStation.isAutonomous() == false){
         var odometrypose = poseEstimator.getEstimatedPosition();
         SmartDashboard.putNumber("OdometryPoseX", odometrypose.getX());
         SmartDashboard.putNumber("OdometryPoseY", odometrypose.getY());

@@ -13,6 +13,7 @@
 
 package frc.robot;
 
+//import com.ctre.phoenix6.mechanisms.MechanismState;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 
@@ -212,13 +213,23 @@ public class RobotContainer {
             .onTrue(Commands.runOnce(
               () -> mechanisimControl.setDesiredState(MechanisimControl.State.AMPSHOOT)));
 
-              OIConstants.m_driverController.leftBumper()// AUTO_AIM 
-              .whileTrue(Commands.run(
-                () -> shooterAlignments.periodic()));
+              //OIConstants.m_driverController.leftBumper()// AUTO_AIM 
+              //.whileTrue(Commands.run(
+                //() -> shooterAlignments.periodic()));
       
-      OIConstants.m_driverController.leftBumper()
-              .onTrue(Commands.runOnce(
-              () -> mechanisimControl.setDesiredState(MechanisimControl.State.AUTO_AIM)));
+      //OIConstants.m_driverController.leftBumper()
+              //.onTrue(Commands.runOnce(
+              //() -> mechanisimControl.setDesiredState(MechanisimControl.State.AUTO_AIM)));
+
+      OIConstants.m_driverController.y() //AUTO_AIM
+              .whileTrue(Commands.parallel(
+                Commands.run(
+                  () -> shooterAlignments.periodic()),
+                Commands.runEnd(
+                  () -> mechanisimControl.setDesiredState(MechanisimControl.State.AUTO_AIM),
+                  () -> mechanisimControl.setDesiredState(MechanisimControl.State.PREPARE_SHOOT), 
+                  mechanisimControl)
+              ));
 
 
       new JoystickButton(OIConstants.kauxController, 4) // PREPARE_SHOOT

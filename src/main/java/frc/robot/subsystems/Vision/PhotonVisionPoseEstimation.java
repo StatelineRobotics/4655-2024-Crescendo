@@ -64,6 +64,7 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
             }   
             inputs.LeftAmbiguitySum = LeftAmbiguitySum;
         }
+
         Optional<EstimatedRobotPose> RightPoseOptional = RightPoseEstimator.update();
         
         if (RightPoseOptional.isPresent()) {
@@ -83,6 +84,7 @@ public class PhotonVisionPoseEstimation implements PhotonVisionIO {
             }  
             inputs.RightAmbiguitySum = RightAmbiguitySum;
         } 
+        
         Optional<EstimatedRobotPose> backPoseOptional = BackPoseEstimator.update();
         
         if (backPoseOptional.isPresent()) {
