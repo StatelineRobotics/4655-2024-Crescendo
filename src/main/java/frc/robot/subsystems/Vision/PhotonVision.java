@@ -25,8 +25,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 
 public class PhotonVision extends SubsystemBase {
-    private PhotonCamera Left = new PhotonCamera("Left");
-    private PhotonCamera Right = new PhotonCamera("Right");
+    //private PhotonCamera Left = new PhotonCamera("Left");
+    //private PhotonCamera Right = new PhotonCamera("Right");
     private PhotonCamera Back = new PhotonCamera("Back");
     private PhotonPipelineResult    latestResult;
     private VisionLEDMode           ledMode = VisionLEDMode.kOff;
@@ -52,6 +52,7 @@ public Optional<Pose2d> getEstimatedPose(){
     double poses = 0.0;
     Rotation2d sumRotation = new Rotation2d();
     //double sumConfidence = 0;
+    /* 
     Pose2d LeftPose = inputs.estimatedLeftPose.toPose2d();
     SmartDashboard.putNumber("VisionPoseLeftX",LeftPose.getX());
     SmartDashboard.putNumber("VisionPoseLeftY",LeftPose.getY());
@@ -68,6 +69,7 @@ public Optional<Pose2d> getEstimatedPose(){
         sumRotation = sumRotation.plus(RightPose.getRotation());
         poses +=1;
     }
+    */
     Pose2d BackPose = inputs.estimatedBackPose.toPose2d();
     if (Back.getLatestResult().hasTargets()) {
         sumX += BackPose.getX();
@@ -75,6 +77,8 @@ public Optional<Pose2d> getEstimatedPose(){
         sumRotation = sumRotation.plus(BackPose.getRotation());
         poses += 1;
     }
+    SmartDashboard.putNumber("VisionPoseBack",sumX);
+    SmartDashboard.putNumber("VisionPoseBack",sumY);
 
 
     if(poses > 0){
@@ -98,12 +102,13 @@ public Optional<Pose2d> getEstimatedPose(){
    */
   public PhotonPipelineResult getLatestResult()
   {
-      latestResult = Left.getLatestResult();
+      latestResult = Back.getLatestResult();
       return latestResult;
   }
 
   public double getTimestamp() {
-    return inputs.estimatedRightPoseTimestamp > inputs.estimatedLeftPoseTimestamp ? inputs.estimatedRightPoseTimestamp : inputs.estimatedLeftPoseTimestamp;
+    //return inputs.estimatedRightPoseTimestamp > inputs.estimatedLeftPoseTimestamp ? inputs.estimatedRightPoseTimestamp : inputs.estimatedLeftPoseTimestamp;
+    return inputs.estimatedBackPoseTimestamp;
 }
   /**
    * Indicates if lastest camera results list contains targets. Must 
@@ -165,7 +170,8 @@ public Optional<Pose2d> getEstimatedPose(){
 
   public boolean getPoseAmbiguity(){
     boolean Updateokay = true;
-    if(inputs.LeftAmbiguitySum >= .6 || inputs.RightAmbiguitySum >= .6){
+    //if(inputs.LeftAmbiguitySum >= .6 || inputs.RightAmbiguitySum >= .6){
+    if(inputs.BackAmbiguitySum >= .6){
         Updateokay = false;
     }
     return Updateokay;
@@ -223,7 +229,7 @@ public Optional<Pose2d> getEstimatedPose(){
   public void selectPipeline(int index)
   {
  
-      Left.setPipelineIndex(index);
+      Back.setPipelineIndex(index);
   }
 
   /**
@@ -234,7 +240,7 @@ public Optional<Pose2d> getEstimatedPose(){
   {
 //NJ      Util.consoleLog("%d", mode.value);
 
-      Left.setLED(mode);
+      Back.setLED(mode);
 
       ledMode = mode;
   }
@@ -259,7 +265,7 @@ public Optional<Pose2d> getEstimatedPose(){
   {
 //NJ      Util.consoleLog();
 
-      Left.takeInputSnapshot();
+      Back.takeInputSnapshot();
   }
     
   public void periodic() {
@@ -274,7 +280,7 @@ public Optional<Pose2d> getEstimatedPose(){
   {
 //NJ      Util.consoleLog();
 
-      Left.takeOutputSnapshot();
+      Back.takeOutputSnapshot();
   }
       
   @Override

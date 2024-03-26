@@ -32,8 +32,9 @@ public class ShooterAlignments{
 
     
     
-    public ShooterAlignments(Drive drive){
+    public ShooterAlignments(Drive drive, PhotonVision photonVision){
        this.drive = drive;
+       this.photonVision = photonVision;
     }
 
 
@@ -58,8 +59,8 @@ public class ShooterAlignments{
     }
 
     public void addValuesToMap() {
-        interpolateMap.put(0.0, 38.0);
-        interpolateMap.put(100.0, 22.5);
+        interpolateMap.put(1.82, 6.8);
+        interpolateMap.put(2.9, 22.5);
     }
 
     public void setMotors(Pose2d Vpose){ 

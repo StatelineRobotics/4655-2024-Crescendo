@@ -82,7 +82,7 @@ public class RobotContainer {
         intakeSubsystem = new  IntakeSubsystem(new IntakeIOSparkMax());
         armSubsystem = new ArmSubsystem(new ArmIOSparkMax());
         climberSubsystem = new ClimberSubsystem(new ClimberIOSparkMax());
-        shooterAlignments = new ShooterAlignments(drive);
+        shooterAlignments = new ShooterAlignments(drive, new PhotonVision(new PhotonVisionPoseEstimation()));
         mechanisimControl = new MechanisimControl(intakeSubsystem, shooterSubsystem, armSubsystem, climberSubsystem, shooterAlignments);
         break;
 
